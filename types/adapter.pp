@@ -1,4 +1,4 @@
 type Opendnssec::Adapter = Enum[
-  DNS,
-  File,
+  'DNS',
+  'File',
 ]

@@ -1,1 +1,1 @@
-type Opendnssec::Timestring = Regexp[/^(P\d+[DY]$|PT\d+[HMS])$/]
+type Opendnssec::Timestring = Pattern[/^(P\d+[DY]$|PT\d+[HMS])$/]

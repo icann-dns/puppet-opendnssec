@@ -1,50 +1,37 @@
 # == Class: opendnssec
 #
 class opendnssec (
-  Boolean              $enabled                = true,
-  Boolean              $xferout_enabled        = true,
-  String               $user                   = 'root',
-  String               $group                  = 'root',
+  Boolean               $enabled                = true,
+  String[1,32]          $user                   = 'root',
+  String[1,32]          $group                  = 'root',
 
-  Boolean              $manage_packages        = true,
-  Boolean              $manage_datastore       = true,
-  Boolean              $manage_service         = true,
-  Boolean              $manage_ods_ksmutil     = true,
-  Boolean              $manage_conf            = true,
+  Boolean               $manage_packages        = true,
+  Boolean               $manage_datastore       = true,
+  Boolean               $manage_service         = true,
+  Boolean               $manage_ods_ksmutil     = true,
+  Boolean               $manage_conf            = true,
 
-  Boolean              $manage_policies        = true,
-  Hash                 $policies               = {},
+  Integer[1,7]          $logging_level          = 3,
+  String[1,20]          $logging_facility       = 'loacl0',
 
-  Boolean              $manage_zones           = true,
-  Hash                 $zones                  = {},
+  String[1,100]         $repository_name        = 'thales',
+  Stdlib::Absolutepath  $repository_module      = '/opt/nfast/toolkits/pkcs11/libcknfast.so',
+  String[1,100]         $repository_pin         = '11223344',
+  Optional[Integer]     $repository_capacity    = undef,
+  String[1,100]         $repository_token_label = 'OpenDNSSEC',
 
-  Boolean              $manage_addns           = true,
-  Hash                 $addns_tsigs            = {},
-  Hash                 $addns_xfers_in         = {},
-  Hash                 $addns_xfers_out        = {},
+  Opendnssec::Datastore $datastore_engine       = 'mysql',
+  Tea::Host             $datastore_host         = 'localhost',
+  Tea::Port             $datastore_port         = 3306,
+  String[1,100]         $datastore_name         = 'kasp',
+  String[1,100]         $datastore_user         = 'opendnssec',
+  String[1,100]         $datastore_password     = 'change_me',
 
-  Integer[0,7]         $logging_level          = 3,
-  String[20]           $logging_facility       = 'loacl0',
+  Stdlib::Absolutepath  $policy_file            = '/etc/opendnssec/kasp.xml',
+  Stdlib::Absolutepath  $zone_file              = '/etc/opendnssec/zonelist.xml',
+  Stdlib::Absolutepath  $addns_file             = '/etc/opendnssec/addns.xml',
 
-  String[100]          $repository_name        = 'thales',
-  Stdlib::Absolutepath $repository_module      = '/opt/nfast/toolkits/pkcs11/libcknfast.so',
-  String[100]          $repository_pin         = '11223344',
-  Optional[Interger]   $repository_capacity    = undef,
-  String[100]          $repository_token_label = 'OpenDNSSEC',
-
-  Opendnsec::Datastore $datastore_engine       = 'mysql',
-  Stdlib::Absolutepath $datastore_file         = '/var/lib/opendnssec/kasp.db',
-  Tea::Host            $datastore_host         = 'localhost',
-  Tea::Port            $datastore_port         = 3306,
-  String[100]          $datastore_name         = 'kasp',
-  String[100]          $datastore_user         = 'opendnssec',
-  String[100]          $datastore_password     = 'change_me',
-
-  Stdlib::Absolutepath $policy_file            = '/etc/opendnssec/kasp.xml',
-  Stdlib::Absolutepath $zone_file              = '/etc/opendnssec/zonelist.xml',
-  Stdlib::Absolutepath $addns_file             = '/etc/opendnssec/addns.xml',
-
-) inherits opendnssec::params {
+) {
 
   if $manage_packages {
     ensure_packages(['opendnssec'])
@@ -61,11 +48,6 @@ class opendnssec (
       ['opendnssec-enforcer', 'opendnssec-signer']:
         ensure => running,
         enable => true,
-    }
-    service {
-      ['pe-puppet']:
-        ensure => 'stopped',
-        enable => false,
     }
   }
   if $manage_conf {
@@ -108,23 +90,6 @@ class opendnssec (
       }
     } elsif $datastore_engine == 'sqlite' {
       ensure_packages(['opendnssec-enforcer-sqlite'])
-    }
-  }
-  if $manage_policies {
-    class {'::opendnssec::policies':
-      policies => $policies,
-    }
-  }
-  if $manage_zones {
-    class {'::opendnssec::zones':
-      zones => $zones,
-    }
-  }
-  if $manage_addns {
-    class {'::opendnssec::addns':
-      tsigs     => $addns_tsigs,
-      xfers_in  => $addns_xfers_in,
-      xfers_out => $addns_xfers_out,
     }
   }
 }

@@ -27,8 +27,8 @@
       </Syslog>
 	</Logging>
 		
-    <PolicyFile>/etc/opendnssec/kasp.xml</PolicyFile>
-    <ZoneListFile>/etc/opendnssec/zonelist.xml</ZoneListFile>
+    <PolicyFile><%= @policy_file %></PolicyFile>
+    <ZoneListFile><%= @zone_file %></ZoneListFile>
   </Common>
 
   <Enforcer>

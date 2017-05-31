@@ -1,49 +1,18 @@
 # == Class: opendnssec
 #
-# Full description of class opendnssec here.
-#
-# === Parameters
-#
-# Document parameters here.
-#
-# [*tsigs*]
-#   A has of tsig parameters to pass to create_resource(opendnssec::addns::tsig, $tsigs)
-#
-# === Variables
-#
-# === Examples
-#
-#  class { 'opendnssec::adddns':
-#    tsigs       => {
-#      'name'    => {
-#         secret => 'PRIVATE'
-#      }
-#    }
-#  }
-#
-# === Authors
-#
-# Mauricio Vergara Ereche <mave@cero32.cl>
-#
-# === Copyright
-#
-# Copyright 2015 ICANN
-#
 class opendnssec::addns (
-  $tsigs          = {},
-  $xfers_in       = {},
-  $xfers_out      = {},
-) inherits opendnssec::params {
+  Hash                  $tsigs           = {},
+  Hash                  $xfers_in        = {},
+  Hash                  $xfers_out       = {},
+  Boolean               $xferout_enabled = true,
+  Stdlib::Absolutepath  $addns_file      = '/etc/opendnssec/addns.xml',
+) {
 
-  $user            = $::opendnssec::user
-  $group           = $::opendnssec::group
-  $addns_file      = $::opendnssec::addns_file
-  $xferout_enabled = $::opendnssec::xferout_enabled
-
-  validate_absolute_path($addns_file)
-  validate_hash($tsigs)
-  validate_hash($xfers_in)
-  validate_hash($xfers_out)
+  include ::opendnssec
+  $user               = $::opendnssec::user
+  $group              = $::opendnssec::group
+  $manage_ods_ksmutil = $::opendnssec::manage_ods_ksmutil
+  $enabled            = $::opendnssec::enabled
 
   concat {$addns_file:
     owner => $user,
@@ -89,7 +58,7 @@ class opendnssec::addns (
     }
     create_resources(opendnssec::addns::xfer_out, $xfers_out)
   }
-  if $::opendnssec::manage_ods_ksmutil and $opendnssec::enabled {
+  if $manage_ods_ksmutil and $enabled {
     exec {'Forcing ods-ksmutil to update after modifying addns.xml':
       command     => '/usr/bin/ods-ksmutil update all',
       user        => $user,

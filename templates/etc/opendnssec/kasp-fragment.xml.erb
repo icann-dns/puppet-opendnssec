@@ -1,13 +1,17 @@
 <%-
-NSEC_ALGO = { 
-  'SHA1' => 1 
-}
-DNSKEY_ALGO = { 
-  'RSASHA1'            => 5,
-  'RSASHA1-NSEC3-SHA1' => 7,
-  'RSASHA256'          => 8,
-  'RSASHA512'          => 10,
-}
+if not defined?(NSEC_ALGO) 
+  NSEC_ALGO = { 
+    'SHA1' => 1 
+  }
+end
+if not defined?(DNSKEY_ALGO) 
+  DNSKEY_ALGO = { 
+    'RSASHA1'            => 5,
+    'RSASHA1-NSEC3-SHA1' => 7,
+    'RSASHA256'          => 8,
+    'RSASHA512'          => 10,
+  }
+end
 -%>
   <Policy name="<%= @name %>">
     <Description><%= @description_text %></Description>
@@ -26,7 +30,7 @@ DNSKEY_ALGO = {
 <%- if @denial_policy == 'NSEC3' -%>
       <NSEC3>
         <!-- <TTL>PT0S</TTL> -->
-<%- if $denial_optout -%>
+<%- if @denial_optout -%>
         <OptOut/>
 <%- end -%>
         <Resalt><%= @denial_resalt %></Resalt>

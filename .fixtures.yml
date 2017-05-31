@@ -1,0 +1,14 @@
+fixtures:
+    symlinks:
+      opendnssec: "#{source_dir}"
+    repositories:
+      stdlib:
+        repo: https://github.com/puppetlabs/puppetlabs-stdlib.git
+        ref: 4.17.0
+      mysql:
+        repo: https://github.com/puppetlabs/puppetlabs-mysql.git
+      concat:
+        repo: https://github.com/puppetlabs/puppetlabs-concat.git
+      tea:
+        repo: https://github.com/icann-dns/puppet-tea.git
+    forge_modules:

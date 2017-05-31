@@ -2,7 +2,7 @@
 #
 class opendnssec::policies (
   Hash $policies = {},
-) inherits opendnssec::params {
+) {
 
   include ::opendnssec
 
@@ -12,8 +12,6 @@ class opendnssec::policies (
   $manage_ods_ksmutil = $::opendnssec::manage_ods_ksmutil
   $enabled            = $::opendnssec::enabled
 
-  validate_absolute_path($policy_file)
-  validate_hash($policies)
   concat {$policy_file:
     owner => $user,
     group => $group,

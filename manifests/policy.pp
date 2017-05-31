@@ -12,7 +12,7 @@ define opendnssec::policy (
   Opendnssec::Timestring   $inception_offset         = 'PT3600S',
 
   Opendnssec::Denialpolicy $denial_policy            = 'NSEC3',
-  Boolean                  $denial_optout            = true,
+  Boolean                  $denial_optout            = false,
   Opendnssec::Timestring   $denial_resalt            = 'P100D',
   Opendnssec::Nsec3algo    $denial_algorithm         = 'SHA1',
   Integer                  $denial_iterations        = 5,
@@ -48,6 +48,9 @@ define opendnssec::policy (
   Opendnssec::Timestring   $parent_soa_ttl           = 'PT172800S',
   Opendnssec::Timestring   $parent_soa_minimum       = 'PT10800S',
 ) {
+  include ::opendnssec
+  $policy_file = $::opendnssec::policy_file
+
   if $description {
     $description_text = $description
   } else {

@@ -1,4 +1,4 @@
 type Opendnssec::Soaserial = Enum[
-  unixtime,
-  counter,
+  'unixtime',
+  'counter',
 ]

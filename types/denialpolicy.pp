@@ -1,1 +1,1 @@
-type Opendnssec::Denialpolicy = Enum[NSEC, NSEC3]
+type Opendnssec::Denialpolicy = Enum['NSEC', 'NSEC3']

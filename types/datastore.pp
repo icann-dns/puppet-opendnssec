@@ -1,1 +1,1 @@
-type Opendnsec::Datastore = Enum['mysql', 'sqlite']
+type Opendnssec::Datastore = Enum['mysql', 'sqlite']

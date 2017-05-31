@@ -3,13 +3,13 @@
 class opendnssec::zones (
   Hash $zones = {},
 
-) inherits opendnssec::params {
+) {
 
   include ::opendnssec
 
-  $user        = $::opendnssec::user
-  $group       = $::opendnssec::group
-  $zone_file   = $::opendnssec::zone_file
+  $user               = $::opendnssec::user
+  $group              = $::opendnssec::group
+  $zone_file          = $::opendnssec::zone_file
   $manage_ods_ksmutil = $::opendnssec::manage_ods_ksmutil
   $enabled            = $::opendnssec::enabled
 
