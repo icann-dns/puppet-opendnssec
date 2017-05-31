@@ -1,0 +1,94 @@
+<%-
+NSEC_ALGO = { 
+  'SHA1' => 1 
+}
+DNSKEY_ALGO = { 
+  'RSASHA1'            => 5,
+  'RSASHA1-NSEC3-SHA1' => 7,
+  'RSASHA256'          => 8,
+  'RSASHA512'          => 10,
+}
+-%>
+  <Policy name="<%= @name %>">
+    <Description><%= @description_text %></Description>
+    <Signatures>
+      <Resign><%= @resign %></Resign>
+      <Refresh><%= @refresh %></Refresh>
+      <Validity>
+        <Default><%= @validity_default %></Default>
+        <Denial><%= @validity_denial %></Denial>
+      </Validity>
+      <Jitter><%= @jitter %></Jitter>
+      <InceptionOffset><%= @inception_offset %></InceptionOffset>
+    </Signatures>
+
+    <Denial>
+<%- if @denial_policy == 'NSEC3' -%>
+      <NSEC3>
+        <!-- <TTL>PT0S</TTL> -->
+<%- if $denial_optout -%>
+        <OptOut/>
+<%- end -%>
+        <Resalt><%= @denial_resalt %></Resalt>
+        <Hash>
+          <Algorithm><%= NSEC_ALGO[@denial_algorithm] %></Algorithm>
+          <Iterations><%= @denial_iterations %></Iterations>
+          <Salt length="<%= @denial_salt_length %>"/>
+        </Hash>
+      </NSEC3>
+<%- else -%>
+      <NSEC/>
+<%- end %>
+    </Denial>
+
+    <Keys>
+      <!-- Parameters for both KSK and ZSK -->
+      <TTL><%= @key_ttl %></TTL>
+      <RetireSafety><%= @key_retire_safty %></RetireSafety>
+      <PublishSafety><%= @key_publish_safty %></PublishSafety>
+      <!-- <ShareKeys/> -->
+      <Purge><%= @key_purge %></Purge>
+
+      <!-- Parameters for KSK only -->
+      <KSK>
+        <Algorithm length="<%= @ksk_algorithm_length %>"><%= DNSKEY_ALGO[@ksk_algorithm] %></Algorithm>
+        <Lifetime><%= @ksk_lifetime %></Lifetime>
+        <Repository><%= @ksk_repository %></Repository>
+        <Standby><%= @ksk_standby %></Standby>
+<%- if @ksk_manual_rollover -%>
+        <ManualRollover/>
+<%- end -%>
+      </KSK>
+
+      <!-- Parameters for ZSK only -->
+      <ZSK>
+        <Algorithm length="<%= @zsk_algorithm_length %>"><%= DNSKEY_ALGO[@zsk_algorithm] %></Algorithm>
+        <Lifetime><%= @zsk_lifetime %></Lifetime>
+        <Repository><%= @zsk_repository %></Repository>
+        <Standby><%= @zsk_standby %></Standby>
+<%- if @zsk_manual_rollover -%>
+        <ManualRollover/>
+<%- end -%>
+      </ZSK>
+    </Keys>
+
+    <Zone>
+      <PropagationDelay><%= @zone_propagation_delay %></PropagationDelay>
+      <SOA>
+        <TTL><%= @zone_soa_ttl %></TTL>
+        <Minimum><%= @zone_soa_minimum %></Minimum>
+        <Serial><%= @zone_soa_serial %></Serial>
+      </SOA>
+    </Zone>
+
+    <Parent>
+      <PropagationDelay><%= @parent_propagation_delay %></PropagationDelay>
+      <DS>
+        <TTL><%= @parent_ds_ttl %></TTL>
+      </DS>
+      <SOA>
+        <TTL><%= @parent_soa_ttl %></TTL>
+        <Minimum><%= @parent_soa_minimum %></Minimum>
+      </SOA>
+    </Parent>
+  </Policy>

@@ -1,0 +1,14 @@
+      <ProvideTransfer>
+        <Peer>
+          <Prefix><%= @prefix_real %></Prefix>
+<%- if @key -%>
+          <Key><%= @key %></Key>
+<%- end -%>
+        </Peer>
+      </ProvideTransfer>
+
+      <Notify>
+        <Remote>
+          <Address><%= @notify_addr %></Address>
+        </Remote>
+      </Notify>

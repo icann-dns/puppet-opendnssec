@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- File managed by Puppet DO NOT EDIT -->
+
+<Adapter>
+ 	<DNS>
+		<TSIG>
+			<Name>gsi-signer-dnseng_internal-20150413</Name>
+			<Algorithm>hmac-md5</Algorithm>
+			<Secret>yXG8jahFFgJciFuM24cn1gayeYey68NGVYMJRFa7dKwv0MzIL0H8RtJwkp5WB8pt211zy+Z6v4PmSf5UxLIouQ==</Secret>
+		</TSIG>
+
+		<Inbound>
+			<!-- Address of host to request XFR from -->
+			<!-- Here we must put all the gsi-distribution IPs (the ones that get the zones from SNS) -->
+			<RequestTransfer>
+				<Remote>
+					<Address>192.0.32.161</Address> <!-- THIS MUST CHANGE TO THE NSD ADDRESS -->
+					<Key>gsi-signer-dnseng_internal-20150413</Key>
+				</Remote>
+				<Remote>
+					<Address>192.0.32.162</Address> <!-- THIS MUST CHANGE TO THE NSD ADDRESS -->
+					<Key>gsi-signer-dnseng_internal-20150413</Key>
+				</Remote>
+			</RequestTransfer>
+
+			<!-- Allow NOTIFY messages from host -->
+			<!-- This shoud match IPs from above -->
+			<AllowNotify>
+				<Peer>
+					<Prefix>192.0.32.162</Prefix> <!-- THIS MUST CHANGE TO THE NSD ADDRESS -->
+				</Peer>
+				<Peer>
+					<Prefix>192.0.32.161</Prefix> <!-- THIS MUST CHANGE TO THE NSD ADDRESS -->
+				</Peer>
+			</AllowNotify>
+		</Inbound>
+
+<!-- Here we send out the signed zones -->
+		<Outbound>
+			<!-- Provide XFR to host -->
+			<ProvideTransfer>
+				<Peer>
+					<Prefix>192.0.32.161</Prefix>
+					<Key>gsi-signer-dnseng_internal-20150413</Key>
+				</Peer>
+				<Peer>
+					<Prefix>192.0.32.162</Prefix>
+					<Key>gsi-signer-dnseng_internal-20150413</Key>
+				</Peer>
+			</ProvideTransfer>
+	
+			<!-- Send NOTIFY messages to host -->
+			<Notify>
+				<Remote>
+					<Address>192.0.32.162</Address>
+				</Remote>
+				<Remote>
+					<Address>192.0.32.161</Address>
+				</Remote>
+			</Notify>
+		</Outbound>
+	</DNS>
+</Adapter>

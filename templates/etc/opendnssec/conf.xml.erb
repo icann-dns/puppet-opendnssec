@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- File managed by Puppet DO NOT EDIT -->
+
+<Configuration>
+  <RepositoryList>
+    <Repository name="<%= @repository_name %>">
+      <Module><%= @repository_module %></Module>
+      <TokenLabel><%= @repository_token_label %></TokenLabel>
+<%- if @repository_pin -%>
+      <PIN><%= @repository_pin %></PIN>
+<%- end -%>
+<%- if @repository_capacity -%>
+      <Capacity><%= @repository_capacity %></Capacity>
+<%- end -%>
+      <!--<RequireBackup/>-->
+      <SkipPublicKey/>
+    </Repository>
+  </RepositoryList>
+
+  <Common>
+    <Logging>
+	  <!-- Command line verbosity will overwrite configure file -->
+      <Verbosity><%= @logging_level %></Verbosity>
+      <Syslog>
+        <Facility><%= @logging_facility %></Facility>
+      </Syslog>
+	</Logging>
+		
+    <PolicyFile>/etc/opendnssec/kasp.xml</PolicyFile>
+    <ZoneListFile>/etc/opendnssec/zonelist.xml</ZoneListFile>
+  </Common>
+
+  <Enforcer>
+    <Privileges>
+      <User><%= @user %></User>
+      <Group><%= @group %></Group>
+    </Privileges>
+<!-- NOTE: Enforcer worker threads are not used; this option is ignored -->
+<!--
+    <WorkerThreads>4</WorkerThreads>
+-->
+
+  <!-- <PidFile>/var/run/opendnssec/enforcerd.pid</PidFile> -->
+    <Datastore>
+<%- if @datastore_engine == 'sqlite' -%>
+      <SQLite><%= @file %></SQLite>
+<%- elsif @datastore_engine == 'mysql' -%>
+      <MySQL>
+        <Host port="<%= @datastore_port %>"><%= @datastore_host %></Host>
+        <Database><%= @datastore_name %></Database>
+        <Username><%= @datastore_user %></Username>
+        <Password><%= @datastore_password %></Password>
+      </MySQL>
+<%- end -%>
+    </Datastore>
+    <Interval>PT3600S</Interval>
+    <!-- <ManualKeyGeneration/> -->
+    <!-- <RolloverNotification>P14D</RolloverNotification> -->
+    
+    <!-- the <DelegationSignerSubmitCommand> will get all current
+     DNSKEYs (as a RRset) on standard input (with optional CKA_ID)
+    -->
+    <!-- <DelegationSignerSubmitCommand>/usr/sbin/simple-dnskey-mailer.sh</DelegationSignerSubmitCommand> -->
+  </Enforcer>
+
+  <Signer>
+    <Privileges>
+      <User><%= @user %></User>
+      <Group><%= @group %></Group>
+    </Privileges>
+
+    <!-- <PidFile>/var/run/opendnssec/signerd.pid</PidFile> -->
+    <!-- <SocketFile>/var/run/opendnssec/engine.sock</SocketFile> -->
+    <WorkingDirectory>/var/lib/opendnssec/tmp</WorkingDirectory>
+    <WorkerThreads>4</WorkerThreads>
+    <!-- <SignerThreads>4</SignerThreads> -->
+
+    <Listener>
+      <Interface><Port>53</Port></Interface>
+    </Listener>
+
+	<!-- the <NotifyCommmand> will expand the following variables:
+      %zone      the name of the zone that was signed
+      %zonefile  the filename of the signed zone
+    -->
+<!--
+    <NotifyCommand>/usr/local/bin/my_nameserver_reload_command</NotifyCommand>
+-->
+<!--
+    <NotifyCommand>/usr/sbin/rndc reload %zone</NotifyCommand>
+-->
+  </Signer>
+
+</Configuration>

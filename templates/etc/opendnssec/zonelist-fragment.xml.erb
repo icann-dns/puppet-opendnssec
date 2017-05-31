@@ -1,0 +1,20 @@
+  <Zone name="<%= @name %>">
+    <Policy><%= @policy %></Policy>
+    <SignerConfiguration><%= @adapter_signer_conf_file %></SignerConfiguration>
+    <Adapters>
+      <Input>
+<%- if @adapter_input_type == 'DNS' -%>
+        <Adapter type="DNS">/etc/opendnssec/addns.xml</Adapter>
+<%- elsif @adapter_input_type == 'File' -%>
+        <Adapter type="File"><%= @adapter_input_f %></Adapter>
+<%- end -%>
+      </Input>
+      <Output>
+<%- if @adapter_output_type == 'DNS' -%>
+        <Adapter type="DNS">/etc/opendnssec/addns.xml</Adapter>
+<%- elsif @adapter_output_type == 'File' -%>
+        <Adapter type="File"><%= @adapter_output_f %></Adapter>
+<%- end -%>
+      </Output>
+    </Adapters>
+  </Zone>

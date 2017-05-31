@@ -1,0 +1,79 @@
+#!/bin/bash
+
+# Copyright (c) 2015, Internet Corporation for Assigned Names and Numbers
+
+# Permission to use, copy, modify, and/or distribute this software for any
+# purpose with or without fee is hereby granted, provided that the above
+# copyright notice and this permission notice appear in all copies.
+#
+# THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+# WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+# MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+# ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+# WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+# ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+# OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+#
+# BLAME: 2013 Mauricio Vergara Ereche <mave@cero32.cl>
+
+# DESC:
+# This script backups all the DB used by opendnssec and the HSM current Security World.
+#
+
+export PATH="/bin:/usr/bin"
+
+NUMBER=<%= @retention %>              # Number of backups stored (At least last 3 months)
+DIR="<%= @backup_dir %>"
+FILESGLOB="<%= @backup_glob %>"       # Important glob. If filename change in Tarball check this
+TODAY="$(date +%F-%H)"                # Date format used: 2015-06-23-20 (YYYY-MM-DD-HH)
+HOST="$(hostname | cut -d "." -f1,2)"
+BACKUP_HOST=<%= @backup_host %>
+USER=="<%= @backup_user %>"
+SSHKEY="/home/${USER}/.ssh/id_rsa"
+MASTER=0
+
+if [ ! -d ${DIR} ] ; then mkdir -p ${DIR} ; fi
+
+if [ -e /etc/opendnssec/MASTER ] ; then
+   MASTER=1
+fi
+
+### First we clean-up old archives.
+cd ${DIR}
+COUNT=$(ls ${FILESGLOB} | wc -l 2>/dev/null)
+if [ ${COUNT} -gt ${NUMBER} ] ; then
+   ls -t ${FILESGLOB} | tail -n $((NUMBER-COUNT)) | xargs rm -f
+fi
+
+## We tell OpenDNSSEC that we are going to do a Backup
+ods-ksmutil backup prepare|grep -v "There were no keys to mark"
+
+### MySQL backup
+mkdir -p ${DIR}/${TODAY}-${HOST}
+cd ${DIR}/${TODAY}-${HOST}
+mysqldump --opt --log-error=backup-error-${TODAY}.log -c -f -A > mysql-${TODAY}.sql
+
+### Security-World backup
+rsync -apr /opt/nfast/kmdata ${DIR}/${TODAY}-${HOST}
+
+### Config and temp files from opendnssec
+rsync -apr /var/lib/opendnssec ${DIR}/${TODAY}-${HOST}
+mkdir -p etc
+rsync -apr /etc/opendnssec ${DIR}/${TODAY}-${HOST}/etc
+
+### Latest logs
+mkdir -p var/log
+cp -a /var/log/syslog ${DIR}/${TODAY}-${HOST}/var/log
+
+### Tarball
+cd ${DIR}
+tar jcf backup-${TODAY}.tar.bz2 ${TODAY}-${HOST}
+rm -rf ${DIR}/${TODAY}-${HOST}
+
+### Send data to SLAVE
+if [ $MASTER -eq 1 ] ; then
+   rsync -arz --del -e "ssh -i ${SSHKEY}" ${DIR} ${USER}@${LOCATION}${BACKUP_HOST}:/home/${USER}
+fi
+
+## We tell OpenDNSSEC that we backup is done
+ods-ksmutil backup commit|grep -v "There were no keys to mark"
