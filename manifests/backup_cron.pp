@@ -3,9 +3,11 @@
 class opendnssec::backup_cron (
   Tea::Host            $backup_host,
   String[1,32]         $backup_user = 'backup',
-  String               $backup_glob = 'backup-20*.tar.bz2',
+  String               $backup_glob = '*.tar.bz2',
+  String               $date_format = '%Y%m%d-%H%M',
   Integer              $retention   = 500,
   Stdlib::Absolutepath $backup_dir  = '/opt/backup',
+  Stdlib::Absolutepath $tmp_dirbase = '/opt/tmp',
   Stdlib::Absolutepath $script_path = '/usr/local/bin/backup-hsm-mysql.sh',
 
 ) {
@@ -13,6 +15,11 @@ class opendnssec::backup_cron (
   $user             = $::opendnssec::user
   $group            = $::opendnssec::group
   $datastore_engine = $::opendnssec::datastore_engine
+  file {[$backup_dir, $tmp_dirbase]:
+    ensure => directory,
+    owner  => $user,
+    group  => $group,
+  }
   if $datastore_engine == 'mysql' {
     file {$script_path:
       ensure  => file,

@@ -20,60 +20,51 @@
 # This script backups all the DB used by opendnssec and the HSM current Security World.
 #
 
-export PATH="/bin:/usr/bin"
+PATH="/bin:/usr/bin"
 
-NUMBER=<%= @retention %>              # Number of backups stored (At least last 3 months)
+NUMBER=<%= @retention %>       
 DIR="<%= @backup_dir %>"
-FILESGLOB="<%= @backup_glob %>"       # Important glob. If filename change in Tarball check this
-TODAY="$(date +%F-%H)"                # Date format used: 2015-06-23-20 (YYYY-MM-DD-HH)
-HOST="$(hostname | cut -d "." -f1,2)"
+TMP_DIR="$(mktemp -d --tmpdir=<%= @tmp_dirbase %>)"
+FILESGLOB="<%= @backup_glob %>"    
+TODAY="$(date +<%= @date_format %>)"
+HOST="<%= @fqdn %>"
 BACKUP_HOST=<%= @backup_host %>
 USER=="<%= @backup_user %>"
 SSHKEY="/home/${USER}/.ssh/id_rsa"
 MASTER=0
 
-if [ ! -d ${DIR} ] ; then mkdir -p ${DIR} ; fi
+# puppet should create this but it does no harm
+if [ ! -d ${DIR} ]
+then 
+  mkdir -p ${DIR}
+fi
 
 if [ -e /etc/opendnssec/MASTER ] ; then
    MASTER=1
 fi
 
 ### First we clean-up old archives.
-cd ${DIR}
-COUNT=$(ls ${FILESGLOB} | wc -l 2>/dev/null)
+COUNT=$(ls -1q ${DIR}/${FILESGLOB} | wc -l 2>/dev/null)
 if [ ${COUNT} -gt ${NUMBER} ] ; then
-   ls -t ${FILESGLOB} | tail -n $((NUMBER-COUNT)) | xargs rm -f
+  ls -d1qt ${DIR}/${FILESGLOB} | tail -n $((NUMBER-COUNT)) | xargs rm -f
 fi
 
 ## We tell OpenDNSSEC that we are going to do a Backup
 ods-ksmutil backup prepare|grep -v "There were no keys to mark"
 
 ### MySQL backup
-mkdir -p ${DIR}/${TODAY}-${HOST}
-cd ${DIR}/${TODAY}-${HOST}
-mysqldump --opt --log-error=backup-error-${TODAY}.log -c -f -A > mysql-${TODAY}.sql
+mysqldump --opt --log-error=${TMP_DIR}/backup-error-${TODAY}.log -c -f -A > ${TMP_DIR}/mysql-${TODAY}.sql
 
-### Security-World backup
-rsync -apr /opt/nfast/kmdata ${DIR}/${TODAY}-${HOST}
-
-### Config and temp files from opendnssec
-rsync -apr /var/lib/opendnssec ${DIR}/${TODAY}-${HOST}
-mkdir -p etc
-rsync -apr /etc/opendnssec ${DIR}/${TODAY}-${HOST}/etc
-
-### Latest logs
-mkdir -p var/log
-cp -a /var/log/syslog ${DIR}/${TODAY}-${HOST}/var/log
-
-### Tarball
-cd ${DIR}
-tar jcf backup-${TODAY}.tar.bz2 ${TODAY}-${HOST}
-rm -rf ${DIR}/${TODAY}-${HOST}
+tar cvjf ${DIR}/${HOST}-${TODAY}.tar.bz -C ${TMP_DIR} mysql-${TODAY}.sql \
+  backup-error-${TODAY}.log  /opt/nfast/kmdata /var/lib/opendnssec \
+  /etc/opendnssec /var/log/syslog 
 
 ### Send data to SLAVE
 if [ $MASTER -eq 1 ] ; then
-   rsync -arz --del -e "ssh -i ${SSHKEY}" ${DIR} ${USER}@${LOCATION}${BACKUP_HOST}:/home/${USER}
+  ssh -i ${SSHKEY} ${BACKUP_HOST} mkdir -p ${DIR}/${HOST}
+  rsync -arz --del -e "ssh -i ${SSHKEY}" ${DIR}/ ${USER}@${BACKUP_HOST}:${DIR}/${HOST}
 fi
 
 ## We tell OpenDNSSEC that we backup is done
 ods-ksmutil backup commit|grep -v "There were no keys to mark"
+rm -rf ${TMP_DIR}

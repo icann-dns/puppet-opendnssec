@@ -22,11 +22,13 @@ describe 'opendnssec::backup_cron' do
   let(:params) do
     {
       :backup_host => 'foobar.example.com',
-      #:backup_user => 'backup',
-      #:backup_glob => 'backup-20*.tar.bz2',
-      #:retention => '500',
-      #:backup_dir => '/opt/backup',
-      #:script_path => '/usr/local/bin/backup-hsm-mysql.sh',
+      # :backup_user => 'backup',
+      # :backup_glob => '*.tar.bz2',
+      # :date_format => '%Y%m%d-%H%M',
+      # :retention => '500',
+      # :backup_dir => '/opt/backup',
+      # :tmp_dirbase => '/opt/tmp',
+      # :script_path => '/usr/local/bin/backup-hsm-mysql.sh',
 
     }
   end
@@ -43,6 +45,20 @@ describe 'opendnssec::backup_cron' do
       describe 'check default config' do
         it { is_expected.to compile.with_all_deps }
         it do
+          is_expected.to contain_file('/opt/backup').with(
+            ensure:  'directory',
+            owner:  'root',
+            group:  'root',
+          )
+        end
+        it do
+          is_expected.to contain_file('/opt/tmp').with(
+            ensure:  'directory',
+            owner:  'root',
+            group:  'root',
+          )
+        end
+        it do
           is_expected.to contain_file('/usr/local/bin/backup-hsm-mysql.sh').with(
             ensure:  'file',
             mode:  '0755',
@@ -53,7 +69,11 @@ describe 'opendnssec::backup_cron' do
           ).with_content(
             %r{DIR="/opt/backup"}
           ).with_content(
-            %r{FILESGLOB="backup-20\*\.tar\.bz2"}
+            %r{TMP_DIR="\$\(mktemp -d --tmpdir=/opt/tmp\)"}
+          ).with_content(
+            %r{FILESGLOB="\*\.tar\.bz2"}
+          ).with_content(
+            %r{TODAY="\$\(date \+%Y%m%d-%H%M\)"}
           ).with_content(
             %r{BACKUP_HOST=foobar.example.com}
           ).with_content(
@@ -105,6 +125,17 @@ describe 'opendnssec::backup_cron' do
             )
           end
         end
+        context 'date_format' do
+          before { params.merge!(date_format: 'foobar') }
+          it { is_expected.to compile }
+          it do
+            is_expected.to contain_file(
+              '/usr/local/bin/backup-hsm-mysql.sh'
+            ).with_content(
+              %r{TODAY="\$\(date \+foobar\)"}
+            )
+          end
+        end
         context 'retention' do
           before { params.merge!(retention: 200) }
           it { is_expected.to compile }
@@ -120,10 +151,35 @@ describe 'opendnssec::backup_cron' do
           before { params.merge!(backup_dir: '/foobar') }
           it { is_expected.to compile }
           it do
+            is_expected.to contain_file('/foobar').with(
+              ensure:  'directory',
+              owner:  'root',
+              group:  'root',
+            )
+          end
+          it do
             is_expected.to contain_file(
               '/usr/local/bin/backup-hsm-mysql.sh'
             ).with_content(
               %r{DIR="/foobar"}
+            )
+          end
+        end
+        context 'tmp_dirbase' do
+          before { params.merge!(tmp_dirbase: '/foobar') }
+          it { is_expected.to compile }
+          it do
+            is_expected.to contain_file('/foobar').with(
+              ensure:  'directory',
+              owner:  'root',
+              group:  'root',
+            )
+          end
+          it do
+            is_expected.to contain_file(
+              '/usr/local/bin/backup-hsm-mysql.sh'
+            ).with_content(
+              %r{TMP_DIR="\$\(mktemp -d --tmpdir=/foobar\)"}
             )
           end
         end
