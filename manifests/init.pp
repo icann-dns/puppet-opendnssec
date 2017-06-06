@@ -31,6 +31,12 @@ class opendnssec (
   Stdlib::Absolutepath  $zone_file              = '/etc/opendnssec/zonelist.xml',
   Stdlib::Absolutepath  $addns_file             = '/etc/opendnssec/addns.xml',
 
+  Hash                  $zones                  = {},
+  Hash                  $policies               = {},
+  Hash                  $remotes                = {},
+  Array[String]         $default_masters        = [],
+  Array[String]         $default_provide_xfrs   = [],
+
 ) {
 
   if $manage_packages {
@@ -90,6 +96,20 @@ class opendnssec (
       }
     } elsif $datastore_engine == 'sqlite' {
       ensure_packages(['opendnssec-enforcer-sqlite'])
+    }
+  }
+  if ! empty($policies) {
+    if defined(Class['opendnssec::policies']) {
+      warning('setting policies and calling opendnssec::policies directly is not supported.  do one or the other')
+    } else {
+      class { '::opendnssec::policies': policies => $policies }
+    }
+  }
+  if ! empty($zones) {
+    if defined(Class['opendnssec::zones']) {
+      warning('setting zones and calling opendnssec::zones directly is not supported.  do one or the other')
+    } else {
+      class { '::opendnssec::zones': zones => $zones }
     }
   }
 }

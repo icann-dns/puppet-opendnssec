@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 describe 'opendnssec::policy' do
@@ -6,7 +8,7 @@ describe 'opendnssec::policy' do
   # to the specific context in the spec/shared_contexts.rb file
   # Note: you can only use a single hiera context per describe/context block
   # rspec-puppet does not allow you to swap out hiera data on a per test block
-  #include_context :hiera
+  # include_context :hiera
 
   let(:title) { 'test_policy' }
 
@@ -22,57 +24,59 @@ describe 'opendnssec::policy' do
   # while all required parameters will require you to add a value
   let(:params) do
     {
-      #:order => '10',
-      #:description => :undef,
-      #:resign => 'PT2H',
-      #:refresh => 'P6D',
-      #:validity_default => 'P21D',
-      #:validity_denial => 'P21D',
-      #:jitter => 'PT12H',
-      #:inception_offset => 'PT3600S',
-      #:denial_policy => 'NSEC3',
-      #:denial_optout => true,
-      #:denial_resalt => 'P100D',
-      #:denial_algorithm => 'SHA1',
-      #:denial_iterations => '5',
-      #:denial_salt_length => '8',
-      #:key_ttl => 'PT3600S',
-      #:key_retire_safty => 'PT3600S',
-      #:key_publish_safty => 'PT3600S',
-      #:key_share_keys => false,
-      #:key_purge => 'P14D',
-      #:ksk_algorithm => 'RSASHA1-NSEC3-SHA1',
-      #:ksk_algorithm_length => '2048',
-      #:ksk_lifetime => 'P365D',
-      #:ksk_repository => :undef,
-      #:ksk_standby => '0',
-      #:ksk_manual_rollover => true,
-      #:zsk_algorithm => 'RSASHA1-NSEC3-SHA1',
-      #:zsk_algorithm_length => '1048',
-      #:zsk_lifetime => 'P90D',
-      #:zsk_repository => :undef,
-      #:zsk_standby => '0',
-      #:zsk_manual_rollover => false,
-      #:zone_propagation_delay => 'PT43200S',
-      #:zone_soa_ttl => 'PT3600S',
-      #:zone_soa_minimum => 'PT3600S',
-      #:zone_soa_serial => 'unixtime',
-      #:parent_propagation_delay => 'PT9999S',
-      #:parent_ds_ttl => 'PT3600S',
-      #:parent_soa_ttl => 'PT172800S',
-      #:parent_soa_minimum => 'PT10800S',
+      # :order => '10',
+      # :description => :undef,
+      # :resign => 'PT2H',
+      # :refresh => 'P6D',
+      # :validity_default => 'P21D',
+      # :validity_denial => 'P21D',
+      # :jitter => 'PT12H',
+      # :inception_offset => 'PT3600S',
+      # :denial_policy => 'NSEC3',
+      # :denial_optout => true,
+      # :denial_resalt => 'P100D',
+      # :denial_algorithm => 'SHA1',
+      # :denial_iterations => '5',
+      # :denial_salt_length => '8',
+      # :key_ttl => 'PT3600S',
+      # :key_retire_safty => 'PT3600S',
+      # :key_publish_safty => 'PT3600S',
+      # :key_share_keys => false,
+      # :key_purge => 'P14D',
+      # :ksk_algorithm => 'RSASHA1-NSEC3-SHA1',
+      # :ksk_algorithm_length => '2048',
+      # :ksk_lifetime => 'P365D',
+      # :ksk_repository => :undef,
+      # :ksk_standby => '0',
+      # :ksk_manual_rollover => true,
+      # :zsk_algorithm => 'RSASHA1-NSEC3-SHA1',
+      # :zsk_algorithm_length => '1048',
+      # :zsk_lifetime => 'P90D',
+      # :zsk_repository => :undef,
+      # :zsk_standby => '0',
+      # :zsk_manual_rollover => false,
+      # :zone_propagation_delay => 'PT43200S',
+      # :zone_soa_ttl => 'PT3600S',
+      # :zone_soa_minimum => 'PT3600S',
+      # :zone_soa_serial => 'unixtime',
+      # :parent_propagation_delay => 'PT9999S',
+      # :parent_ds_ttl => 'PT3600S',
+      # :parent_soa_ttl => 'PT172800S',
+      # :parent_soa_minimum => 'PT10800S',
 
     }
   end
   # add these two lines in a single test block to enable puppet and hiera debug mode
   # Puppet::Util::Log.level = :debug
   # Puppet::Util::Log.newdestination(:console)
-  let (:pre_condition) { 'class {\'::opendnssec\': }' }
+  let(:pre_condition) { 'class {\'::opendnssec\': }' }
+
   on_supported_os.each do |os, facts|
-    context 'on #{os}' do
+    context "on #{os}" do
       let(:facts) do
         facts
       end
+
       describe 'check default config' do
         it { is_expected.to compile.with_all_deps }
         it do
@@ -174,7 +178,7 @@ describe 'opendnssec::policy' do
             is_expected.to contain_concat__fragment(
               'policy_test_policy'
             ).with_content(
-            %r{<Description>bla</Description>}
+              %r{<Description>bla</Description>}
             )
           end
         end

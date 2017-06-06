@@ -12,6 +12,10 @@ define opendnssec::zone (
 ) {
 
   include ::opendnssec
+
+  if ! defined(Opendnssec::Policy[$policy]) {
+    fail("${name} defines policy ${policy} however Opendnssec::Policy[${policy}] is not defined")
+  }
   $zone_file = $::opendnssec::zone_file
   $adapter_signer_conf_file = $adapter_signer_conf ? {
     undef   => "${adapter_base_dir}/signconf/${name}.xml",

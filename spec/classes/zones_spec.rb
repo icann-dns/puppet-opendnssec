@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 describe 'opendnssec::zones' do
@@ -25,36 +27,39 @@ describe 'opendnssec::zones' do
 
     }
   end
+
   # add these two lines in a single test block to enable puppet and hiera debug mode
   # Puppet::Util::Log.level = :debug
   # Puppet::Util::Log.newdestination(:console)
   # This will need to get moved
   # it { pp catalogue.resources }
   on_supported_os.each do |os, facts|
-    context 'on #{os}' do
+    context "on #{os}" do
       let(:facts) do
         facts
       end
+
       describe 'check default config' do
         it { is_expected.to compile.with_all_deps }
+        it { is_expected.to contain_class('opendnssec::zones') }
         it do
           is_expected.to contain_concat('/etc/opendnssec/zonelist.xml').with(
             owner: 'root',
-            group: 'root',
+            group: 'root'
           )
         end
         it do
           is_expected.to contain_concat__fragment('zone_header').with(
             target: '/etc/opendnssec/zonelist.xml',
             content: "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\n<!-- File managed by Puppet DO NOT EDIT -->\n\n<ZoneList>\n",
-            order: '01',
+            order: '01'
           )
         end
         it do
           is_expected.to contain_concat__fragment('zone_footer') .with(
             target: '/etc/opendnssec/zonelist.xml',
             content: "</ZoneList>\n",
-            order: '99',
+            order: '99'
           )
         end
         it do
@@ -62,10 +67,10 @@ describe 'opendnssec::zones' do
             command: '/usr/bin/ods-ksmutil update all',
             user: 'root',
             refreshonly: true,
-            subscribe: 'Concat[/etc/opendnssec/zonelist.xml]',
+            subscribe: 'Concat[/etc/opendnssec/zonelist.xml]'
           )
         end
-      end 
+      end
       describe 'Change Defaults' do
         context 'zones' do
           before { params.merge!(zones: {}) }
@@ -74,6 +79,7 @@ describe 'opendnssec::zones' do
         end
         context 'change user' do
           let(:pre_condition) { 'class {\'::opendnssec\': user => \'foobar\' }' }
+
           it { is_expected.to compile }
           it do
             is_expected.to contain_concat(
@@ -88,6 +94,7 @@ describe 'opendnssec::zones' do
         end
         context 'change group' do
           let(:pre_condition) { 'class {\'::opendnssec\': group => \'foobar\' }' }
+
           it { is_expected.to compile }
           it do
             is_expected.to contain_concat(
@@ -99,6 +106,7 @@ describe 'opendnssec::zones' do
           let(:pre_condition) do
             'class {\'::opendnssec\': zone_file => \'/foobar\' }'
           end
+
           it { is_expected.to compile }
           it { is_expected.to contain_concat('/foobar') }
           it do
@@ -116,6 +124,7 @@ describe 'opendnssec::zones' do
           let(:pre_condition) do
             'class {\'::opendnssec\': enabled => false }'
           end
+
           it { is_expected.to compile }
           it do
             is_expected.not_to contain_exec(
@@ -127,6 +136,7 @@ describe 'opendnssec::zones' do
           let(:pre_condition) do
             'class {\'::opendnssec\': manage_ods_ksmutil => false }'
           end
+
           it { is_expected.to compile }
           it do
             is_expected.not_to contain_exec(

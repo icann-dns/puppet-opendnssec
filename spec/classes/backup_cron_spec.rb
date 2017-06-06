@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 describe 'opendnssec::backup_cron' do
@@ -21,7 +23,7 @@ describe 'opendnssec::backup_cron' do
   # while all required parameters will require you to add a value
   let(:params) do
     {
-      :backup_host => 'foobar.example.com',
+      backup_host: 'foobar.example.com',
       # :backup_user => 'backup',
       # :backup_glob => '*.tar.bz2',
       # :date_format => '%Y%m%d-%H%M',
@@ -32,30 +34,33 @@ describe 'opendnssec::backup_cron' do
 
     }
   end
+
   # add these two lines in a single test block to enable puppet and hiera debug mode
   # Puppet::Util::Log.level = :debug
   # Puppet::Util::Log.newdestination(:console)
   # This will need to get moved
   # it { pp catalogue.resources }
   on_supported_os.each do |os, facts|
-    context 'on #{os}' do
+    context "on #{os}" do
       let(:facts) do
         facts
       end
+
       describe 'check default config' do
         it { is_expected.to compile.with_all_deps }
+        it { is_expected.to contain_class('opendnssec::backup_cron') }
         it do
           is_expected.to contain_file('/opt/backup').with(
             ensure:  'directory',
             owner:  'root',
-            group:  'root',
+            group:  'root'
           )
         end
         it do
           is_expected.to contain_file('/opt/tmp').with(
             ensure:  'directory',
             owner:  'root',
-            group:  'root',
+            group:  'root'
           )
         end
         it do
@@ -63,7 +68,7 @@ describe 'opendnssec::backup_cron' do
             ensure:  'file',
             mode:  '0755',
             owner:  'root',
-            group:  'root',
+            group:  'root'
           ).with_content(
             %r{NUMBER=500}
           ).with_content(
@@ -87,7 +92,7 @@ describe 'opendnssec::backup_cron' do
             user:  'root',
             hour:  '*/6',
             minute:  '0',
-            require:  'File[/usr/local/bin/backup-hsm-mysql.sh]',
+            require:  'File[/usr/local/bin/backup-hsm-mysql.sh]'
           )
         end
       end
@@ -154,7 +159,7 @@ describe 'opendnssec::backup_cron' do
             is_expected.to contain_file('/foobar').with(
               ensure:  'directory',
               owner:  'root',
-              group:  'root',
+              group:  'root'
             )
           end
           it do
@@ -172,7 +177,7 @@ describe 'opendnssec::backup_cron' do
             is_expected.to contain_file('/foobar').with(
               ensure:  'directory',
               owner:  'root',
-              group:  'root',
+              group:  'root'
             )
           end
           it do
@@ -191,7 +196,7 @@ describe 'opendnssec::backup_cron' do
             is_expected.to contain_cron('backup-hsm-mysql').with(
               command: '/foobar',
               require: 'File[/foobar]'
-            ) 
+            )
           end
         end
       end

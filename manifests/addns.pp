@@ -2,8 +2,8 @@
 #
 class opendnssec::addns (
   Hash                  $tsigs           = {},
-  Hash                  $xfers_in        = {},
-  Hash                  $xfers_out       = {},
+  Array                 $masters         = [],
+  Array                 $provide_xfrs    = [],
   Boolean               $xferout_enabled = true,
   Stdlib::Absolutepath  $addns_file      = '/etc/opendnssec/addns.xml',
 ) {
@@ -13,6 +13,7 @@ class opendnssec::addns (
   $group              = $::opendnssec::group
   $manage_ods_ksmutil = $::opendnssec::manage_ods_ksmutil
   $enabled            = $::opendnssec::enabled
+  $remotes            = $::opendnssec::remotes
 
   concat {$addns_file:
     owner => $user,
@@ -32,31 +33,74 @@ class opendnssec::addns (
   if $tsigs {
     create_resources(opendnssec::addns::tsig, $tsigs)
   }
-  if $xfers_in {
-    concat::fragment{'xfer_in_header':
+  if $masters {
+    concat::fragment{'master_header':
       target  => $addns_file,
-      content => "\n    <Inbound>\n",
+      content => "\n    <Inbound>\n      <RequestTransfer>\n",
       order   => '20',
     }
-    concat::fragment{'xfer_in_footer':
+    $masters.each |String $master| {
+      if ! has_key($remotes, $master) {
+        fail("${master} is not defined in opendnssec::remotes")
+      }
+      $port = pick($remotes[$master]['port'], 53)
+      concat::fragment{ "master_remote_${master}":
+        target  => $addns_file,
+        content => "<Remote><Address>${remotes[$master]['address4']}</Address><Port>${port}</Port></Remote>\n",
+        order   => '23',
+      }
+    }
+    concat::fragment{ 'master_mid':
       target  => $addns_file,
-      content => "    </Inbound>\n",
+      content => "      </RequestTransfer>\n      <AllowNotify>\n",
+      order   => '25',
+    }
+    $masters.each |String $master| {
+      concat::fragment{ "master_peer_${master}":
+        target  => $addns_file,
+        content => "<Peer><Prefix>${remotes[$master]['address4']}</Prefix></Peer>\n",
+        order   => '27',
+      }
+    }
+    concat::fragment{'master_footer':
+      target  => $addns_file,
+      content => "      </AllowNotify>\n    </Inbound>\n",
       order   => '29',
     }
-    create_resources(opendnssec::addns::xfer_in, $xfers_in)
   }
-  if $xfers_out and $xferout_enabled {
-    concat::fragment{'xfer_out_header':
+  if ! empty($provide_xfrs) and $xferout_enabled {
+    concat::fragment{'provide_xfr_header':
       target  => $addns_file,
-      content => "\n    <Outbound>\n",
+      content => "\n    <Outbound>\n      <ProvideTransfer>\n",
       order   => '30',
     }
-    concat::fragment{'xfer_out_footer':
+    $provide_xfrs.each |String $provide_xfr| {
+      if ! has_key($remotes, $provide_xfr) {
+        fail("${provide_xfr} is not defined in opendnssec::remotes")
+      }
+      concat::fragment{ "provide_xfr_transfer_peer_${provide_xfr}":
+        target  => $addns_file,
+        content => "<Peer><Prefix>${remotes[$provide_xfr]['address4']}</Prefix></Peer>\n",
+        order   => '33',
+      }
+    }
+    concat::fragment{'provide_xfr_mid':
       target  => $addns_file,
-      content => "    </Outbound>\n",
+      content => "\n      </ProvideTransfer>\n      <Notify>\n",
+      order   => '35',
+    }
+    $provide_xfrs.each |String $provide_xfr| {
+      concat::fragment{ "provide_xfr_notify_peer_${provide_xfr}":
+        target  => $addns_file,
+        content => "<Peer><Address>${remotes[$provide_xfr]['address4']}</Address></Peer>\n",
+        order   => '37',
+      }
+    }
+    concat::fragment{'provide_xfr_footer':
+      target  => $addns_file,
+      content => "\n      </Notify>\n    </Outbound>\n",
       order   => '39',
     }
-    create_resources(opendnssec::addns::xfer_out, $xfers_out)
   }
   if $manage_ods_ksmutil and $enabled {
     exec {'Forcing ods-ksmutil to update after modifying addns.xml':

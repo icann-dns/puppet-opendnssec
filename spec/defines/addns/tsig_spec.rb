@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 describe 'opendnssec::addns::tsig' do
@@ -6,9 +8,9 @@ describe 'opendnssec::addns::tsig' do
   # to the specific context in the spec/shared_contexts.rb file
   # Note: you can only use a single hiera context per describe/context block
   # rspec-puppet does not allow you to swap out hiera data on a per test block
-  #include_context :hiera
+  # include_context :hiera
 
-  let(:title) { 'XXreplace_meXX' }
+  let(:title) { 'test_tsig' }
 
   # below is the facts hash that gives you the ability to mock
   # facts on a per describe/context block.  If you use a fact in your
@@ -22,54 +24,97 @@ describe 'opendnssec::addns::tsig' do
   # while all required parameters will require you to add a value
   let(:params) do
     {
+      secret: 'AAAA',
       #:order => "15",
       #:tsig_name => :undef,
       #:algorithm => "hmac-md5",
-      #:secret => :undef,
 
     }
   end
   # add these two lines in a single test block to enable puppet and hiera debug mode
   # Puppet::Util::Log.level = :debug
   # Puppet::Util::Log.newdestination(:console)
-  let (:pre_condition) { "class {'::xxxCHANGEMExxx' }" }
+  let(:pre_condition) { "class {'::opendnssec': }" }
+
   on_supported_os.each do |os, facts|
     context "on #{os}" do
       let(:facts) do
         facts
       end
+
       describe 'check default config' do
         it { is_expected.to compile.with_all_deps }
-        
-  it do
-    is_expected.to contain_concat__fragment("tsig_$name")
-        .with({
-          "target" => "$::opendnssec::addns_file",
-          "content" => [],
-          "order" => "15",
-          })
-  end
+        it do
+          is_expected.to contain_concat__fragment('tsig_test_tsig').with(
+            'target' => '/etc/opendnssec/addns.xml',
+            'order' => '15'
+          ).with_content(
+            %r{<TSIG>
+            \s+<Name>test_tsig</Name>
+            \s+<Algorithm>hmac-md5</Algorithm>
+            \s+<Secret>AAAA</Secret>
+            \s+</TSIG>
+            }x
+          )
         end
+      end
       describe 'Change Defaults' do
         context 'order' do
-          before { params.merge!(order: 'XXXchangemeXXX') }
+          before { params.merge!(order: '22') }
           it { is_expected.to compile }
-          # Add Check to validate change was successful
+          it do
+            is_expected.to contain_concat__fragment(
+              'tsig_test_tsig'
+            ).with_order('22')
+          end
         end
         context 'tsig_name' do
-          before { params.merge!(tsig_name: 'XXXchangemeXXX') }
+          before { params.merge!(tsig_name: 'foobar') }
           it { is_expected.to compile }
-          # Add Check to validate change was successful
+          it do
+            is_expected.to contain_concat__fragment('tsig_test_tsig').with(
+              'target' => '/etc/opendnssec/addns.xml',
+            ).with_content(
+              %r{<TSIG>
+              \s+<Name>foobar</Name>
+              \s+<Algorithm>hmac-md5</Algorithm>
+              \s+<Secret>AAAA</Secret>
+              \s+</TSIG>
+              }x
+            )
+          end
         end
         context 'algorithm' do
-          before { params.merge!(algorithm: 'XXXchangemeXXX') }
+          before { params.merge!(algorithm: 'hmac-sha1') }
           it { is_expected.to compile }
-          # Add Check to validate change was successful
+          it do
+            is_expected.to contain_concat__fragment('tsig_test_tsig').with(
+              'target' => '/etc/opendnssec/addns.xml',
+            ).with_content(
+              %r{<TSIG>
+              \s+<Name>test_tsig</Name>
+              \s+<Algorithm>hmac-sha1</Algorithm>
+              \s+<Secret>AAAA</Secret>
+              \s+</TSIG>
+              }x
+            )
+          end
         end
         context 'secret' do
-          before { params.merge!(secret: 'XXXchangemeXXX') }
+          before { params.merge!(secret: 'BBBB') }
           it { is_expected.to compile }
-          # Add Check to validate change was successful
+          it do
+            is_expected.to contain_concat__fragment('tsig_test_tsig').with(
+              'target' => '/etc/opendnssec/addns.xml',
+            ).with_content(
+              %r{<TSIG>
+              \s+<Name>test_tsig</Name>
+              \s+<Algorithm>hmac-md5</Algorithm>
+              \s+<Secret>BBBB</Secret>
+              \s+</TSIG>
+              }x
+            )
+          end
         end
       end
       describe 'check bad type' do

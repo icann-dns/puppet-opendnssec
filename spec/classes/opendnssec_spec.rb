@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 describe 'opendnssec' do
@@ -57,16 +59,18 @@ describe 'opendnssec' do
 
     }
   end
+
   # add these two lines in a single test block to enable puppet and hiera debug mode
   # Puppet::Util::Log.level = :debug
   # Puppet::Util::Log.newdestination(:console)
   # This will need to get moved
   # it { pp catalogue.resources }
   on_supported_os.each do |os, facts|
-    context 'on #{os}' do
+    context "on #{os}" do
       let(:facts) do
         facts
       end
+
       describe 'check default config' do
         it { is_expected.to compile.with_all_deps }
         it { is_expected.to contain_class('opendnssec') }
@@ -78,19 +82,19 @@ describe 'opendnssec' do
             mode: '0640',
             recurse: true,
             owner: 'root',
-            group: 'root',
+            group: 'root'
           )
         end
         it do
           is_expected.to contain_service('opendnssec-enforcer').with(
             ensure: 'running',
-            enable: true,
+            enable: true
           )
         end
         it do
           is_expected.to contain_service('opendnssec-signer').with(
             ensure: 'running',
-            enable: true,
+            enable: true
           )
         end
         it do
@@ -98,7 +102,7 @@ describe 'opendnssec' do
             ensure: 'file',
             mode: '0644',
             owner: 'root',
-            group: 'root',
+            group: 'root'
           ).with_content(
             %r{<Repository\s+name="thales">
             \s+<Module>/opt/nfast/toolkits/pkcs11/libcknfast.so</Module>
@@ -136,7 +140,7 @@ describe 'opendnssec' do
             command: '/usr/bin/ods-ksmutil update all',
             user: 'root',
             refreshonly: true,
-            subscribe: 'File[/etc/opendnssec/conf.xml]',
+            subscribe: 'File[/etc/opendnssec/conf.xml]'
           )
         end
         it do
@@ -144,13 +148,13 @@ describe 'opendnssec' do
             ensure: 'file',
             mode: '0644',
             owner: 'root',
-            group: 'root',
+            group: 'root'
           )
         end
         it do
           is_expected.to contain_mysql__db('kasp').with(
             user: 'opendnssec',
-            password: 'change_me',
+            password: 'change_me'
           )
         end
       end
@@ -176,13 +180,15 @@ describe 'opendnssec' do
               '/etc/opendnssec/conf.xml'
             ).with_owner('foobar')
           end
-          it do 
+          it do
             is_expected.to contain_exec(
               'ods-ksmutil updated conf.xml'
             ).with_user('foobar')
           end
           it do
-            is_expected.to contain_file('/etc/opendnssec/MASTER').with_owner('foobar')
+            is_expected.to contain_file(
+              '/etc/opendnssec/MASTER'
+            ).with_owner('foobar')
           end
         end
         context 'group' do
@@ -364,7 +370,7 @@ describe 'opendnssec' do
           it do
             is_expected.to contain_mysql__db('foobar').with(
               user: 'opendnssec',
-              password: 'change_me',
+              password: 'change_me'
             )
           end
           it do
@@ -386,7 +392,7 @@ describe 'opendnssec' do
           it do
             is_expected.to contain_mysql__db('kasp').with(
               user: 'foobar',
-              password: 'change_me',
+              password: 'change_me'
             )
           end
           it do
@@ -408,7 +414,7 @@ describe 'opendnssec' do
           it do
             is_expected.to contain_mysql__db('kasp').with(
               user: 'opendnssec',
-              password: 'foobar',
+              password: 'foobar'
             )
           end
           it do
