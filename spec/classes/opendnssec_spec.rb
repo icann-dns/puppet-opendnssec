@@ -42,9 +42,9 @@ describe 'opendnssec' do
       #:addns_xfers_out => {},
       #:logging_level => '3',
       #:logging_facility => 'loacl0',
-      #:repository_name => 'thales',
-      #:repository_module => '/opt/nfast/toolkits/pkcs11/libcknfast.so',
-      #:repository_pin => '11223344',
+      #:repository_name => 'SoftHSM',
+      #:repository_module => '/usr/lib/softhsm/libsofthsm.so',
+      #:repository_pin => '1234',
       #:repository_capacity => :undef,
       #:repository_token_label => 'OpenDNSSEC',
       #:datastore_engine => 'mysql',
@@ -74,6 +74,7 @@ describe 'opendnssec' do
       describe 'check default config' do
         it { is_expected.to compile.with_all_deps }
         it { is_expected.to contain_class('opendnssec') }
+        it { is_expected.to contain_class('mysql::server') }
         it { is_expected.to contain_package('opendnssec') }
         it { is_expected.to contain_package('opendnssec-enforcer-mysql') }
         it do
@@ -104,15 +105,17 @@ describe 'opendnssec' do
             owner: 'root',
             group: 'root'
           ).with_content(
-            %r{<Repository\s+name="thales">
-            \s+<Module>/opt/nfast/toolkits/pkcs11/libcknfast.so</Module>
+            %r{<Repository\s+name="SoftHSM">
+            \s+<Module>/usr/lib/softhsm/libsofthsm.so</Module>
             \s+<TokenLabel>OpenDNSSEC</TokenLabel>
-            \s+<PIN>11223344</PIN>
+            \s+<PIN>1234</PIN>
+            \s+<SkipPublicKey/>
+            \s+</Repository>
             }x
           ).with_content(
             %r{<Verbosity>3</Verbosity>
             \s+<Syslog>
-            \s+<Facility>loacl0</Facility>
+            \s+<Facility>local0</Facility>
             }x
           ).with_content(
             %r{<PolicyFile>/etc/opendnssec/kasp.xml</PolicyFile>}
@@ -242,19 +245,19 @@ describe 'opendnssec' do
             is_expected.to contain_file('/etc/opendnssec/conf.xml').with_content(
               %r{<Verbosity>5</Verbosity>
               \s+<Syslog>
-              \s+<Facility>loacl0</Facility>
+              \s+<Facility>local0</Facility>
               }x
             )
           end
         end
         context 'logging_facility' do
-          before { params.merge!(logging_facility: 'foobar') }
+          before { params.merge!(logging_facility: 'cron') }
           it { is_expected.to compile }
           it do
             is_expected.to contain_file('/etc/opendnssec/conf.xml').with_content(
               %r{<Verbosity>3</Verbosity>
               \s+<Syslog>
-              \s+<Facility>foobar</Facility>
+              \s+<Facility>cron</Facility>
               }x
             )
           end
@@ -265,9 +268,11 @@ describe 'opendnssec' do
           it do
             is_expected.to contain_file('/etc/opendnssec/conf.xml').with_content(
               %r{<Repository\s+name="foobar">
-              \s+<Module>/opt/nfast/toolkits/pkcs11/libcknfast.so</Module>
+              \s+<Module>/usr/lib/softhsm/libsofthsm.so</Module>
               \s+<TokenLabel>OpenDNSSEC</TokenLabel>
-              \s+<PIN>11223344</PIN>
+              \s+<PIN>1234</PIN>
+              \s+<SkipPublicKey/>
+              \s+</Repository>
               }x
             )
           end
@@ -277,10 +282,12 @@ describe 'opendnssec' do
           it { is_expected.to compile }
           it do
             is_expected.to contain_file('/etc/opendnssec/conf.xml').with_content(
-              %r{<Repository\s+name="thales">
+              %r{<Repository\s+name="SoftHSM">
               \s+<Module>/foobar</Module>
               \s+<TokenLabel>OpenDNSSEC</TokenLabel>
-              \s+<PIN>11223344</PIN>
+              \s+<PIN>1234</PIN>
+              \s+<SkipPublicKey/>
+              \s+</Repository>
               }x
             )
           end
@@ -290,10 +297,12 @@ describe 'opendnssec' do
           it { is_expected.to compile }
           it do
             is_expected.to contain_file('/etc/opendnssec/conf.xml').with_content(
-              %r{<Repository\s+name="thales">
-              \s+<Module>/opt/nfast/toolkits/pkcs11/libcknfast.so</Module>
+              %r{<Repository\s+name="SoftHSM">
+              \s+<Module>/usr/lib/softhsm/libsofthsm.so</Module>
               \s+<TokenLabel>OpenDNSSEC</TokenLabel>
               \s+<PIN>foobar</PIN>
+              \s+<SkipPublicKey/>
+              \s+</Repository>
               }x
             )
           end
@@ -303,11 +312,13 @@ describe 'opendnssec' do
           it { is_expected.to compile }
           it do
             is_expected.to contain_file('/etc/opendnssec/conf.xml').with_content(
-              %r{<Repository\s+name="thales">
-              \s+<Module>/opt/nfast/toolkits/pkcs11/libcknfast.so</Module>
+              %r{<Repository\s+name="SoftHSM">
+              \s+<Module>/usr/lib/softhsm/libsofthsm.so</Module>
               \s+<TokenLabel>OpenDNSSEC</TokenLabel>
-              \s+<PIN>11223344</PIN>
+              \s+<PIN>1234</PIN>
               \s+<Capacity>1</Capacity>
+              \s+<SkipPublicKey/>
+              \s+</Repository>
               }x
             )
           end
@@ -317,10 +328,42 @@ describe 'opendnssec' do
           it { is_expected.to compile }
           it do
             is_expected.to contain_file('/etc/opendnssec/conf.xml').with_content(
-              %r{<Repository\s+name="thales">
-              \s+<Module>/opt/nfast/toolkits/pkcs11/libcknfast.so</Module>
+              %r{<Repository\s+name="SoftHSM">
+              \s+<Module>/usr/lib/softhsm/libsofthsm.so</Module>
               \s+<TokenLabel>foobar</TokenLabel>
-              \s+<PIN>11223344</PIN>
+              \s+<PIN>1234</PIN>
+              \s+<SkipPublicKey/>
+              \s+</Repository>
+              }x
+            )
+          end
+        end
+        context 'skip_publickey' do
+          before { params.merge!(skip_publickey: false) }
+          it { is_expected.to compile }
+          it do
+            is_expected.to contain_file('/etc/opendnssec/conf.xml').with_content(
+              %r{<Repository\s+name="SoftHSM">
+              \s+<Module>/usr/lib/softhsm/libsofthsm.so</Module>
+              \s+<TokenLabel>OpenDNSSEC</TokenLabel>
+              \s+<PIN>1234</PIN>
+              \s+</Repository>
+              }x
+            )
+          end
+        end
+        context 'repository_capacity' do
+          before { params.merge!(require_backup: true) }
+          it { is_expected.to compile }
+          it do
+            is_expected.to contain_file('/etc/opendnssec/conf.xml').with_content(
+              %r{<Repository\s+name="SoftHSM">
+              \s+<Module>/usr/lib/softhsm/libsofthsm.so</Module>
+              \s+<TokenLabel>OpenDNSSEC</TokenLabel>
+              \s+<PIN>1234</PIN>
+              \s+<RequireBackup/>
+              \s+<SkipPublicKey/>
+              \s+</Repository>
               }x
             )
           end

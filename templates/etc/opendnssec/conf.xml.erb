@@ -13,8 +13,12 @@
 <%- if @repository_capacity -%>
       <Capacity><%= @repository_capacity %></Capacity>
 <%- end -%>
-      <!--<RequireBackup/>-->
+<%- if @require_backup -%>
+      <RequireBackup/>
+<%- end -%>
+<%- if @skip_publickey -%>
       <SkipPublicKey/>
+<%- end -%>
     </Repository>
   </RepositoryList>
 

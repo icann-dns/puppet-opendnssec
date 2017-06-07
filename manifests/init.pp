@@ -12,13 +12,15 @@ class opendnssec (
   Boolean               $manage_conf            = true,
 
   Integer[1,7]          $logging_level          = 3,
-  String[1,20]          $logging_facility       = 'loacl0',
+  Tea::Syslogfacility   $logging_facility       = 'local0',
 
-  String[1,100]         $repository_name        = 'thales',
-  Stdlib::Absolutepath  $repository_module      = '/opt/nfast/toolkits/pkcs11/libcknfast.so',
-  String[1,100]         $repository_pin         = '11223344',
+  String[1,100]         $repository_name        = 'SoftHSM',
+  Stdlib::Absolutepath  $repository_module      = '/usr/lib/softhsm/libsofthsm.so',
+  String[1,100]         $repository_pin         = '1234',
   Optional[Integer]     $repository_capacity    = undef,
   String[1,100]         $repository_token_label = 'OpenDNSSEC',
+  Boolean               $skip_publickey         = true,
+  Boolean               $require_backup         = false,
 
   Opendnssec::Datastore $datastore_engine       = 'mysql',
   Tea::Host             $datastore_host         = 'localhost',
@@ -87,12 +89,13 @@ class opendnssec (
   }
   if $manage_datastore {
     if $datastore_engine == 'mysql' {
-      if $manage_packages {
-        ensure_packages(['opendnssec-enforcer-mysql'])
-      }
+      require  ::mysql::server
       mysql::db {$datastore_name:
         user     => $datastore_user,
         password => $datastore_password,
+      }
+      if $manage_packages {
+        ensure_packages(['opendnssec-enforcer-mysql'])
       }
     } elsif $datastore_engine == 'sqlite' {
       ensure_packages(['opendnssec-enforcer-sqlite'])

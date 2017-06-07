@@ -8,6 +8,7 @@ require 'progressbar'
 modules = [
   'puppetlabs-stdlib',
   'puppetlabs-concat',
+  'puppetlabs-mysql',
   'icann-tea',
 ]
 git_repos = []
