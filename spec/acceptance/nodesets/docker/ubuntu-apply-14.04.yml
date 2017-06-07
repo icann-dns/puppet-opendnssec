@@ -1,0 +1,58 @@
+---
+# This file is managed via modulesync
+# https://github.com/voxpupuli/modulesync
+# https://github.com/voxpupuli/modulesync_config
+HOSTS:
+  ubuntu-1404-x64-unsigned:
+    roles: 
+    - agent
+    - default
+    - frictionless
+    - unsigned
+    platform: ubuntu-14.04-amd64
+    hypervisor: docker
+    image: ubuntu:14.04
+    docker_preserve_image: true
+    docker_cmd: '["/sbin/init"]'
+    docker_image_commands:
+      - 'rm /usr/sbin/policy-rc.d'
+      - 'rm /sbin/initctl; dpkg-divert --rename --remove /sbin/initctl'
+      - 'apt-get install -y net-tools wget'
+      - 'locale-gen en_US.UTF-8'
+  ubuntu-1404-x64-signer:
+    roles: 
+    - agent
+    - signer
+    - frictionless
+    platform: ubuntu-14.04-amd64
+    hypervisor: docker
+    image: ubuntu:14.04
+    docker_preserve_image: true
+    docker_cmd: '["/sbin/init"]'
+    docker_image_commands:
+      - 'rm /usr/sbin/policy-rc.d'
+      - 'rm /sbin/initctl; dpkg-divert --rename --remove /sbin/initctl'
+      - 'apt-get install -y net-tools wget'
+      - 'locale-gen en_US.UTF-8'
+  ubuntu-1404-x64-signed:
+    roles: 
+    - agent
+    - signed
+    - frictionless
+    platform: ubuntu-14.04-amd64
+    hypervisor: docker
+    image: ubuntu:14.04
+    docker_preserve_image: true
+    docker_cmd: '["/sbin/init"]'
+    docker_image_commands:
+      - 'rm /usr/sbin/policy-rc.d'
+      - 'rm /sbin/initctl; dpkg-divert --rename --remove /sbin/initctl'
+      - 'apt-get install -y net-tools wget'
+      - 'locale-gen en_US.UTF-8'
+CONFIG:
+  trace_limit: 200
+  pe_debug: false
+  pe_ver: 2016.4.3
+  pe_dir: https://s3.amazonaws.com/pe-builds/released/2016.4.3
+...
+# vim: syntax=yaml
