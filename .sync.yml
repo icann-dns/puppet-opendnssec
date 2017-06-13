@@ -4,15 +4,7 @@
   extras:
   - rvm: 2.3.1
     env:
-    - BEAKER_set="docker/ubuntu-agent-14.04"
-    - CHECK=beaker
-    - BEAKER_TESTMODE=agent
-    sudo: required
-    services:
-    - docker
-  - rvm: 2.3.1
-    env:
-    - BEAKER_set="docker/ubuntu-apply-14.04"
+    - BEAKER_set="docker/ubuntu-apply-16.04"
     - CHECK=beaker
     - BEAKER_TESTMODE=apply
     sudo: required
