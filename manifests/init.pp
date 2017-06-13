@@ -15,7 +15,7 @@ class opendnssec (
   Tea::Syslogfacility   $logging_facility       = 'local0',
 
   String[1,100]         $repository_name        = 'SoftHSM',
-  Stdlib::Absolutepath  $repository_module      = '/usr/lib/softhsm/libsofthsm.so',
+  Stdlib::Absolutepath  $repository_module      = '/usr/lib/x86_64-linux-gnu/softhsm/libsofthsm2.so',
   String[1,100]         $repository_pin         = '1234',
   Optional[Integer]     $repository_capacity    = undef,
   String[1,100]         $repository_token_label = 'OpenDNSSEC',
@@ -28,6 +28,7 @@ class opendnssec (
   String[1,100]         $datastore_name         = 'kasp',
   String[1,100]         $datastore_user         = 'opendnssec',
   String[1,100]         $datastore_password     = 'change_me',
+  Stdlib::Absolutepath  $mysql_sql_file         = '/usr/share/opendnssec/database_create.mysql',
 
   Stdlib::Absolutepath  $policy_file            = '/etc/opendnssec/kasp.xml',
   Stdlib::Absolutepath  $zone_file              = '/etc/opendnssec/zonelist.xml',
@@ -49,6 +50,23 @@ class opendnssec (
       recurse => true,
       owner   => $user,
       group   => $group;
+    }
+  }
+  if $manage_datastore {
+    if $datastore_engine == 'mysql' {
+      require  ::mysql::server
+      mysql::db {$datastore_name:
+        user     => $datastore_user,
+        password => $datastore_password,
+        sql      => $mysql_sql_file,
+        before   => Exec['ods-ksmutil updated conf.xml'],
+      }
+
+      if $manage_packages {
+        ensure_packages(['opendnssec-enforcer-mysql'])
+      }
+    } elsif $datastore_engine == 'sqlite' {
+      ensure_packages(['opendnssec-enforcer-sqlite'])
     }
   }
   if $enabled and $manage_service {
@@ -85,20 +103,6 @@ class opendnssec (
       file {'/etc/opendnssec/MASTER':
         ensure => 'absent',
       }
-    }
-  }
-  if $manage_datastore {
-    if $datastore_engine == 'mysql' {
-      require  ::mysql::server
-      mysql::db {$datastore_name:
-        user     => $datastore_user,
-        password => $datastore_password,
-      }
-      if $manage_packages {
-        ensure_packages(['opendnssec-enforcer-mysql'])
-      }
-    } elsif $datastore_engine == 'sqlite' {
-      ensure_packages(['opendnssec-enforcer-sqlite'])
     }
   }
   if ! empty($policies) {

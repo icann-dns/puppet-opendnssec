@@ -10,6 +10,7 @@ modules = [
   'puppetlabs-concat',
   'puppetlabs-mysql',
   'icann-tea',
+  'icann-softhsm',
 ]
 git_repos = []
 # git_repos = [
@@ -41,6 +42,8 @@ hosts.each do |host|
   else
     host.install_package('vim')
     host.install_package('dnsutils')
+    host.install_package('mlocate')
+    host.install_package('rsyslog')
   end
   # remove search list and domain from resolve.conf
   on(host, 'echo $(grep nameserver /etc/resolv.conf) > /etc/resolv.conf')
