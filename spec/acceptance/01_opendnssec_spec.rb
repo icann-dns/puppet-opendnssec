@@ -6,8 +6,8 @@ describe 'opendnssec class' do
   context 'defaults' do
     it 'work with no errors' do
       pp = <<-EOF
-      class {'::softhsm': 
-        tokens => { 
+      class {'::softhsm':
+        tokens => {
           'OpenDNSSEC' => {
             'pin'    => '1234',
             'so_pin' => '1234',

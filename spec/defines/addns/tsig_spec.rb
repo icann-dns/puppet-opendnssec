@@ -72,8 +72,8 @@ describe 'opendnssec::addns::tsig' do
           before { params.merge!(tsig_name: 'foobar') }
           it { is_expected.to compile }
           it do
-            is_expected.to contain_concat__fragment('tsig_test_tsig').with(
-              'target' => '/etc/opendnssec/addns.xml',
+            is_expected.to contain_concat__fragment('tsig_test_tsig').with_target(
+              '/etc/opendnssec/addns.xml'
             ).with_content(
               %r{<TSIG>
               \s+<Name>foobar</Name>
@@ -88,8 +88,8 @@ describe 'opendnssec::addns::tsig' do
           before { params.merge!(algorithm: 'hmac-sha1') }
           it { is_expected.to compile }
           it do
-            is_expected.to contain_concat__fragment('tsig_test_tsig').with(
-              'target' => '/etc/opendnssec/addns.xml',
+            is_expected.to contain_concat__fragment('tsig_test_tsig').with_target(
+              '/etc/opendnssec/addns.xml'
             ).with_content(
               %r{<TSIG>
               \s+<Name>test_tsig</Name>
@@ -104,8 +104,8 @@ describe 'opendnssec::addns::tsig' do
           before { params.merge!(secret: 'BBBB') }
           it { is_expected.to compile }
           it do
-            is_expected.to contain_concat__fragment('tsig_test_tsig').with(
-              'target' => '/etc/opendnssec/addns.xml',
+            is_expected.to contain_concat__fragment('tsig_test_tsig').with_target(
+              '/etc/opendnssec/addns.xml'
             ).with_content(
               %r{<TSIG>
               \s+<Name>test_tsig</Name>

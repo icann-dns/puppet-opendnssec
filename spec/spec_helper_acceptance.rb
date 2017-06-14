@@ -10,7 +10,7 @@ modules = [
   'puppetlabs-concat',
   'puppetlabs-mysql',
   'icann-tea',
-  'icann-softhsm',
+  'icann-softhsm'
 ]
 git_repos = []
 # git_repos = [

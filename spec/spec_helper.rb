@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'puppetlabs_spec_helper/module_spec_helper'
 require 'rspec-puppet-facts'
 include RspecPuppetFacts
@@ -19,7 +21,7 @@ if Dir.exist?(File.expand_path('../../lib', __FILE__))
   end
 end
 
-#add custom fact
+# add custom fact
 add_custom_fact :root_home, '/root'
 
 RSpec.configure do |c|
