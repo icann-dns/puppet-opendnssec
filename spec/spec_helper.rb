@@ -19,6 +19,9 @@ if Dir.exist?(File.expand_path('../../lib', __FILE__))
   end
 end
 
+#add custom fact
+add_custom_fact :root_home, '/root'
+
 RSpec.configure do |c|
   default_facts = {
     puppetversion: Puppet.version,

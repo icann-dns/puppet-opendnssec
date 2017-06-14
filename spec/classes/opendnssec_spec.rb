@@ -43,7 +43,7 @@ describe 'opendnssec' do
       #:logging_level => '3',
       #:logging_facility => 'loacl0',
       #:repository_name => 'SoftHSM',
-      #:repository_module => '/usr/lib/softhsm/libsofthsm.so',
+      #:repository_module => '#{repository_module}',
       #:repository_pin => '1234',
       #:repository_capacity => :undef,
       #:repository_token_label => 'OpenDNSSEC',
@@ -71,9 +71,16 @@ describe 'opendnssec' do
         facts
       end
 
+      case facts[:lsbdistcodename]
+      when 'trusty'
+        let(:repository_module) { '/usr/lib/softhsm/libsofthsm.so' }
+      else
+        let(:repository_module) { '/usr/lib/x86_64-linux-gnu/softhsm/libsofthsm2.so' }
+      end
       describe 'check default config' do
         it { is_expected.to compile.with_all_deps }
         it { is_expected.to contain_class('opendnssec') }
+        it { is_expected.to contain_class('opendnssec::params') }
         it { is_expected.to contain_class('mysql::server') }
         it { is_expected.to contain_package('opendnssec') }
         it { is_expected.to contain_package('opendnssec-enforcer-mysql') }
@@ -106,7 +113,7 @@ describe 'opendnssec' do
             group: 'root'
           ).with_content(
             %r{<Repository\s+name="SoftHSM">
-            \s+<Module>/usr/lib/softhsm/libsofthsm.so</Module>
+            \s+<Module>#{repository_module}</Module>
             \s+<TokenLabel>OpenDNSSEC</TokenLabel>
             \s+<PIN>1234</PIN>
             \s+<SkipPublicKey/>
@@ -268,7 +275,7 @@ describe 'opendnssec' do
           it do
             is_expected.to contain_file('/etc/opendnssec/conf.xml').with_content(
               %r{<Repository\s+name="foobar">
-              \s+<Module>/usr/lib/softhsm/libsofthsm.so</Module>
+              \s+<Module>#{repository_module}</Module>
               \s+<TokenLabel>OpenDNSSEC</TokenLabel>
               \s+<PIN>1234</PIN>
               \s+<SkipPublicKey/>
@@ -298,7 +305,7 @@ describe 'opendnssec' do
           it do
             is_expected.to contain_file('/etc/opendnssec/conf.xml').with_content(
               %r{<Repository\s+name="SoftHSM">
-              \s+<Module>/usr/lib/softhsm/libsofthsm.so</Module>
+              \s+<Module>#{repository_module}</Module>
               \s+<TokenLabel>OpenDNSSEC</TokenLabel>
               \s+<PIN>foobar</PIN>
               \s+<SkipPublicKey/>
@@ -313,7 +320,7 @@ describe 'opendnssec' do
           it do
             is_expected.to contain_file('/etc/opendnssec/conf.xml').with_content(
               %r{<Repository\s+name="SoftHSM">
-              \s+<Module>/usr/lib/softhsm/libsofthsm.so</Module>
+              \s+<Module>#{repository_module}</Module>
               \s+<TokenLabel>OpenDNSSEC</TokenLabel>
               \s+<PIN>1234</PIN>
               \s+<Capacity>1</Capacity>
@@ -329,7 +336,7 @@ describe 'opendnssec' do
           it do
             is_expected.to contain_file('/etc/opendnssec/conf.xml').with_content(
               %r{<Repository\s+name="SoftHSM">
-              \s+<Module>/usr/lib/softhsm/libsofthsm.so</Module>
+              \s+<Module>#{repository_module}</Module>
               \s+<TokenLabel>foobar</TokenLabel>
               \s+<PIN>1234</PIN>
               \s+<SkipPublicKey/>
@@ -344,7 +351,7 @@ describe 'opendnssec' do
           it do
             is_expected.to contain_file('/etc/opendnssec/conf.xml').with_content(
               %r{<Repository\s+name="SoftHSM">
-              \s+<Module>/usr/lib/softhsm/libsofthsm.so</Module>
+              \s+<Module>#{repository_module}</Module>
               \s+<TokenLabel>OpenDNSSEC</TokenLabel>
               \s+<PIN>1234</PIN>
               \s+</Repository>
@@ -358,7 +365,7 @@ describe 'opendnssec' do
           it do
             is_expected.to contain_file('/etc/opendnssec/conf.xml').with_content(
               %r{<Repository\s+name="SoftHSM">
-              \s+<Module>/usr/lib/softhsm/libsofthsm.so</Module>
+              \s+<Module>#{repository_module}</Module>
               \s+<TokenLabel>OpenDNSSEC</TokenLabel>
               \s+<PIN>1234</PIN>
               \s+<RequireBackup/>

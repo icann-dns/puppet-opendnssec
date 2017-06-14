@@ -15,7 +15,7 @@ class opendnssec (
   Tea::Syslogfacility   $logging_facility       = 'local0',
 
   String[1,100]         $repository_name        = 'SoftHSM',
-  Stdlib::Absolutepath  $repository_module      = '/usr/lib/x86_64-linux-gnu/softhsm/libsofthsm2.so',
+  Stdlib::Absolutepath  $repository_module      = $::opendnssec::params::repository_module,
   String[1,100]         $repository_pin         = '1234',
   Optional[Integer]     $repository_capacity    = undef,
   String[1,100]         $repository_token_label = 'OpenDNSSEC',
@@ -40,7 +40,7 @@ class opendnssec (
   Array[String]         $default_masters        = [],
   Array[String]         $default_provide_xfrs   = [],
 
-) {
+) inherits opendnssec::params {
 
   if $manage_packages {
     ensure_packages(['opendnssec'])
@@ -52,14 +52,19 @@ class opendnssec (
       group   => $group;
     }
   }
-  if $manage_datastore {
+  if $enabled and $manage_datastore {
     if $datastore_engine == 'mysql' {
+      if $manage_ods_ksmutil and $manage_conf {
+        $mysql_db_before = Exec['ods-ksmutil updated conf.xml']
+      } else {
+        $mysql_db_before = undef
+      }
       require  ::mysql::server
       mysql::db {$datastore_name:
         user     => $datastore_user,
         password => $datastore_password,
         sql      => $mysql_sql_file,
-        before   => Exec['ods-ksmutil updated conf.xml'],
+        before   => $mysql_db_before,
       }
 
       if $manage_packages {
@@ -85,12 +90,17 @@ class opendnssec (
       content => template('opendnssec/etc/opendnssec/conf.xml.erb');
     }
     if $enabled {
+      if $manage_conf {
+        $exec_subscribe = File['/etc/opendnssec/conf.xml']
+      } else {
+        $exec_subscribe = undef
+      }
       if $manage_ods_ksmutil {
         exec {'ods-ksmutil updated conf.xml':
           command     => '/usr/bin/ods-ksmutil update all',
           user        => $user,
           refreshonly => true,
-          subscribe   => File['/etc/opendnssec/conf.xml'],
+          subscribe   => $exec_subscribe,
         }
       }
       file {'/etc/opendnssec/MASTER':
