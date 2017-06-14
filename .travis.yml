@@ -29,6 +29,10 @@ matrix:
   - rvm: 2.4.0
     env: PUPPET_VERSION="~> 4.0" CHECK=build DEPLOY_TO_FORGE=yes
   - rvm: 2.3.1
+    env: ["BEAKER_set=\"docker/ubuntu-apply-14.04\"", "CHECK=beaker", "BEAKER_TESTMODE=apply"]
+    services: ["docker"]
+    sudo: required
+  - rvm: 2.3.1
     env: ["BEAKER_set=\"docker/ubuntu-apply-16.04\"", "CHECK=beaker", "BEAKER_TESTMODE=apply"]
     services: ["docker"]
     sudo: required
