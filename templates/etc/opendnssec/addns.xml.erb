@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- File managed by pu    ppet DO NOT EDIT -->
+<!-- File managed by puppet DO NOT EDIT -->
 <Adapter>
   <DNS>
 <%- if @default_tsig_name != 'NOKEY' -%>
@@ -83,7 +83,7 @@
         </Peer>
       <%- if @remotes[provide_xfr].fetch('tsig_name', 'NOKEY') != 'NOKEY' -%>
           <Key><%= @remotes[provide_xfr]['tsig_name'] %></Key>
-      <%- elsif @default_tsig_name -%>
+      <%- elsif @default_tsig_name != 'NOKEY' -%>
           <Key><%= @default_tsig_name %></Key>
       <%- end -%>
     <%- end -%>
@@ -93,7 +93,7 @@
         </Peer>
       <%- if @remotes[provide_xfr].fetch('tsig_name', 'NOKEY') != 'NOKEY' -%>
           <Key><%= @remotes[provide_xfr]['tsig_name'] %></Key>
-      <%- elsif @default_tsig_name -%>
+      <%- elsif @default_tsig_name != 'NOKEY' -%>
           <Key><%= @default_tsig_name %></Key>
       <%- end -%>
     <%- end -%>
@@ -105,15 +105,14 @@
         <Peer>
           <Address><%= @remotes[provide_xfr]['address4'].split('/')[0] %></Address>
         </Peer>
-      </Notify>
     <%- end -%>
     <%- if @remotes[provide_xfr].include?('address6') -%>
         <Peer>
           <Address><%= @remotes[provide_xfr]['address6'].split('/')[0] %></Address>
         </Peer>
-      </Notify>
     <%- end -%>
   <%- end -%>
+      </Notify>
 <%- end -%>
     </Outbound>
   </DNS>

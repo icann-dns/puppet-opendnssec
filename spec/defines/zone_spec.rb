@@ -59,6 +59,16 @@ describe 'opendnssec::zone' do
       describe 'check default config' do
         it { is_expected.to compile.with_all_deps }
         it do
+          is_expected.to contain_file(
+            '/etc/opendnssec/addns-default.xml'
+          )
+        end
+        it do
+          is_expected.to contain_exec(
+            'Forcing ods-ksmutil to update after modifying addns-default.xml'
+          )
+        end
+        it do
           is_expected.to contain_concat__fragment('zone_test_zone').with(
             target: '/etc/opendnssec/zonelist.xml',
             order: '10'
@@ -109,6 +119,17 @@ describe 'opendnssec::zone' do
         context 'masters' do
           before { params.merge!(masters: ['master']) }
           it { is_expected.to compile }
+          it { is_expected.to contain_opendnssec__addns('test_zone-masters') }
+          it do
+            is_expected.to contain_file(
+              '/etc/opendnssec/addns-test_zone-masters.xml'
+            )
+          end
+          it do
+            is_expected.to contain_exec(
+              'Forcing ods-ksmutil to update after modifying addns-test_zone-masters.xml'
+            )
+          end
           it do
             is_expected.to contain_concat__fragment(
               'zone_test_zone'
@@ -132,6 +153,17 @@ describe 'opendnssec::zone' do
         context 'provide_xfrs' do
           before { params.merge!(provide_xfrs: ['provide_xfr']) }
           it { is_expected.to compile }
+          it { is_expected.to contain_opendnssec__addns('test_zone-provide_xfrs') }
+          it do
+            is_expected.to contain_file(
+              '/etc/opendnssec/addns-test_zone-provide_xfrs.xml'
+            )
+          end
+          it do
+            is_expected.to contain_exec(
+              'Forcing ods-ksmutil to update after modifying addns-test_zone-provide_xfrs.xml'
+            )
+          end
           it do
             is_expected.to contain_concat__fragment(
               'zone_test_zone'

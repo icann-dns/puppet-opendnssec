@@ -3,7 +3,7 @@
 # refer to <http://puppet-lint.com/checks/>.
 
 # Examples (uncomment before use):
---disable_autoloader_layout
+#--disable_autoloader_layout
 # spacing, indentation and whitespace
 #--no-2sp_soft_tabs-check
 #--no-hard_tabs-check
