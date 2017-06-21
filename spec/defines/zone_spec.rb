@@ -38,7 +38,17 @@ describe 'opendnssec::zone' do
   # add these two lines in a single test block to enable puppet and hiera debug mode
   # Puppet::Util::Log.level = :debug
   # Puppet::Util::Log.newdestination(:console)
-  let(:pre_condition) { 'opendnssec::policy {\'test_policy\': }' }
+  let(:pre_condition) do
+    <<-EOF
+    class { '::opendnssec':
+      policies => {'test_policy' => {} },
+      remotes  => {
+        'master' => { 'address4' => '192.0.2.1' },
+        'provide_xfr' => { 'address4' => '192.0.2.2' },
+      },
+    }
+    EOF
+  end
 
   on_supported_os.each do |os, facts|
     context "on #{os}" do
@@ -58,10 +68,10 @@ describe 'opendnssec::zone' do
             \s+<SignerConfiguration>/var/lib/opendnssec/signconf/test_zone.xml</SignerConfiguration>
             \s+<Adapters>
             \s+<Input>
-            \s+<Adapter\stype="DNS">/etc/opendnssec/addns.xml</Adapter>
+            \s+<Adapter\stype="DNS">/etc/opendnssec/addns-default.xml</Adapter>
             \s+</Input>
             \s+<Output>
-            \s+<Adapter\stype="DNS">/etc/opendnssec/addns.xml</Adapter>
+            \s+<Adapter\stype="DNS">/etc/opendnssec/addns-default.xml</Adapter>
             \s+</Output>
             \s+</Adapters>
             \s+</Zone>
@@ -85,10 +95,79 @@ describe 'opendnssec::zone' do
               \s+<SignerConfiguration>/var/lib/opendnssec/signconf/test_zone.xml</SignerConfiguration>
               \s+<Adapters>
               \s+<Input>
-              \s+<Adapter\stype="DNS">/etc/opendnssec/addns.xml</Adapter>
+              \s+<Adapter\stype="DNS">/etc/opendnssec/addns-default.xml</Adapter>
               \s+</Input>
               \s+<Output>
-              \s+<Adapter\stype="DNS">/etc/opendnssec/addns.xml</Adapter>
+              \s+<Adapter\stype="DNS">/etc/opendnssec/addns-default.xml</Adapter>
+              \s+</Output>
+              \s+</Adapters>
+              \s+</Zone>
+              }x
+            )
+          end
+        end
+        context 'masters' do
+          before { params.merge!(masters: ['master']) }
+          it { is_expected.to compile }
+          it do
+            is_expected.to contain_concat__fragment(
+              'zone_test_zone'
+            ).with_content(
+              %r{<Zone\sname="test_zone">
+              \s+<Policy>test_policy</Policy>
+              \s+<SignerConfiguration>/var/lib/opendnssec/signconf/test_zone.xml</SignerConfiguration>
+              \s+<Adapters>
+              \s+<Input>
+              \s+<Adapter\stype="DNS">/etc/opendnssec/addns-test_zone-masters.xml</Adapter>
+              \s+</Input>
+              \s+<Output>
+              \s+<Adapter\stype="DNS">/etc/opendnssec/addns-default.xml</Adapter>
+              \s+</Output>
+              \s+</Adapters>
+              \s+</Zone>
+              }x
+            )
+          end
+        end
+        context 'provide_xfrs' do
+          before { params.merge!(provide_xfrs: ['provide_xfr']) }
+          it { is_expected.to compile }
+          it do
+            is_expected.to contain_concat__fragment(
+              'zone_test_zone'
+            ).with_content(
+              %r{<Zone\sname="test_zone">
+              \s+<Policy>test_policy</Policy>
+              \s+<SignerConfiguration>/var/lib/opendnssec/signconf/test_zone.xml</SignerConfiguration>
+              \s+<Adapters>
+              \s+<Input>
+              \s+<Adapter\stype="DNS">/etc/opendnssec/addns-default.xml</Adapter>
+              \s+</Input>
+              \s+<Output>
+              \s+<Adapter\stype="DNS">/etc/opendnssec/addns-test_zone-provide_xfrs.xml</Adapter>
+              \s+</Output>
+              \s+</Adapters>
+              \s+</Zone>
+              }x
+            )
+          end
+        end
+        context 'masters and provide_xfrs' do
+          before { params.merge!(masters: ['master'], provide_xfrs: ['provide_xfr']) }
+          it { is_expected.to compile }
+          it do
+            is_expected.to contain_concat__fragment(
+              'zone_test_zone'
+            ).with_content(
+              %r{<Zone\sname="test_zone">
+              \s+<Policy>test_policy</Policy>
+              \s+<SignerConfiguration>/var/lib/opendnssec/signconf/test_zone.xml</SignerConfiguration>
+              \s+<Adapters>
+              \s+<Input>
+              \s+<Adapter\stype="DNS">/etc/opendnssec/addns-test_zone-masters.xml</Adapter>
+              \s+</Input>
+              \s+<Output>
+              \s+<Adapter\stype="DNS">/etc/opendnssec/addns-test_zone-provide_xfrs.xml</Adapter>
               \s+</Output>
               \s+</Adapters>
               \s+</Zone>
@@ -122,7 +201,7 @@ describe 'opendnssec::zone' do
               \s+<Adapter\stype="File">/foobar/unsigned/test_zone</Adapter>
               \s+</Input>
               \s+<Output>
-              \s+<Adapter\stype="DNS">/etc/opendnssec/addns.xml</Adapter>
+              \s+<Adapter\stype="DNS">/etc/opendnssec/addns-default.xml</Adapter>
               \s+</Output>
               \s+</Adapters>
               \s+</Zone>
@@ -147,7 +226,7 @@ describe 'opendnssec::zone' do
               \s+<SignerConfiguration>/foobar/signconf/test_zone.xml</SignerConfiguration>
               \s+<Adapters>
               \s+<Input>
-              \s+<Adapter\stype="DNS">/etc/opendnssec/addns.xml</Adapter>
+              \s+<Adapter\stype="DNS">/etc/opendnssec/addns-default.xml</Adapter>
               \s+</Input>
               \s+<Output>
               \s+<Adapter\stype="File">/foobar/signed/test_zone</Adapter>
@@ -170,10 +249,10 @@ describe 'opendnssec::zone' do
               \s+<SignerConfiguration>/foobar/signconf/test_zone.xml</SignerConfiguration>
               \s+<Adapters>
               \s+<Input>
-              \s+<Adapter\stype="DNS">/etc/opendnssec/addns.xml</Adapter>
+              \s+<Adapter\stype="DNS">/etc/opendnssec/addns-default.xml</Adapter>
               \s+</Input>
               \s+<Output>
-              \s+<Adapter\stype="DNS">/etc/opendnssec/addns.xml</Adapter>
+              \s+<Adapter\stype="DNS">/etc/opendnssec/addns-default.xml</Adapter>
               \s+</Output>
               \s+</Adapters>
               \s+</Zone>
@@ -194,10 +273,10 @@ describe 'opendnssec::zone' do
               \s+<SignerConfiguration>/foobar</SignerConfiguration>
               \s+<Adapters>
               \s+<Input>
-              \s+<Adapter\stype="DNS">/etc/opendnssec/addns.xml</Adapter>
+              \s+<Adapter\stype="DNS">/etc/opendnssec/addns-default.xml</Adapter>
               \s+</Input>
               \s+<Output>
-              \s+<Adapter\stype="DNS">/etc/opendnssec/addns.xml</Adapter>
+              \s+<Adapter\stype="DNS">/etc/opendnssec/addns-default.xml</Adapter>
               \s+</Output>
               \s+</Adapters>
               \s+</Zone>
@@ -226,7 +305,7 @@ describe 'opendnssec::zone' do
               \s+<Adapter\stype="File">/foobar</Adapter>
               \s+</Input>
               \s+<Output>
-              \s+<Adapter\stype="DNS">/etc/opendnssec/addns.xml</Adapter>
+              \s+<Adapter\stype="DNS">/etc/opendnssec/addns-default.xml</Adapter>
               \s+</Output>
               \s+</Adapters>
               \s+</Zone>
@@ -251,7 +330,7 @@ describe 'opendnssec::zone' do
               \s+<SignerConfiguration>/var/lib/opendnssec/signconf/test_zone.xml</SignerConfiguration>
               \s+<Adapters>
               \s+<Input>
-              \s+<Adapter\stype="DNS">/etc/opendnssec/addns.xml</Adapter>
+              \s+<Adapter\stype="DNS">/etc/opendnssec/addns-default.xml</Adapter>
               \s+</Input>
               \s+<Output>
               \s+<Adapter\stype="File">/foobar</Adapter>
@@ -277,7 +356,7 @@ describe 'opendnssec::zone' do
               \s+<Adapter\stype="File">/var/lib/opendnssec/unsigned/test_zone</Adapter>
               \s+</Input>
               \s+<Output>
-              \s+<Adapter\stype="DNS">/etc/opendnssec/addns.xml</Adapter>
+              \s+<Adapter\stype="DNS">/etc/opendnssec/addns-default.xml</Adapter>
               \s+</Output>
               \s+</Adapters>
               \s+</Zone>
@@ -297,7 +376,7 @@ describe 'opendnssec::zone' do
               \s+<SignerConfiguration>/var/lib/opendnssec/signconf/test_zone.xml</SignerConfiguration>
               \s+<Adapters>
               \s+<Input>
-              \s+<Adapter\stype="DNS">/etc/opendnssec/addns.xml</Adapter>
+              \s+<Adapter\stype="DNS">/etc/opendnssec/addns-default.xml</Adapter>
               \s+</Input>
               \s+<Output>
               \s+<Adapter\stype="File">/var/lib/opendnssec/signed/test_zone</Adapter>

@@ -81,6 +81,7 @@ describe 'opendnssec' do
         it { is_expected.to compile.with_all_deps }
         it { is_expected.to contain_class('opendnssec') }
         it { is_expected.to contain_class('opendnssec::params') }
+        it { is_expected.to contain_opendnssec__addns('default') }
         it { is_expected.to contain_class('mysql::server') }
         it { is_expected.to contain_package('opendnssec') }
         it { is_expected.to contain_package('opendnssec-enforcer-mysql') }

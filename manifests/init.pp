@@ -34,14 +34,32 @@ class opendnssec (
   Stdlib::Absolutepath  $zone_file              = '/etc/opendnssec/zonelist.xml',
   Stdlib::Absolutepath  $addns_file             = '/etc/opendnssec/addns.xml',
 
+  Boolean               $xferout_enabled        = true,
+
   Hash                  $zones                  = {},
   Hash                  $policies               = {},
   Hash                  $remotes                = {},
+  String                $default_tsig_name      = 'NOKEY',
   Array[String]         $default_masters        = [],
   Array[String]         $default_provide_xfrs   = [],
+  Hash[String, Opendnssec::Tsig] $tsigs         = {},
 
 ) inherits opendnssec::params {
 
+  if $default_tsig_name != 'NOKEY' and ! has_key($tsigs, $default_tsig_name) {
+    fail("\$opendnssec::tsigs['${default_tsig_name}'] defined by default_tsig_name does not exist")
+  }
+  $default_masters.each |String $master| {
+    if ! has_key($remotes, $master) {
+      fail("\$opendnssec::masters['${master}'] defined by default_master does not exist")
+    }
+  }
+  $default_provide_xfrs.each |String $provide_xfr| {
+    if ! has_key($remotes, $provide_xfr) {
+      fail("\$opendnssec::provide_xfrs['${provide_xfr}'] defined by default_provide_xfr does not exist")
+    }
+  }
+    
   if $manage_packages {
     ensure_packages(['opendnssec'])
     file {'/var/lib/opendnssec':
@@ -88,6 +106,10 @@ class opendnssec (
       owner   => $user,
       group   => $group,
       content => template('opendnssec/etc/opendnssec/conf.xml.erb');
+    }
+    opendnssec::addns {'default':
+      masters      => $default_masters,
+      provide_xfrs => $default_provide_xfrs,
     }
     if $enabled {
       if $manage_conf {
