@@ -50,7 +50,7 @@ describe 'opendnssec::policy' do
       # :ksk_standby => '0',
       # :ksk_manual_rollover => true,
       # :zsk_algorithm => 'RSASHA1-NSEC3-SHA1',
-      # :zsk_algorithm_length => '1048',
+      # :zsk_algorithm_length => '1024',
       # :zsk_lifetime => 'P90D',
       # :zsk_repository => :undef,
       # :zsk_standby => '0',
@@ -131,7 +131,7 @@ describe 'opendnssec::policy' do
             }x
           ).with_content(
             %r{<ZSK>
-            \s+<Algorithm\slength="1048">7</Algorithm>
+            \s+<Algorithm\slength="1024">7</Algorithm>
             \s+<Lifetime>P90D</Lifetime>
             \s+<Repository>SoftHSM</Repository>
             \s+<Standby>0</Standby>
@@ -572,7 +572,7 @@ describe 'opendnssec::policy' do
               'policy_test_policy'
             ).with_content(
               %r{<ZSK>
-              \s+<Algorithm\slength="1048">5</Algorithm>
+              \s+<Algorithm\slength="1024">5</Algorithm>
               \s+<Lifetime>P90D</Lifetime>
               \s+<Repository>SoftHSM</Repository>
               \s+<Standby>0</Standby>
@@ -606,7 +606,7 @@ describe 'opendnssec::policy' do
               'policy_test_policy'
             ).with_content(
               %r{<ZSK>
-              \s+<Algorithm\slength="1048">7</Algorithm>
+              \s+<Algorithm\slength="1024">7</Algorithm>
               \s+<Lifetime>P1D</Lifetime>
               \s+<Repository>SoftHSM</Repository>
               \s+<Standby>0</Standby>
@@ -623,7 +623,7 @@ describe 'opendnssec::policy' do
               'policy_test_policy'
             ).with_content(
               %r{<ZSK>
-              \s+<Algorithm\slength="1048">7</Algorithm>
+              \s+<Algorithm\slength="1024">7</Algorithm>
               \s+<Lifetime>P90D</Lifetime>
               \s+<Repository>SoftHSM</Repository>
               \s+<Standby>1</Standby>
@@ -640,7 +640,7 @@ describe 'opendnssec::policy' do
               'policy_test_policy'
             ).with_content(
               %r{<ZSK>
-              \s+<Algorithm\slength="1048">7</Algorithm>
+              \s+<Algorithm\slength="1024">7</Algorithm>
               \s+<Lifetime>P90D</Lifetime>
               \s+<Repository>SoftHSM</Repository>
               \s+<Standby>0</Standby>

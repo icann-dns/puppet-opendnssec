@@ -31,7 +31,7 @@ define opendnssec::policy (
   Boolean                  $ksk_manual_rollover      = true,
 
   Opendnssec::Dnskeyalgo   $zsk_algorithm            = 'RSASHA1-NSEC3-SHA1',
-  Integer                  $zsk_algorithm_length     = 1048,
+  Integer                  $zsk_algorithm_length     = 1024,
   Opendnssec::Timestring   $zsk_lifetime             = 'P90D',
   Integer                  $zsk_standby              = 0,
   Boolean                  $zsk_manual_rollover      = false,

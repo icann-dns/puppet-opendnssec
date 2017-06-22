@@ -18,7 +18,7 @@ class opendnssec (
   Stdlib::Absolutepath  $repository_module      = $::opendnssec::params::repository_module,
   String[1,100]         $repository_pin         = '1234',
   Optional[Integer]     $repository_capacity    = undef,
-  String[1,100]         $repository_token_label = 'OpenDNSSEC',
+  String[1,32]          $repository_token_label = 'OpenDNSSEC',
   Boolean               $skip_publickey         = true,
   Boolean               $require_backup         = false,
 
@@ -32,7 +32,6 @@ class opendnssec (
 
   Stdlib::Absolutepath  $policy_file            = '/etc/opendnssec/kasp.xml',
   Stdlib::Absolutepath  $zone_file              = '/etc/opendnssec/zonelist.xml',
-  Stdlib::Absolutepath  $addns_file             = '/etc/opendnssec/addns.xml',
 
   Boolean               $xferout_enabled        = true,
 
