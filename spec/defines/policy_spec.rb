@@ -79,7 +79,7 @@ describe 'opendnssec::policy' do
 
       describe 'check default config' do
         it { is_expected.to compile.with_all_deps }
-        it { is_expected.to contain.opendnssec__policy('test_policy') }
+        it { is_expected.to contain_opendnssec__policy('test_policy') }
         it do
           is_expected.to contain_concat__fragment('policy_test_policy').with(
             target: '/etc/opendnssec/kasp.xml',

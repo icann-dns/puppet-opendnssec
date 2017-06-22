@@ -51,7 +51,7 @@
     <%- end -%>
     <%- if @remotes[master].fetch('tsig_name', 'NOKEY') != 'NOKEY' -%>
           <Key><%= @remotes[master]['tsig_name'] %></Key>
-    <%- elsif @default_tsig_name -%>
+    <%- elsif @default_tsig_name != 'NOKEY' -%>
           <Key><%= @default_tsig_name %></Key>
     <%- end -%>
         </Remote>
@@ -80,40 +80,48 @@
     <%- if @remotes[provide_xfr].include?('address4') -%>
         <Peer>
           <Prefix><%= @remotes[provide_xfr]['address4'] %></Prefix>
-        </Peer>
       <%- if @remotes[provide_xfr].fetch('tsig_name', 'NOKEY') != 'NOKEY' -%>
           <Key><%= @remotes[provide_xfr]['tsig_name'] %></Key>
       <%- elsif @default_tsig_name != 'NOKEY' -%>
           <Key><%= @default_tsig_name %></Key>
       <%- end -%>
+        </Peer>
     <%- end -%>
     <%- if @remotes[provide_xfr].include?('address6') -%>
         <Peer>
           <Prefix><%= @remotes[provide_xfr]['address6'] %></Prefix>
-        </Peer>
       <%- if @remotes[provide_xfr].fetch('tsig_name', 'NOKEY') != 'NOKEY' -%>
           <Key><%= @remotes[provide_xfr]['tsig_name'] %></Key>
       <%- elsif @default_tsig_name != 'NOKEY' -%>
           <Key><%= @default_tsig_name %></Key>
       <%- end -%>
+        </Peer>
     <%- end -%>
   <%- end -%>
+<%- end -%>
       </ProvideTransfer>
       <Notify>
+<%- if @xferout_enabled -%>
   <%- @provide_xfrs.each do |provide_xfr| -%>
     <%- if @remotes[provide_xfr].include?('address4') -%>
         <Peer>
           <Address><%= @remotes[provide_xfr]['address4'].split('/')[0] %></Address>
+      <%- if @remotes[provide_xfr].include?('port') -%>
+          <Port><%= @remotes[provide_xfr]['port'] %></Port>
+      <%- end -%>
         </Peer>
     <%- end -%>
     <%- if @remotes[provide_xfr].include?('address6') -%>
         <Peer>
           <Address><%= @remotes[provide_xfr]['address6'].split('/')[0] %></Address>
+      <%- if @remotes[provide_xfr].include?('port') -%>
+          <Port><%= @remotes[provide_xfr]['port'] %></Port>
+      <%- end -%>
         </Peer>
     <%- end -%>
   <%- end -%>
-      </Notify>
 <%- end -%>
+      </Notify>
     </Outbound>
   </DNS>
 </Adapter>
