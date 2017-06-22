@@ -70,7 +70,7 @@ describe 'opendnssec class' do
       its(:stdout) { is_expected.to match(%r{root-servers.net\s+ZSK\s+active}) }
     end
   end
-  describe command('/usr/bin/ods-signer zones') do
+  describe command('/usr/sbin/ods-signer zones') do
     its(:stdout) { is_expected.to match('root-servers.net') }
   end
 end
