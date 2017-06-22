@@ -17,10 +17,10 @@
     * [Add a zone with masters and slave]( #add-a-zone-with-masters-and-slave)
     * [Add a zone with masters and slave with default tsig](#add-a-zone-with-masters-and-slave-with-default-tsig)
     * [Add a zone with masters and slave with remote based tsig](#add-a-zone-with-masters-and-slave-with-remote-based-tsig)
+5. [reference](reference)
     * [Classes](#classes)
     * [Defines](#defines)
-5. [Limitations - OS compatibility, etc.](#limitations)
-6. [Development - Guide for contributing to the module](#development)
+6. [Limitations - OS compatibility, etc.](#limitations)
 
 ## Overview
 
