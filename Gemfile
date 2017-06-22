@@ -25,8 +25,8 @@ group :test do
   gem 'metadata-json-lint',                                         :require => false
   gem 'puppet-blacksmith',                                          :require => false
   gem 'pry',                                                        :require => false
-  gem 'voxpupuli-release',                                          :require => false, :git => 'https://github.com/voxpupuli/voxpupuli-release-gem.git'
-  gem 'puppet-strings', '~> 1.0.0',                                 :require => false
+  gem 'voxpupuli-release',                                          :require => false, :git => 'https://github.com/voxpupuli/voxpupuli-release-gem'
+  gem 'puppet-strings', '~> 1.0',                                   :require => false
   gem 'redcarpet',                                                  :require => false
   gem 'gettext-setup',                                              :require => false
   gem 'rubocop', '~> 0.48.0',                                       :require => false if RUBY_VERSION >= '2.3.0'
@@ -38,12 +38,14 @@ group :test do
   gem 'listen', '<= 3.0.6',                                         :require => false if RUBY_VERSION < '2.2.5'
   gem 'rack', '~> 1.0',                                             :require => false if RUBY_VERSION < '2.2.2'
   gem 'github_changelog_generator',                                 :require => false if RUBY_VERSION >= '2.2.2'
+  gem 'parallel_tests',                                             :require => false
 end
 
 group :development do
-  gem 'travis',       :require => false
-  gem 'travis-lint',  :require => false
-  gem 'guard-rake',   :require => false
+  gem 'travis',                   :require => false
+  gem 'travis-lint',              :require => false
+  gem 'guard-rake',               :require => false
+  gem 'overcommit', '~> 0.39.1',  :require => false
 end
 
 group :system_tests do
