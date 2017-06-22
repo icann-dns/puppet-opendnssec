@@ -124,7 +124,7 @@ describe 'opendnssec::policy' do
             %r{<KSK>
             \s+<Algorithm\slength="2048">7</Algorithm>
             \s+<Lifetime>P365D</Lifetime>
-            \s+<Repository></Repository>
+            \s+<Repository>SoftHSM</Repository>
             \s+<Standby>0</Standby>
             \s+<ManualRollover/>
             \s+</KSK>
@@ -133,7 +133,7 @@ describe 'opendnssec::policy' do
             %r{<ZSK>
             \s+<Algorithm\slength="1048">7</Algorithm>
             \s+<Lifetime>P90D</Lifetime>
-            \s+<Repository></Repository>
+            \s+<Repository>SoftHSM</Repository>
             \s+<Standby>0</Standby>
             \s+</ZSK>
             }x
@@ -485,7 +485,7 @@ describe 'opendnssec::policy' do
               %r{<KSK>
               \s+<Algorithm\slength="2048">5</Algorithm>
               \s+<Lifetime>P365D</Lifetime>
-              \s+<Repository></Repository>
+              \s+<Repository>SoftHSM</Repository>
               \s+<Standby>0</Standby>
               \s+<ManualRollover/>
               \s+</KSK>
@@ -503,7 +503,7 @@ describe 'opendnssec::policy' do
               %r{<KSK>
               \s+<Algorithm\slength="1024">7</Algorithm>
               \s+<Lifetime>P365D</Lifetime>
-              \s+<Repository></Repository>
+              \s+<Repository>SoftHSM</Repository>
               \s+<Standby>0</Standby>
               \s+<ManualRollover/>
               \s+</KSK>
@@ -521,25 +521,7 @@ describe 'opendnssec::policy' do
               %r{<KSK>
               \s+<Algorithm\slength="2048">7</Algorithm>
               \s+<Lifetime>P1D</Lifetime>
-              \s+<Repository></Repository>
-              \s+<Standby>0</Standby>
-              \s+<ManualRollover/>
-              \s+</KSK>
-              }x
-            )
-          end
-        end
-        context 'ksk_repository' do
-          before { params.merge!(ksk_repository: 'foobar') }
-          it { is_expected.to compile }
-          it do
-            is_expected.to contain_concat__fragment(
-              'policy_test_policy'
-            ).with_content(
-              %r{<KSK>
-              \s+<Algorithm\slength="2048">7</Algorithm>
-              \s+<Lifetime>P365D</Lifetime>
-              \s+<Repository>foobar</Repository>
+              \s+<Repository>SoftHSM</Repository>
               \s+<Standby>0</Standby>
               \s+<ManualRollover/>
               \s+</KSK>
@@ -557,7 +539,7 @@ describe 'opendnssec::policy' do
               %r{<KSK>
               \s+<Algorithm\slength="2048">7</Algorithm>
               \s+<Lifetime>P365D</Lifetime>
-              \s+<Repository></Repository>
+              \s+<Repository>SoftHSM</Repository>
               \s+<Standby>1</Standby>
               \s+<ManualRollover/>
               \s+</KSK>
@@ -575,7 +557,7 @@ describe 'opendnssec::policy' do
               %r{<KSK>
               \s+<Algorithm\slength="2048">7</Algorithm>
               \s+<Lifetime>P365D</Lifetime>
-              \s+<Repository></Repository>
+              \s+<Repository>SoftHSM</Repository>
               \s+<Standby>0</Standby>
               \s+</KSK>
               }x
@@ -585,7 +567,6 @@ describe 'opendnssec::policy' do
         context 'zsk_algorithm' do
           before { params.merge!(zsk_algorithm: 'RSASHA1') }
           it { is_expected.to compile }
-          # Add Check to validate change was successful
           it do
             is_expected.to contain_concat__fragment(
               'policy_test_policy'
@@ -593,7 +574,7 @@ describe 'opendnssec::policy' do
               %r{<ZSK>
               \s+<Algorithm\slength="1048">5</Algorithm>
               \s+<Lifetime>P90D</Lifetime>
-              \s+<Repository></Repository>
+              \s+<Repository>SoftHSM</Repository>
               \s+<Standby>0</Standby>
               \s+</ZSK>
               }x
@@ -610,7 +591,7 @@ describe 'opendnssec::policy' do
               %r{<ZSK>
               \s+<Algorithm\slength="2048">7</Algorithm>
               \s+<Lifetime>P90D</Lifetime>
-              \s+<Repository></Repository>
+              \s+<Repository>SoftHSM</Repository>
               \s+<Standby>0</Standby>
               \s+</ZSK>
               }x
@@ -627,24 +608,7 @@ describe 'opendnssec::policy' do
               %r{<ZSK>
               \s+<Algorithm\slength="1048">7</Algorithm>
               \s+<Lifetime>P1D</Lifetime>
-              \s+<Repository></Repository>
-              \s+<Standby>0</Standby>
-              \s+</ZSK>
-              }x
-            )
-          end
-        end
-        context 'zsk_repository' do
-          before { params.merge!(zsk_repository: 'foobar') }
-          it { is_expected.to compile }
-          it do
-            is_expected.to contain_concat__fragment(
-              'policy_test_policy'
-            ).with_content(
-              %r{<ZSK>
-              \s+<Algorithm\slength="1048">7</Algorithm>
-              \s+<Lifetime>P90D</Lifetime>
-              \s+<Repository>foobar</Repository>
+              \s+<Repository>SoftHSM</Repository>
               \s+<Standby>0</Standby>
               \s+</ZSK>
               }x
@@ -661,7 +625,7 @@ describe 'opendnssec::policy' do
               %r{<ZSK>
               \s+<Algorithm\slength="1048">7</Algorithm>
               \s+<Lifetime>P90D</Lifetime>
-              \s+<Repository></Repository>
+              \s+<Repository>SoftHSM</Repository>
               \s+<Standby>1</Standby>
               \s+</ZSK>
               }x
@@ -678,7 +642,7 @@ describe 'opendnssec::policy' do
               %r{<ZSK>
               \s+<Algorithm\slength="1048">7</Algorithm>
               \s+<Lifetime>P90D</Lifetime>
-              \s+<Repository></Repository>
+              \s+<Repository>SoftHSM</Repository>
               \s+<Standby>0</Standby>
               \s+<ManualRollover/>
               \s+</ZSK>

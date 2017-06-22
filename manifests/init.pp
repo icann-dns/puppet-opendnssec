@@ -40,6 +40,7 @@ class opendnssec (
   Hash                  $policies               = {},
   Hash                  $remotes                = {},
   String                $default_tsig_name      = 'NOKEY',
+  String                $default_policy_name    = 'default',
   Array[String]         $default_masters        = [],
   Array[String]         $default_provide_xfrs   = [],
   Hash[String, Opendnssec::Tsig] $tsigs         = {},
@@ -59,7 +60,6 @@ class opendnssec (
       fail("\$opendnssec::provide_xfrs['${provide_xfr}'] defined by default_provide_xfr does not exist")
     }
   }
-    
   if $manage_packages {
     ensure_packages(['opendnssec'])
     file {'/var/lib/opendnssec':
@@ -119,7 +119,7 @@ class opendnssec (
       }
       if $manage_ods_ksmutil {
         exec {'ods-ksmutil updated conf.xml':
-          command     => '/usr/bin/ods-ksmutil update all',
+          command     => '/usr/bin/yes | /usr/bin/ods-ksmutil update all',
           user        => $user,
           refreshonly => true,
           subscribe   => $exec_subscribe,
@@ -137,18 +137,13 @@ class opendnssec (
       }
     }
   }
-  if ! empty($policies) {
-    if defined(Class['opendnssec::policies']) {
-      warning('setting policies and calling opendnssec::policies directly is not supported.  do one or the other')
-    } else {
-      class { '::opendnssec::policies': policies => $policies }
-    }
+  if ! defined(Class['opendnssec::policies']) {
+    class { '::opendnssec::policies': policies => $policies }
   }
-  if ! empty($zones) {
-    if defined(Class['opendnssec::zones']) {
-      warning('setting zones and calling opendnssec::zones directly is not supported.  do one or the other')
-    } else {
-      class { '::opendnssec::zones': zones => $zones }
-    }
+  if ! defined(Opendnssec::Policy[$default_policy_name]) {
+    opendnssec::policy { $default_policy_name: }
+  }
+  if ! defined(Class['opendnssec::zones']) {
+    class { '::opendnssec::zones': zones => $zones }
   }
 }

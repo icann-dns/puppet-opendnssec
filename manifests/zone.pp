@@ -1,7 +1,7 @@
 # == Define: opendnssec::zone
 #
 define opendnssec::zone (
-  String                         $policy,
+  Optional[String]               $policy              = undef,
   Optional[Array[String]]        $masters             = [],
   Optional[Array[String]]        $provide_xfrs        = [],
   String                         $order               = '10',
@@ -14,20 +14,24 @@ define opendnssec::zone (
 ) {
 
   include ::opendnssec
+  $_policy = $policy ? {
+    undef   => $::opendnssec::default_policy_name,
+    default => $policy,
+  }
   $remotes = $::opendnssec::remotes
   $masters.each |String $master| {
     if ! has_key($remotes, $master) {
-      fail("\$::opendnssec::remotes[$master] does not exist but defined in Opendnssec::Zone['${name}'")
+      fail("\$::opendnssec::remotes[${master}] does not exist but defined in Opendnssec::Zone['${name}'")
     }
   }
   $provide_xfrs.each |String $provide_xfr| {
     if ! has_key($remotes, $provide_xfr) {
-      fail("\$::opendnssec::remotes[$provide_xfr] does not exist but defined in Opendnssec::Zone['${name}'")
+      fail("\$::opendnssec::remotes[${provide_xfr}] does not exist but defined in Opendnssec::Zone['${name}'")
     }
   }
 
-  if ! defined(Opendnssec::Policy[$policy]) {
-    fail("${name} defines policy ${policy} however Opendnssec::Policy[${policy}] is not defined")
+  if ! defined(Opendnssec::Policy[$_policy]) {
+    fail("${name} defines policy ${_policy} however Opendnssec::Policy[${_policy}] is not defined")
   }
   if empty($masters) {
     $adapter_masters_conf = 'default'

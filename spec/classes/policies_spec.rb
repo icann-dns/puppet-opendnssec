@@ -64,7 +64,7 @@ describe 'opendnssec::policies' do
         end
         it do
           is_expected.to contain_exec('ods-ksmutil updated kasp.xml').with(
-            command: '/usr/bin/ods-ksmutil update all',
+            command: '/usr/bin/yes | /usr/bin/ods-ksmutil update all',
             user: 'root',
             refreshonly: true,
             subscribe: 'Concat[/etc/opendnssec/kasp.xml]'

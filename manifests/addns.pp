@@ -32,7 +32,7 @@ define opendnssec::addns (
   }
   if $manage_ods_ksmutil and $enabled {
     exec {"Forcing ods-ksmutil to update after modifying addns-${name}.xml":
-      command     => '/usr/bin/ods-ksmutil update all',
+      command     => '/usr/bin/yes | /usr/bin/ods-ksmutil update all',
       user        => $user,
       refreshonly => true,
       subscribe   => File["/etc/opendnssec/addns-${name}.xml"],

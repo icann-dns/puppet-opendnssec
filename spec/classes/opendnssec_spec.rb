@@ -82,6 +82,8 @@ describe 'opendnssec' do
         it { is_expected.to contain_class('opendnssec') }
         it { is_expected.to contain_class('opendnssec::params') }
         it { is_expected.to contain_opendnssec__addns('default') }
+        it { is_expected.to contain_opendnssec__policy('default') }
+        it { is_expected.to contain_concat__fragment('policy_default') }
         it { is_expected.to contain_class('mysql::server') }
         it { is_expected.to contain_package('opendnssec') }
         it { is_expected.to contain_package('opendnssec-enforcer-mysql') }
@@ -148,7 +150,7 @@ describe 'opendnssec' do
         end
         it do
           is_expected.to contain_exec('ods-ksmutil updated conf.xml').with(
-            command: '/usr/bin/ods-ksmutil update all',
+            command: '/usr/bin/yes | /usr/bin/ods-ksmutil update all',
             user: 'root',
             refreshonly: true,
             subscribe: 'File[/etc/opendnssec/conf.xml]'

@@ -30,7 +30,7 @@ class opendnssec::zones (
   create_resources(opendnssec::zone, $zones)
   if $manage_ods_ksmutil and $enabled {
     exec {'ods-ksmutil updated zonelist.xml':
-      command     => '/usr/bin/ods-ksmutil update all',
+      command     => '/usr/bin/yes | /usr/bin/ods-ksmutil update all',
       user        => $user,
       refreshonly => true,
       subscribe   => Concat[$zone_file];

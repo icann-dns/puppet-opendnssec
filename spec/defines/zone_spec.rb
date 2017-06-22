@@ -24,7 +24,7 @@ describe 'opendnssec::zone' do
   # while all required parameters will require you to add a value
   let(:params) do
     {
-      policy: 'test_policy',
+      # policy: 'test_policy',
       # :order => '10',
       # :adapter_base_dir => '/var/lib/opendnssec',
       # :adapter_signer_conf => :undef,
@@ -32,7 +32,6 @@ describe 'opendnssec::zone' do
       # :adapter_output_file => :undef,
       # :adapter_input_type => 'DNS',
       # :adapter_output_type => 'DNS',
-
     }
   end
   # add these two lines in a single test block to enable puppet and hiera debug mode
@@ -41,7 +40,7 @@ describe 'opendnssec::zone' do
   let(:pre_condition) do
     <<-EOF
     class { '::opendnssec':
-      policies => {'test_policy' => {} },
+      policies => {'default' => {} },
       remotes  => {
         'master' => { 'address4' => '192.0.2.1' },
         'provide_xfr' => { 'address4' => '192.0.2.2' },
@@ -74,7 +73,7 @@ describe 'opendnssec::zone' do
             order: '10'
           ).with_content(
             %r{<Zone\sname="test_zone">
-            \s+<Policy>test_policy</Policy>
+            \s+<Policy>default</Policy>
             \s+<SignerConfiguration>/var/lib/opendnssec/signconf/test_zone.xml</SignerConfiguration>
             \s+<Adapters>
             \s+<Input>
@@ -135,7 +134,7 @@ describe 'opendnssec::zone' do
               'zone_test_zone'
             ).with_content(
               %r{<Zone\sname="test_zone">
-              \s+<Policy>test_policy</Policy>
+              \s+<Policy>default</Policy>
               \s+<SignerConfiguration>/var/lib/opendnssec/signconf/test_zone.xml</SignerConfiguration>
               \s+<Adapters>
               \s+<Input>
@@ -169,7 +168,7 @@ describe 'opendnssec::zone' do
               'zone_test_zone'
             ).with_content(
               %r{<Zone\sname="test_zone">
-              \s+<Policy>test_policy</Policy>
+              \s+<Policy>default</Policy>
               \s+<SignerConfiguration>/var/lib/opendnssec/signconf/test_zone.xml</SignerConfiguration>
               \s+<Adapters>
               \s+<Input>
@@ -192,7 +191,7 @@ describe 'opendnssec::zone' do
               'zone_test_zone'
             ).with_content(
               %r{<Zone\sname="test_zone">
-              \s+<Policy>test_policy</Policy>
+              \s+<Policy>default</Policy>
               \s+<SignerConfiguration>/var/lib/opendnssec/signconf/test_zone.xml</SignerConfiguration>
               \s+<Adapters>
               \s+<Input>
@@ -226,7 +225,7 @@ describe 'opendnssec::zone' do
               'zone_test_zone'
             ).with_content(
               %r{<Zone\sname="test_zone">
-              \s+<Policy>test_policy</Policy>
+              \s+<Policy>default</Policy>
               \s+<SignerConfiguration>/foobar/signconf/test_zone.xml</SignerConfiguration>
               \s+<Adapters>
               \s+<Input>
@@ -254,7 +253,7 @@ describe 'opendnssec::zone' do
               'zone_test_zone'
             ).with_content(
               %r{<Zone\sname="test_zone">
-              \s+<Policy>test_policy</Policy>
+              \s+<Policy>default</Policy>
               \s+<SignerConfiguration>/foobar/signconf/test_zone.xml</SignerConfiguration>
               \s+<Adapters>
               \s+<Input>
@@ -277,7 +276,7 @@ describe 'opendnssec::zone' do
               'zone_test_zone'
             ).with_content(
               %r{<Zone\sname="test_zone">
-              \s+<Policy>test_policy</Policy>
+              \s+<Policy>default</Policy>
               \s+<SignerConfiguration>/foobar/signconf/test_zone.xml</SignerConfiguration>
               \s+<Adapters>
               \s+<Input>
@@ -301,7 +300,7 @@ describe 'opendnssec::zone' do
               'zone_test_zone'
             ).with_content(
               %r{<Zone\sname="test_zone">
-              \s+<Policy>test_policy</Policy>
+              \s+<Policy>default</Policy>
               \s+<SignerConfiguration>/foobar</SignerConfiguration>
               \s+<Adapters>
               \s+<Input>
@@ -330,7 +329,7 @@ describe 'opendnssec::zone' do
               'zone_test_zone'
             ).with_content(
               %r{<Zone\sname="test_zone">
-              \s+<Policy>test_policy</Policy>
+              \s+<Policy>default</Policy>
               \s+<SignerConfiguration>/var/lib/opendnssec/signconf/test_zone.xml</SignerConfiguration>
               \s+<Adapters>
               \s+<Input>
@@ -358,7 +357,7 @@ describe 'opendnssec::zone' do
               'zone_test_zone'
             ).with_content(
               %r{<Zone\sname="test_zone">
-              \s+<Policy>test_policy</Policy>
+              \s+<Policy>default</Policy>
               \s+<SignerConfiguration>/var/lib/opendnssec/signconf/test_zone.xml</SignerConfiguration>
               \s+<Adapters>
               \s+<Input>
@@ -381,7 +380,7 @@ describe 'opendnssec::zone' do
               'zone_test_zone'
             ).with_content(
               %r{<Zone\sname="test_zone">
-              \s+<Policy>test_policy</Policy>
+              \s+<Policy>default</Policy>
               \s+<SignerConfiguration>/var/lib/opendnssec/signconf/test_zone.xml</SignerConfiguration>
               \s+<Adapters>
               \s+<Input>
@@ -404,7 +403,7 @@ describe 'opendnssec::zone' do
               'zone_test_zone'
             ).with_content(
               %r{<Zone\sname="test_zone">
-              \s+<Policy>test_policy</Policy>
+              \s+<Policy>default</Policy>
               \s+<SignerConfiguration>/var/lib/opendnssec/signconf/test_zone.xml</SignerConfiguration>
               \s+<Adapters>
               \s+<Input>

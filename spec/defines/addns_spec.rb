@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 describe 'opendnssec::addns' do
@@ -6,7 +8,7 @@ describe 'opendnssec::addns' do
   # to the specific context in the spec/shared_contexts.rb file
   # Note: you can only use a single hiera context per describe/context block
   # rspec-puppet does not allow you to swap out hiera data on a per test block
-  #include_context :hiera
+  # include_context :hiera
 
   let(:title) { 'test_addns' }
 
@@ -47,6 +49,7 @@ describe 'opendnssec::addns' do
       let(:facts) do
         facts
       end
+
       describe 'check default config' do
         it { is_expected.to compile.with_all_deps }
         it { is_expected.to contain_opendnssec__addns('test_addns') }
@@ -81,12 +84,12 @@ describe 'opendnssec::addns' do
           is_expected.to contain_exec(
             'Forcing ods-ksmutil to update after modifying addns-test_addns.xml'
           ).with(
-            command: '/usr/bin/ods-ksmutil update all',
+            command: '/usr/bin/yes | /usr/bin/ods-ksmutil update all',
             user: 'root',
             refreshonly: true,
-            subscribe: 'File[/etc/opendnssec/addns-test_addns.xml]',
+            subscribe: 'File[/etc/opendnssec/addns-test_addns.xml]'
           )
-        end      
+        end
       end
       describe 'Change Defaults' do
         context 'masters' do
@@ -217,6 +220,7 @@ describe 'opendnssec::addns' do
             }
             EOF
           end
+
           it { is_expected.to compile }
           it do
             is_expected.to contain_file(
@@ -227,7 +231,7 @@ describe 'opendnssec::addns' do
             is_expected.to contain_exec(
               'Forcing ods-ksmutil to update after modifying addns-test_addns.xml'
             ).with_user('foobar')
-          end      
+          end
         end
         context 'opendnssec::group' do
           let(:pre_condition) do
@@ -242,6 +246,7 @@ describe 'opendnssec::addns' do
             }
             EOF
           end
+
           it { is_expected.to compile }
           it do
             is_expected.to contain_file(
@@ -262,6 +267,7 @@ describe 'opendnssec::addns' do
             }
             EOF
           end
+
           it { is_expected.to compile }
           it do
             is_expected.not_to contain_exec(
@@ -282,6 +288,7 @@ describe 'opendnssec::addns' do
             }
             EOF
           end
+
           it { is_expected.to compile }
           it do
             is_expected.not_to contain_exec(
@@ -302,6 +309,7 @@ describe 'opendnssec::addns' do
             }
             EOF
           end
+
           it { is_expected.to compile }
           it do
             is_expected.to contain_file(
@@ -349,18 +357,19 @@ describe 'opendnssec::addns' do
             class { '::opendnssec':
               policies => {'test_policy' => {} },
               remotes  => {
-                'master' => { 
+                'master' => {
                   'address4' => '192.0.2.1',
                   'address6' => '2001:DB8::1',
                 },
                 'provide_xfr' => {
                   'address4' => '192.0.2.2',
-                  'address6' => '2001:DB8::2', 
+                  'address6' => '2001:DB8::2',
                 },
               },
             }
             EOF
           end
+
           it { is_expected.to compile }
           it do
             is_expected.to contain_file(
@@ -420,7 +429,7 @@ describe 'opendnssec::addns' do
             class { '::opendnssec':
               policies => {'test_policy' => {} },
               remotes  => {
-                'master' => { 
+                'master' => {
                   'address4' => '192.0.2.1',
                   'port' => '5353',
                 },
@@ -432,6 +441,7 @@ describe 'opendnssec::addns' do
             }
             EOF
           end
+
           it { is_expected.to compile }
           it do
             is_expected.to contain_file(
@@ -497,6 +507,7 @@ describe 'opendnssec::addns' do
             }
             EOF
           end
+
           it { is_expected.to compile }
           it do
             is_expected.to contain_file(
@@ -572,6 +583,7 @@ describe 'opendnssec::addns' do
             }
             EOF
           end
+
           it { is_expected.to compile }
           it do
             is_expected.to contain_file(
@@ -649,6 +661,7 @@ describe 'opendnssec::addns' do
             }
             EOF
           end
+
           it { is_expected.to compile }
           it do
             is_expected.to contain_file(
@@ -728,6 +741,7 @@ describe 'opendnssec::addns' do
             }
             EOF
           end
+
           it { is_expected.to compile }
           it do
             is_expected.to contain_file(

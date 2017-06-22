@@ -57,7 +57,7 @@ end
       <KSK>
         <Algorithm length="<%= @ksk_algorithm_length %>"><%= DNSKEY_ALGO[@ksk_algorithm] %></Algorithm>
         <Lifetime><%= @ksk_lifetime %></Lifetime>
-        <Repository><%= @ksk_repository %></Repository>
+        <Repository><%= @repository_name %></Repository>
         <Standby><%= @ksk_standby %></Standby>
 <%- if @ksk_manual_rollover -%>
         <ManualRollover/>
@@ -68,7 +68,7 @@ end
       <ZSK>
         <Algorithm length="<%= @zsk_algorithm_length %>"><%= DNSKEY_ALGO[@zsk_algorithm] %></Algorithm>
         <Lifetime><%= @zsk_lifetime %></Lifetime>
-        <Repository><%= @zsk_repository %></Repository>
+        <Repository><%= @repository_name %></Repository>
         <Standby><%= @zsk_standby %></Standby>
 <%- if @zsk_manual_rollover -%>
         <ManualRollover/>

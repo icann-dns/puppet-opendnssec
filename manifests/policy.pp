@@ -27,14 +27,12 @@ define opendnssec::policy (
   Opendnssec::Dnskeyalgo   $ksk_algorithm            = 'RSASHA1-NSEC3-SHA1',
   Integer                  $ksk_algorithm_length     = 2048,
   Opendnssec::Timestring   $ksk_lifetime             = 'P365D',
-  Optional[String]         $ksk_repository           = undef,
   Integer                  $ksk_standby              = 0,
   Boolean                  $ksk_manual_rollover      = true,
 
   Opendnssec::Dnskeyalgo   $zsk_algorithm            = 'RSASHA1-NSEC3-SHA1',
   Integer                  $zsk_algorithm_length     = 1048,
   Opendnssec::Timestring   $zsk_lifetime             = 'P90D',
-  Optional[String]         $zsk_repository           = undef,
   Integer                  $zsk_standby              = 0,
   Boolean                  $zsk_manual_rollover      = false,
 
@@ -49,7 +47,9 @@ define opendnssec::policy (
   Opendnssec::Timestring   $parent_soa_minimum       = 'PT10800S',
 ) {
   include ::opendnssec
-  $policy_file = $::opendnssec::policy_file
+
+  $policy_file     = $::opendnssec::policy_file
+  $repository_name = $::opendnssec::repository_name
 
   if $description {
     $description_text = $description
