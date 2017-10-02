@@ -107,14 +107,10 @@ describe 'opendnssec::addns' do
               \s+<DNS>
               \s+<Inbound>
               \s+<RequestTransfer>
-              \s+<Remote>
-              \s+<Address>192.0.2.1</Address>
-              \s+</Remote>
+              \s+<xi:include\shref="/etc/opendnssec/remotes/master_requesttransfer.xml"\s/>
               \s+</RequestTransfer>
               \s+<AllowNotify>
-              \s+<Peer>
-              \s+<Prefix>192.0.2.1</Prefix>
-              \s+</Peer>
+              \s+<xi:include\shref="/etc/opendnssec/remotes/master_notify_in.xml"\s/>
               \s+</AllowNotify>
               \s+</Inbound>
               \s+<Outbound>
@@ -149,14 +145,10 @@ describe 'opendnssec::addns' do
               \s+</Inbound>
               \s+<Outbound>
               \s+<ProvideTransfer>
-              \s+<Peer>
-              \s+<Prefix>192.0.2.2</Prefix>
-              \s+</Peer>
+              \s+<xi:include\shref="/etc/opendnssec/remotes/provide_xfr_providetransfer.xml"\s/>
               \s+</ProvideTransfer>
               \s+<Notify>
-              \s+<Peer>
-              \s+<Address>192.0.2.2</Address>
-              \s+</Peer>
+              \s+<xi:include\shref="/etc/opendnssec/remotes/provide_xfr_notify_out.xml"\s/>
               \s+</Notify>
               \s+</Outbound>
               \s+</DNS>
@@ -179,26 +171,18 @@ describe 'opendnssec::addns' do
               \s+<DNS>
               \s+<Inbound>
               \s+<RequestTransfer>
-              \s+<Remote>
-              \s+<Address>192.0.2.1</Address>
-              \s+</Remote>
+              \s+<xi:include\shref="/etc/opendnssec/remotes/master_requesttransfer.xml"\s/>
               \s+</RequestTransfer>
               \s+<AllowNotify>
-              \s+<Peer>
-              \s+<Prefix>192.0.2.1</Prefix>
-              \s+</Peer>
+              \s+<xi:include\shref="/etc/opendnssec/remotes/master_notify_in.xml"\s/>
               \s+</AllowNotify>
               \s+</Inbound>
               \s+<Outbound>
               \s+<ProvideTransfer>
-              \s+<Peer>
-              \s+<Prefix>192.0.2.2</Prefix>
-              \s+</Peer>
+              \s+<xi:include\shref="/etc/opendnssec/remotes/provide_xfr_providetransfer.xml"\s/>
               \s+</ProvideTransfer>
               \s+<Notify>
-              \s+<Peer>
-              \s+<Address>192.0.2.2</Address>
-              \s+</Peer>
+              \s+<xi:include\shref="/etc/opendnssec/remotes/provide_xfr_notify_out.xml"\s/>
               \s+</Notify>
               \s+</Outbound>
               \s+</DNS>
@@ -296,194 +280,6 @@ describe 'opendnssec::addns' do
             )
           end
         end
-        context 'opendnssec::remotes IPv6' do
-          before { params.merge!(provide_xfrs: ['provide_xfr'], masters: ['master']) }
-          let(:pre_condition) do
-            <<-EOF
-            class { '::opendnssec':
-              policies => {'test_policy' => {} },
-              remotes  => {
-                'master' => { 'address6' => '2001:DB8::1' },
-                'provide_xfr' => { 'address6' => '2001:DB8::2' },
-              },
-            }
-            EOF
-          end
-
-          it { is_expected.to compile }
-          it do
-            is_expected.to contain_file(
-              '/etc/opendnssec/addns-test_addns.xml'
-            ).with_content(
-              %r{
-              <\?xml\sversion="1.0"\sencoding="UTF-8"\?>
-              \s+<!--\sFile\smanaged\sby\spuppet\sDO\sNOT\sEDIT\s-->
-              \s+<Adapter>
-              \s+<DNS>
-              \s+<Inbound>
-              \s+<RequestTransfer>
-              \s+<Remote>
-              \s+<Address>2001:DB8::1</Address>
-              \s+</Remote>
-              \s+</RequestTransfer>
-              \s+<AllowNotify>
-              \s+<Peer>
-              \s+<Prefix>2001:DB8::1</Prefix>
-              \s+</Peer>
-              \s+</AllowNotify>
-              \s+</Inbound>
-              \s+<Outbound>
-              \s+<ProvideTransfer>
-              \s+<Peer>
-              \s+<Prefix>2001:DB8::2</Prefix>
-              \s+</Peer>
-              \s+</ProvideTransfer>
-              \s+<Notify>
-              \s+<Peer>
-              \s+<Address>2001:DB8::2</Address>
-              \s+</Peer>
-              \s+</Notify>
-              \s+</Outbound>
-              \s+</DNS>
-              \s+</Adapter>
-              }x
-            )
-          end
-        end
-        context 'opendnssec::remotes IPv4 & IPv6' do
-          before { params.merge!(provide_xfrs: ['provide_xfr'], masters: ['master']) }
-          let(:pre_condition) do
-            <<-EOF
-            class { '::opendnssec':
-              policies => {'test_policy' => {} },
-              remotes  => {
-                'master' => {
-                  'address4' => '192.0.2.1',
-                  'address6' => '2001:DB8::1',
-                },
-                'provide_xfr' => {
-                  'address4' => '192.0.2.2',
-                  'address6' => '2001:DB8::2',
-                },
-              },
-            }
-            EOF
-          end
-
-          it { is_expected.to compile }
-          it do
-            is_expected.to contain_file(
-              '/etc/opendnssec/addns-test_addns.xml'
-            ).with_content(
-              %r{
-              <\?xml\sversion="1.0"\sencoding="UTF-8"\?>
-              \s+<!--\sFile\smanaged\sby\spuppet\sDO\sNOT\sEDIT\s-->
-              \s+<Adapter>
-              \s+<DNS>
-              \s+<Inbound>
-              \s+<RequestTransfer>
-              \s+<Remote>
-              \s+<Address>192.0.2.1</Address>
-              \s+</Remote>
-              \s+<Remote>
-              \s+<Address>2001:DB8::1</Address>
-              \s+</Remote>
-              \s+</RequestTransfer>
-              \s+<AllowNotify>
-              \s+<Peer>
-              \s+<Prefix>192.0.2.1</Prefix>
-              \s+</Peer>
-              \s+<Peer>
-              \s+<Prefix>2001:DB8::1</Prefix>
-              \s+</Peer>
-              \s+</AllowNotify>
-              \s+</Inbound>
-              \s+<Outbound>
-              \s+<ProvideTransfer>
-              \s+<Peer>
-              \s+<Prefix>192.0.2.2</Prefix>
-              \s+</Peer>
-              \s+<Peer>
-              \s+<Prefix>2001:DB8::2</Prefix>
-              \s+</Peer>
-              \s+</ProvideTransfer>
-              \s+<Notify>
-              \s+<Peer>
-              \s+<Address>192.0.2.2</Address>
-              \s+</Peer>
-              \s+<Peer>
-              \s+<Address>2001:DB8::2</Address>
-              \s+</Peer>
-              \s+</Notify>
-              \s+</Outbound>
-              \s+</DNS>
-              \s+</Adapter>
-              }x
-            )
-          end
-        end
-        context 'opendnssec::remotes Port' do
-          before { params.merge!(provide_xfrs: ['provide_xfr'], masters: ['master']) }
-          let(:pre_condition) do
-            <<-EOF
-            class { '::opendnssec':
-              policies => {'test_policy' => {} },
-              remotes  => {
-                'master' => {
-                  'address4' => '192.0.2.1',
-                  'port' => '5353',
-                },
-                'provide_xfr' => {
-                  'address4' => '192.0.2.2',
-                  'port' => '5353',
-                },
-              },
-            }
-            EOF
-          end
-
-          it { is_expected.to compile }
-          it do
-            is_expected.to contain_file(
-              '/etc/opendnssec/addns-test_addns.xml'
-            ).with_content(
-              %r{
-              <\?xml\sversion="1.0"\sencoding="UTF-8"\?>
-              \s+<!--\sFile\smanaged\sby\spuppet\sDO\sNOT\sEDIT\s-->
-              \s+<Adapter>
-              \s+<DNS>
-              \s+<Inbound>
-              \s+<RequestTransfer>
-              \s+<Remote>
-              \s+<Address>192.0.2.1</Address>
-              \s+<Port>5353</Port>
-              \s+</Remote>
-              \s+</RequestTransfer>
-              \s+<AllowNotify>
-              \s+<Peer>
-              \s+<Prefix>192.0.2.1</Prefix>
-              \s+</Peer>
-              \s+</AllowNotify>
-              \s+</Inbound>
-              \s+<Outbound>
-              \s+<ProvideTransfer>
-              \s+<Peer>
-              \s+<Prefix>192.0.2.2</Prefix>
-              \s+</Peer>
-              \s+</ProvideTransfer>
-              \s+<Notify>
-              \s+<Peer>
-              \s+<Address>192.0.2.2</Address>
-              \s+<Port>5353</Port>
-              \s+</Peer>
-              \s+</Notify>
-              \s+</Outbound>
-              \s+</DNS>
-              \s+</Adapter>
-              }x
-            )
-          end
-        end
         context 'opendnssec::remotes Tsig name' do
           before { params.merge!(provide_xfrs: ['provide_xfr'], masters: ['master']) }
           let(:pre_condition) do
@@ -518,40 +314,22 @@ describe 'opendnssec::addns' do
               \s+<!--\sFile\smanaged\sby\spuppet\sDO\sNOT\sEDIT\s-->
               \s+<Adapter>
               \s+<DNS>
-              \s+<TSIG>
-              \s+<Name>test_tsig_master</Name>
-              \s+<Algorithm>hmac-sha1</Algorithm>
-              \s+<Secret>AAAA</Secret>
-              \s+</TSIG>
-              \s+<TSIG>
-              \s+<Name>test_tsig_provide_xfr</Name>
-              \s+<Algorithm>hmac-md5</Algorithm>
-              \s+<Secret>BBBB</Secret>
-              \s+</TSIG>
+              \s+<xi:include\shref="/etc/opendnssec/tsigs/test_tsig_master.xml"\s/>
+              \s+<xi:include\shref="/etc/opendnssec/tsigs/test_tsig_provide_xfr.xml"\s/>
               \s+<Inbound>
               \s+<RequestTransfer>
-              \s+<Remote>
-              \s+<Address>192.0.2.1</Address>
-              \s+<Key>test_tsig_master</Key>
-              \s+</Remote>
+              \s+<xi:include\shref="/etc/opendnssec/remotes/master_requesttransfer.xml"\s/>
               \s+</RequestTransfer>
               \s+<AllowNotify>
-              \s+<Peer>
-              \s+<Prefix>192.0.2.1</Prefix>
-              \s+</Peer>
+              \s+<xi:include\shref="/etc/opendnssec/remotes/master_notify_in.xml"\s/>
               \s+</AllowNotify>
               \s+</Inbound>
               \s+<Outbound>
               \s+<ProvideTransfer>
-              \s+<Peer>
-              \s+<Prefix>192.0.2.2</Prefix>
-              \s+<Key>test_tsig_provide_xfr</Key>
-              \s+</Peer>
+              \s+<xi:include\shref="/etc/opendnssec/remotes/provide_xfr_providetransfer.xml"\s/>
               \s+</ProvideTransfer>
               \s+<Notify>
-              \s+<Peer>
-              \s+<Address>192.0.2.2</Address>
-              \s+</Peer>
+              \s+<xi:include\shref="/etc/opendnssec/remotes/provide_xfr_notify_out.xml"\s/>
               \s+</Notify>
               \s+</Outbound>
               \s+</DNS>
@@ -594,131 +372,22 @@ describe 'opendnssec::addns' do
               \s+<!--\sFile\smanaged\sby\spuppet\sDO\sNOT\sEDIT\s-->
               \s+<Adapter>
               \s+<DNS>
-              \s+<TSIG>
-              \s+<Name>test_tsig_default</Name>
-              \s+<Algorithm>hmac-sha1</Algorithm>
-              \s+<Secret>AAAA</Secret>
-              \s+</TSIG>
-              \s+<TSIG>
-              \s+<Name>test_tsig_provide_xfr</Name>
-              \s+<Algorithm>hmac-md5</Algorithm>
-              \s+<Secret>BBBB</Secret>
-              \s+</TSIG>
+              \s+<xi:include\shref="/etc/opendnssec/tsigs/test_tsig_default.xml"\s/>
+              \s+<xi:include\shref="/etc/opendnssec/tsigs/test_tsig_provide_xfr.xml"\s/>
               \s+<Inbound>
               \s+<RequestTransfer>
-              \s+<Remote>
-              \s+<Address>192.0.2.1</Address>
-              \s+<Key>test_tsig_default</Key>
-              \s+</Remote>
+              \s+<xi:include\shref="/etc/opendnssec/remotes/master_requesttransfer.xml"\s/>
               \s+</RequestTransfer>
               \s+<AllowNotify>
-              \s+<Peer>
-              \s+<Prefix>192.0.2.1</Prefix>
-              \s+</Peer>
+              \s+<xi:include\shref="/etc/opendnssec/remotes/master_notify_in.xml"\s/>
               \s+</AllowNotify>
               \s+</Inbound>
               \s+<Outbound>
               \s+<ProvideTransfer>
-              \s+<Peer>
-              \s+<Prefix>192.0.2.2</Prefix>
-              \s+<Key>test_tsig_provide_xfr</Key>
-              \s+</Peer>
+              \s+<xi:include\shref="/etc/opendnssec/remotes/provide_xfr_providetransfer.xml"\s/>
               \s+</ProvideTransfer>
               \s+<Notify>
-              \s+<Peer>
-              \s+<Address>192.0.2.2</Address>
-              \s+</Peer>
-              \s+</Notify>
-              \s+</Outbound>
-              \s+</DNS>
-              \s+</Adapter>
-              }x
-            )
-          end
-        end
-        context 'opendnssec::remotes IPv4 and IPv6 port and default_tsig_name' do
-          before { params.merge!(provide_xfrs: ['provide_xfr'], masters: ['master']) }
-          let(:pre_condition) do
-            <<-EOF
-            class { '::opendnssec':
-              policies => {'test_policy' => {} },
-              default_tsig_name => 'test_tsig_default',
-              tsigs => {
-                'test_tsig_default' => { 'data' => 'AAAA', 'algo' => 'hmac-sha1' },
-              },
-              remotes  => {
-                'master' => {
-                  'address4' => '192.0.2.1',
-                  'address6' => '2001:DB8::1',
-                  'port' => 5353,
-                },
-                'provide_xfr' => {
-                  'address4' => '192.0.2.2',
-                  'address6' => '2001:DB8::2',
-                  'port' => 5353,
-                },
-              },
-            }
-            EOF
-          end
-
-          it { is_expected.to compile }
-          it do
-            is_expected.to contain_file(
-              '/etc/opendnssec/addns-test_addns.xml'
-            ).with_content(
-              %r{
-              <\?xml\sversion="1.0"\sencoding="UTF-8"\?>
-              \s+<!--\sFile\smanaged\sby\spuppet\sDO\sNOT\sEDIT\s-->
-              \s+<Adapter>
-              \s+<DNS>
-              \s+<TSIG>
-              \s+<Name>test_tsig_default</Name>
-              \s+<Algorithm>hmac-sha1</Algorithm>
-              \s+<Secret>AAAA</Secret>
-              \s+</TSIG>
-              \s+<Inbound>
-              \s+<RequestTransfer>
-              \s+<Remote>
-              \s+<Address>192.0.2.1</Address>
-              \s+<Port>5353</Port>
-              \s+<Key>test_tsig_default</Key>
-              \s+</Remote>
-              \s+<Remote>
-              \s+<Address>2001:DB8::1</Address>
-              \s+<Port>5353</Port>
-              \s+<Key>test_tsig_default</Key>
-              \s+</Remote>
-              \s+</RequestTransfer>
-              \s+<AllowNotify>
-              \s+<Peer>
-              \s+<Prefix>192.0.2.1</Prefix>
-              \s+</Peer>
-              \s+<Peer>
-              \s+<Prefix>2001:DB8::1</Prefix>
-              \s+</Peer>
-              \s+</AllowNotify>
-              \s+</Inbound>
-              \s+<Outbound>
-              \s+<ProvideTransfer>
-              \s+<Peer>
-              \s+<Prefix>192.0.2.2</Prefix>
-              \s+<Key>test_tsig_default</Key>
-              \s+</Peer>
-              \s+<Peer>
-              \s+<Prefix>2001:DB8::2</Prefix>
-              \s+<Key>test_tsig_default</Key>
-              \s+</Peer>
-              \s+</ProvideTransfer>
-              \s+<Notify>
-              \s+<Peer>
-              \s+<Address>192.0.2.2</Address>
-              \s+<Port>5353</Port>
-              \s+</Peer>
-              \s+<Peer>
-              \s+<Address>2001:DB8::2</Address>
-              \s+<Port>5353</Port>
-              \s+</Peer>
+              \s+<xi:include\shref="/etc/opendnssec/remotes/provide_xfr_notify_out.xml"\s/>
               \s+</Notify>
               \s+</Outbound>
               \s+</DNS>

@@ -32,33 +32,22 @@ class opendnssec (
 
   Stdlib::Absolutepath  $policy_file            = '/etc/opendnssec/kasp.xml',
   Stdlib::Absolutepath  $zone_file              = '/etc/opendnssec/zonelist.xml',
+  Stdlib::Absolutepath  $tsigs_dir              = '/etc/opendnssec/tsigs',
+  Stdlib::Absolutepath  $remotes_dir            = '/etc/opendnssec/remotes',
 
   Boolean               $xferout_enabled        = true,
 
   Hash                  $zones                  = {},
   Hash                  $policies               = {},
   Hash                  $remotes                = {},
+  Hash                  $tsigs                  = {},
   String                $default_tsig_name      = 'NOKEY',
   String                $default_policy_name    = 'default',
   Array[String]         $default_masters        = [],
   Array[String]         $default_provide_xfrs   = [],
-  Hash[String, Opendnssec::Tsig] $tsigs         = {},
 
 ) inherits opendnssec::params {
 
-  if $default_tsig_name != 'NOKEY' and ! has_key($tsigs, $default_tsig_name) {
-    fail("\$opendnssec::tsigs['${default_tsig_name}'] defined by default_tsig_name does not exist")
-  }
-  $default_masters.each |String $master| {
-    if ! has_key($remotes, $master) {
-      fail("\$opendnssec::masters['${master}'] defined by default_master does not exist")
-    }
-  }
-  $default_provide_xfrs.each |String $provide_xfr| {
-    if ! has_key($remotes, $provide_xfr) {
-      fail("\$opendnssec::provide_xfrs['${provide_xfr}'] defined by default_provide_xfr does not exist")
-    }
-  }
   if $manage_packages {
     ensure_packages(['opendnssec'])
     file {'/var/lib/opendnssec':
@@ -68,6 +57,11 @@ class opendnssec (
       owner   => $user,
       group   => $group;
     }
+  }
+  file {[$tsigs_dir, $remotes_dir]:
+    ensure => 'directory',
+    owner  => $user,
+    group  => $group,
   }
   if $enabled and $manage_datastore {
     if $datastore_engine == 'mysql' {
@@ -99,6 +93,23 @@ class opendnssec (
     }
   }
   if $manage_conf {
+
+    create_resources(opendnssec::tsig, $tsigs)
+    if $default_tsig_name != 'NOKEY' and ! defined(Opendnssec::Tsig[$default_tsig_name]) {
+      fail("Opendnssec::Tsig['${default_tsig_name}'] defined by default_tsig_name does not exist")
+    }
+
+    create_resources(opendnssec::remote, $remotes)
+    $default_masters.each |String $master| {
+      if ! defined(Opendnssec::Remote[$master]) {
+        fail("Opendnssec::Remote['${master}'] defined by default_master does not exist")
+      }
+    }
+    $default_provide_xfrs.each |String $provide_xfr| {
+      if ! defined(Opendnssec::Remote[$provide_xfr]) {
+        fail("Opendnssec::Remote['${provide_xfr}'] defined by default_provide_xfr does not exist")
+      }
+    }
     file { '/etc/opendnssec/conf.xml':
       ensure  => 'file',
       mode    => '0644',

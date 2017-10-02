@@ -1,4 +1,4 @@
-type Opendnssec::Tsigalgo = Enum[
+type Opendnssec::Algo = Enum[
   'hmac-md5',
   'hmac-sha1',
   'hmac-sha224',

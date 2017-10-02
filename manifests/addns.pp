@@ -11,17 +11,19 @@ define opendnssec::addns (
   $manage_ods_ksmutil = $::opendnssec::manage_ods_ksmutil
   $enabled            = $::opendnssec::enabled
   $remotes            = $::opendnssec::remotes
-  $tsigs              = $::opendnssec::tsigs
+  $remotes_dir        = $::opendnssec::remotes_dir
+  $tsigs_dir          = $::opendnssec::tsigs_dir
   $xferout_enabled    = $::opendnssec::xferout_enabled
   $default_tsig_name  = $::opendnssec::default_tsig_name
+
   $masters.each |String $master| {
-    if ! has_key($remotes, $master) {
-      fail("addns-${name}: \$::opndnssec::remotes['${master}'] doesn't exist")
+    if ! defined(Opendnssec::Remote[$master]) {
+      fail("addns-${name}: Opendnssec::Remote['${master}'] doesn't exist")
     }
   }
   $provide_xfrs.each |String $provide_xfr| {
-    if ! has_key($remotes, $provide_xfr) {
-      fail("addns-${name}: \$::opndnssec::remotes['${provide_xfr}'] doesn't exist")
+    if ! defined(Opendnssec::Remote[$provide_xfr]) {
+      fail("addns-${name}: Opendnssec::Remote['${provide_xfr}'] doesn't exist")
     }
   }
 

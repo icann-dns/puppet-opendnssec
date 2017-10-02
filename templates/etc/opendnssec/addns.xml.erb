@@ -3,73 +3,27 @@
 <Adapter>
   <DNS>
 <%- if @default_tsig_name != 'NOKEY' -%>
-    <TSIG>
-      <Name><%= @default_tsig_name %></Name>
-      <Algorithm><%= @tsigs[@default_tsig_name]['algo'] %></Algorithm>
-      <Secret><%= @tsigs[@default_tsig_name]['data'] %></Secret>
-    </TSIG>
+    <xi:include href="<%= @tsigs_dir %>/<%= @default_tsig_name %>.xml" />
 <%- end -%>
 <%- @masters.each do |master| -%>
   <%- if @remotes[master].fetch('tsig_name', 'NOKEY') != 'NOKEY' -%>
-    <TSIG>
-      <Name><%= @remotes[master]['tsig_name'] %></Name>
-      <Algorithm><%= @tsigs[@remotes[master]['tsig_name']]['algo'] %></Algorithm>
-      <Secret><%= @tsigs[@remotes[master]['tsig_name']]['data'] %></Secret>
-    </TSIG>
+    <xi:include href="<%= @tsigs_dir %>/<%= @remotes[master]['tsig_name'] %>.xml" />
   <%- end -%>
 <%- end -%>
 <%- @provide_xfrs.each do |provide_xfr| -%>
   <%- if @remotes[provide_xfr].fetch('tsig_name', 'NOKEY') != 'NOKEY' -%>
-    <TSIG>
-      <Name><%= @remotes[provide_xfr]['tsig_name'] %></Name>
-      <Algorithm><%= @tsigs[@remotes[provide_xfr]['tsig_name']]['algo'] %></Algorithm>
-      <Secret><%= @tsigs[@remotes[provide_xfr]['tsig_name']]['data'] %></Secret>
-    </TSIG>
+    <xi:include href="<%= @tsigs_dir %>/<%= @remotes[provide_xfr]['tsig_name'] %>.xml" />
   <%- end -%>
 <%- end -%>
     <Inbound>
       <RequestTransfer>
 <%- @masters.each do |master| -%>
-  <%- if @remotes[master].include?('address4') -%>
-        <Remote>
-          <Address><%= @remotes[master]['address4'].split('/')[0] %></Address>
-    <%- if @remotes[master].include?('port') -%>
-          <Port><%= @remotes[master]['port'] %></Port>
-    <%- end -%>
-    <%- if @remotes[master].fetch('tsig_name', 'NOKEY') != 'NOKEY' -%>
-          <Key><%= @remotes[master]['tsig_name'] %></Key>
-    <%- elsif @default_tsig_name != 'NOKEY' -%>
-          <Key><%= @default_tsig_name %></Key>
-    <%- end -%>
-        </Remote>
-  <%- end -%>
-  <%- if @remotes[master].include?('address6') -%>
-        <Remote>
-          <Address><%= @remotes[master]['address6'].split('/')[0] %></Address>
-    <%- if @remotes[master].include?('port') -%>
-          <Port><%= @remotes[master]['port'] %></Port>
-    <%- end -%>
-    <%- if @remotes[master].fetch('tsig_name', 'NOKEY') != 'NOKEY' -%>
-          <Key><%= @remotes[master]['tsig_name'] %></Key>
-    <%- elsif @default_tsig_name != 'NOKEY' -%>
-          <Key><%= @default_tsig_name %></Key>
-    <%- end -%>
-        </Remote>
-  <%- end -%>
+        <xi:include href="<%= @remotes_dir %>/<%= master %>_requesttransfer.xml" />
 <%- end -%>
       </RequestTransfer>
       <AllowNotify>
 <%- @masters.each do |master| -%>
-  <%- if @remotes[master].include?('address4') -%>
-        <Peer>
-          <Prefix><%= @remotes[master]['address4'] %></Prefix>
-        </Peer>
-  <%- end -%>
-  <%- if @remotes[master].include?('address6') -%>
-        <Peer>
-          <Prefix><%= @remotes[master]['address6'] %></Prefix>
-        </Peer>
-  <%- end -%>
+        <xi:include href="<%= @remotes_dir %>/<%= master %>_notify_in.xml" />
 <%- end -%>
       </AllowNotify>
     </Inbound>
@@ -77,26 +31,7 @@
       <ProvideTransfer>
 <%- if @xferout_enabled -%>
   <%- @provide_xfrs.each do |provide_xfr| -%>
-    <%- if @remotes[provide_xfr].include?('address4') -%>
-        <Peer>
-          <Prefix><%= @remotes[provide_xfr]['address4'] %></Prefix>
-      <%- if @remotes[provide_xfr].fetch('tsig_name', 'NOKEY') != 'NOKEY' -%>
-          <Key><%= @remotes[provide_xfr]['tsig_name'] %></Key>
-      <%- elsif @default_tsig_name != 'NOKEY' -%>
-          <Key><%= @default_tsig_name %></Key>
-      <%- end -%>
-        </Peer>
-    <%- end -%>
-    <%- if @remotes[provide_xfr].include?('address6') -%>
-        <Peer>
-          <Prefix><%= @remotes[provide_xfr]['address6'] %></Prefix>
-      <%- if @remotes[provide_xfr].fetch('tsig_name', 'NOKEY') != 'NOKEY' -%>
-          <Key><%= @remotes[provide_xfr]['tsig_name'] %></Key>
-      <%- elsif @default_tsig_name != 'NOKEY' -%>
-          <Key><%= @default_tsig_name %></Key>
-      <%- end -%>
-        </Peer>
-    <%- end -%>
+        <xi:include href="<%= @remotes_dir %>/<%= provide_xfr %>_providetransfer.xml" />
   <%- end -%>
 <%- end -%>
       </ProvideTransfer>
@@ -104,20 +39,7 @@
 <%- if @xferout_enabled -%>
   <%- @provide_xfrs.each do |provide_xfr| -%>
     <%- if @remotes[provide_xfr].include?('address4') -%>
-        <Peer>
-          <Address><%= @remotes[provide_xfr]['address4'].split('/')[0] %></Address>
-      <%- if @remotes[provide_xfr].include?('port') -%>
-          <Port><%= @remotes[provide_xfr]['port'] %></Port>
-      <%- end -%>
-        </Peer>
-    <%- end -%>
-    <%- if @remotes[provide_xfr].include?('address6') -%>
-        <Peer>
-          <Address><%= @remotes[provide_xfr]['address6'].split('/')[0] %></Address>
-      <%- if @remotes[provide_xfr].include?('port') -%>
-          <Port><%= @remotes[provide_xfr]['port'] %></Port>
-      <%- end -%>
-        </Peer>
+        <xi:include href="<%= @remotes_dir %>/<%= provide_xfr %>_notify_out.xml" />
     <%- end -%>
   <%- end -%>
 <%- end -%>
