@@ -1,19 +1,21 @@
 <?xml version="1.0"?>
+      <RequestTransfer>
 <%- if @address4 -%>
-<Remote>
-  <Address><%= @address4 %></Address>
-  <Port><%= @port %></Port>
+        <Remote>
+          <Address><%= @address4 %></Address>
+          <Port><%= @port %></Port>
   <%- if @_tsig_name != 'NOKEY' -%>
-  <Key><%= @_tsig_name %></Key>
+          <Key><%= @_tsig_name %></Key>
   <%- end -%>
-</Remote>
+        </Remote>
 <%- end -%>
 <%- if @address6 -%>
-<Remote>
-  <Address><%= @address6 %></Address>
-  <Port><%= @port %></Port>
+        <Remote>
+          <Address><%= @address6 %></Address>
+          <Port><%= @port %></Port>
   <%- if @_tsig_name != 'NOKEY' -%>
-  <Key><%= @_tsig_name %></Key>
+          <Key><%= @_tsig_name %></Key>
   <%- end -%>
-</Remote>
+        </Remote>
 <%- end -%>
+      </RequestTransfer>

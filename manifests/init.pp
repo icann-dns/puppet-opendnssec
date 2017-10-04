@@ -34,6 +34,7 @@ class opendnssec (
   Stdlib::Absolutepath  $zone_file              = '/etc/opendnssec/zonelist.xml',
   Stdlib::Absolutepath  $tsigs_dir              = '/etc/opendnssec/tsigs',
   Stdlib::Absolutepath  $remotes_dir            = '/etc/opendnssec/remotes',
+  Stdlib::Absolutepath  $xsl_file               = '/usr/share/opendnssec/addns.xsl',
 
   Boolean               $xferout_enabled        = true,
 
@@ -49,7 +50,7 @@ class opendnssec (
 ) inherits opendnssec::params {
 
   if $manage_packages {
-    ensure_packages(['opendnssec'])
+    ensure_packages(['opendnssec', 'xsltproc'])
     file {'/var/lib/opendnssec':
       ensure  => 'directory',
       mode    => '0640',
@@ -57,6 +58,10 @@ class opendnssec (
       owner   => $user,
       group   => $group;
     }
+  }
+  file {$xsl_file:
+    ensure => file,
+    source => 'puppet:///modules/opendnssec/usr/share/opendnssec/addns.xsl',
   }
   file {[$tsigs_dir, $remotes_dir]:
     ensure => 'directory',

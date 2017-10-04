@@ -1,17 +1,19 @@
 <?xml version="1.0"?>
+      <ProvideTransfer>
 <%- if @address4 -%>
-<Peer>
-  <Prefix><%= @address4 %></Prefix>
+        <Peer>
+          <Prefix><%= @address4 %></Prefix>
   <%- if @_tsig_name != 'NOKEY' -%>
-  <Key><%= @_tsig_name %></Key>
+          <Key><%= @_tsig_name %></Key>
   <%- end -%>
-</Peer>
+        </Peer>
 <%- end -%>
 <%- if @address6 -%>
-<Peer>
-  <Prefix><%= @address6 %></Prefix>
+        <Peer>
+          <Prefix><%= @address6 %></Prefix>
   <%- if @_tsig_name != 'NOKEY' -%>
-  <Key><%= @_tsig_name %></Key>
+          <Key><%= @_tsig_name %></Key>
   <%- end -%>
-</Peer>
+        </Peer>
 <%- end -%>
+      </ProvideTransfer>

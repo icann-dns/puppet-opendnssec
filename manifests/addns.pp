@@ -6,6 +6,7 @@ define opendnssec::addns (
 ) {
 
   include ::opendnssec
+  $xsl_file           = $::opendnssec::xsl_file
   $user               = $::opendnssec::user
   $group              = $::opendnssec::group
   $manage_ods_ksmutil = $::opendnssec::manage_ods_ksmutil
@@ -15,7 +16,6 @@ define opendnssec::addns (
   $tsigs_dir          = $::opendnssec::tsigs_dir
   $xferout_enabled    = $::opendnssec::xferout_enabled
   $default_tsig_name  = $::opendnssec::default_tsig_name
-
   $masters.each |String $master| {
     if ! defined(Opendnssec::Remote[$master]) {
       fail("addns-${name}: Opendnssec::Remote['${master}'] doesn't exist")
@@ -27,17 +27,22 @@ define opendnssec::addns (
     }
   }
 
-  file { "/etc/opendnssec/addns-${name}.xml":
+  file { "/etc/opendnssec/addns-${name}.xml.tmp":
     owner   => $user,
     group   => $group,
     content => template('opendnssec/etc/opendnssec/addns.xml.erb'),
+    notify  => Exec["write /etc/opendnssec/addns-${name}.xml"],
+  }
+  exec { "write /etc/opendnssec/addns-${name}.xml":
+    command     => "/usr/bin/xsltproc --xinclude ${xsl_file} /etc/opendnssec/addns-${name}.xml.tmp | sed 's/\sxml:base[^>]*//g' > /etc/opendnssec/addns-${name}.xml",
+    refreshonly => true,
   }
   if $manage_ods_ksmutil and $enabled {
     exec {"Forcing ods-ksmutil to update after modifying addns-${name}.xml":
       command     => '/usr/bin/yes | /usr/bin/ods-ksmutil update all',
       user        => $user,
       refreshonly => true,
-      subscribe   => File["/etc/opendnssec/addns-${name}.xml"],
+      subscribe   => Exec["write /etc/opendnssec/addns-${name}.xml"],
     }
   }
 }

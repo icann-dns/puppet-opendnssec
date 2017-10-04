@@ -2,7 +2,7 @@
 
 require 'spec_helper_acceptance'
 
-describe 'opendnssec class' do
+describe 'opendnssec dns adapter -> dns adapter' do
   context 'defaults' do
     it 'work with no errors' do
       pp = <<-EOF
@@ -14,6 +14,11 @@ describe 'opendnssec class' do
           },
         },
       }
+      class {'::nsd':
+        port    => 5353,
+        zones   => { 'root-servers.net' => { 'masters' => ['localhost'] } },
+        remotes => { 'localhost' => { 'address4' => '127.0.0.1', } },
+      }
       class {'::opendnssec':
         zones => {
           'root-servers.net' => {
@@ -21,7 +26,7 @@ describe 'opendnssec class' do
               'lax.xfr.dns.icann.org',
               'iad.xfr.dns.icann.org',
             ],
-            provide_xfrs => ['localhost']
+            'provide_xfrs' => ['localhost'],
           },
         },
         remotes  => {
@@ -33,7 +38,10 @@ describe 'opendnssec class' do
             'address4' => '192.0.47.132',
             'address6' => '2620:0:2830:202::132',
           },
-          'localhost' => { 'address4' => '127.0.0.1', },
+          'localhost' => { 
+            'address4' => '127.0.0.1', 
+            'port' => 5353,
+          },
         },
       }
       EOF
@@ -69,8 +77,13 @@ describe 'opendnssec class' do
       its(:stdout) { is_expected.to match(%r{root-servers.net\s+KSK\s+publish}) }
       its(:stdout) { is_expected.to match(%r{root-servers.net\s+ZSK\s+active}) }
     end
-  end
-  describe command('/usr/sbin/ods-signer zones') do
-    its(:stdout) { is_expected.to match('root-servers.net') }
+    describe command('/usr/sbin/ods-signer zones') do
+      its(:stdout) { is_expected.to match('root-servers.net') }
+    end
+    describe command(
+      '/usr/bin/dig -p 5353 +dnssec soa root-servers.net @localhost'
+    ) do
+      its(:stdout) { is_expected.to match(%r{\bRRSIG\b}) }
+    end
   end
 end

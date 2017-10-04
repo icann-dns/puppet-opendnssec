@@ -1,13 +1,15 @@
 <?xml version="1.0"?>
+      <Notify>
 <%- if @address4 -%>
-<Peer>
-  <Prefix><%= @address4 %></Prefix>
-  <Port><%= @port %></Port>
-</Peer>
+        <Remote>
+          <Address><%= @address4 %></Address>
+          <Port><%= @port %></Port>
+        </Remote>
 <%- end -%>
 <%- if @address6 -%>
-<Peer>
-  <Prefix><%= @address6 %></Prefix>
-  <Port><%= @port %></Port>
-</Peer>
+        <Remote>
+          <Address><%= @address6 %></Address>
+          <Port><%= @port %></Port>
+        </Remote>
 <%- end -%>
+      </Notify>

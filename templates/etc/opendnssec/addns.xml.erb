@@ -1,49 +1,56 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- File managed by puppet DO NOT EDIT -->
-<Adapter>
+<Adapter xmlns:xi="http://www.w3.org/2001/XInclude">
   <DNS>
 <%- if @default_tsig_name != 'NOKEY' -%>
-    <xi:include href="<%= @tsigs_dir %>/<%= @default_tsig_name %>.xml" />
+    <xi:include href="<%= @tsigs_dir %>/<%= @default_tsig_name %>.xml"
+          xpointer="xpointer(//TSIG)" />
 <%- end -%>
 <%- @masters.each do |master| -%>
   <%- if @remotes[master].fetch('tsig_name', 'NOKEY') != 'NOKEY' -%>
-    <xi:include href="<%= @tsigs_dir %>/<%= @remotes[master]['tsig_name'] %>.xml" />
+    <xi:include href="<%= @tsigs_dir %>/<%= @remotes[master]['tsig_name'] %>.xml"
+          xpointer="xpointer(//TSIG)" />
   <%- end -%>
 <%- end -%>
 <%- @provide_xfrs.each do |provide_xfr| -%>
   <%- if @remotes[provide_xfr].fetch('tsig_name', 'NOKEY') != 'NOKEY' -%>
-    <xi:include href="<%= @tsigs_dir %>/<%= @remotes[provide_xfr]['tsig_name'] %>.xml" />
+    <xi:include href="<%= @tsigs_dir %>/<%= @remotes[provide_xfr]['tsig_name'] %>.xml"
+          xpointer="xpointer(//TSIG)" />
   <%- end -%>
 <%- end -%>
     <Inbound>
+<%- if @masters.any? -%>
       <RequestTransfer>
-<%- @masters.each do |master| -%>
-        <xi:include href="<%= @remotes_dir %>/<%= master %>_requesttransfer.xml" />
-<%- end -%>
+  <%- @masters.each do |master| -%>
+        <xi:include href="<%= @remotes_dir %>/<%= master %>_requesttransfer.xml"
+            xpointer="xpointer(//RequestTransfer/Remote)" />
+  <%- end -%>
       </RequestTransfer>
       <AllowNotify>
-<%- @masters.each do |master| -%>
-        <xi:include href="<%= @remotes_dir %>/<%= master %>_notify_in.xml" />
-<%- end -%>
+  <%- @masters.each do |master| -%>
+        <xi:include href="<%= @remotes_dir %>/<%= master %>_notify_in.xml"
+            xpointer="xpointer(//AllowNotify/Peer)" />
+  <%- end -%>
       </AllowNotify>
+<%- end -%>
     </Inbound>
     <Outbound>
+<%- if @xferout_enabled and @provide_xfrs.any? -%>
       <ProvideTransfer>
-<%- if @xferout_enabled -%>
   <%- @provide_xfrs.each do |provide_xfr| -%>
-        <xi:include href="<%= @remotes_dir %>/<%= provide_xfr %>_providetransfer.xml" />
+        <xi:include href="<%= @remotes_dir %>/<%= provide_xfr %>_providetransfer.xml"
+            xpointer="xpointer(//ProvideTransfer/Peer)" />
   <%- end -%>
-<%- end -%>
       </ProvideTransfer>
       <Notify>
-<%- if @xferout_enabled -%>
   <%- @provide_xfrs.each do |provide_xfr| -%>
     <%- if @remotes[provide_xfr].include?('address4') -%>
-        <xi:include href="<%= @remotes_dir %>/<%= provide_xfr %>_notify_out.xml" />
+        <xi:include href="<%= @remotes_dir %>/<%= provide_xfr %>_notify_out.xml"
+            xpointer="xpointer(//Notify/Remote)" />
     <%- end -%>
   <%- end -%>
-<%- end -%>
       </Notify>
+<%- end -%>
     </Outbound>
   </DNS>
 </Adapter>
