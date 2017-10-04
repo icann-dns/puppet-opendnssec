@@ -2,7 +2,7 @@
 
 require 'spec_helper_acceptance'
 
-describe 'opendnssec dns adapter -> dns adapter' do
+describe 'opendnssec file adapter in dns adapter out' do
   context 'defaults' do
     it 'work with no errors' do
       example_zone = <<EOS
