@@ -1,21 +1,8 @@
 ---
 .travis.yml:
-  install_system_tests: true
-  extras:
-  - rvm: 2.3.1
-    env:
-    - BEAKER_set="docker/ubuntu-14.04"
-    - CHECK=beaker
-    - BEAKER_TESTMODE=apply
-    sudo: required
-    services:
-    - docker
-  - rvm: 2.3.1
-    env:
-    - BEAKER_set="docker/ubuntu-16.04"
-    - CHECK=beaker
-    - BEAKER_TESTMODE=apply
-    sudo: required
-    services:
-    - docker
+  docker_sets:
+  - set: docker/ubuntu-14.04
+    testmode: apply
+  - set: docker/ubuntu-16.04
+    testmode: apply
   secure: "f5bYcp02Gw4fT2ik5QognnjTipc76L2t4WE+5IE82qGHpz07GKEp0UewYcRtx8gW5pT5n+2DCiBPPKjLv3d95hW+4ttGrHuWMHpRyvWtFmQArPPvX1uxmpn4MJDrITIge7Ky27iy3JfKXmzMVjQ0/GMbUZPxbsun7pAtpZQAWi2dZWq4/ZZ2KmK5l29cItO31+72ZCbz0jYQDxz7H7sCORQqfdpsHr3n1HLm/qs717Ca9VxVEWagKBso29WSEhEnB9xTnFABp02d44+OwTxAwwDiFtPymu6PTLpOD3YErf57txnMjtUavW84/hjdcLovCNLkz5tHRkpVnICCXZ3AtvQ4sFFmzX407Xm1EsIBvxq3VcYJ5EfydKv5NNEaYgVIBGl+sdaRxKIdj2Y0senoVKMwjcTCB8EijigUwPaPeh/iHYVl9Wah4yll9RN5tvWrFm2Pho8Diqeue/MKN/lrbgZ0f1L9UfCOatbBxdL+D+ZYyC10dIZ/v4AXTmK2eDD0GEpH0PiKgPVIJNh9DeJGUMg7JDZLlLWMNUiis5kZuCVVr4aMCpJNYEKdDL/pU7dIy82OamgDVV3yA0YUixo7zxUawG1bhmvSqPdrErvjNvqKDP8QIFUCRKbhUqzFKEaYiBd6LAugjZJU1Yd+P1/vqu7ugNNDPN4bSKdQuq+pE1E="
