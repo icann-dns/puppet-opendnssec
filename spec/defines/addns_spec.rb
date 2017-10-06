@@ -54,26 +54,18 @@ describe 'opendnssec::addns' do
         it { is_expected.to compile.with_all_deps }
         it { is_expected.to contain_opendnssec__addns('test_addns') }
         it do
-          is_expected.to contain_file('/etc/opendnssec/addns-test_addns.xml').with(
+          is_expected.to contain_file('/etc/opendnssec/addns-test_addns.xml.tmp').with(
             owner: 'root',
             group: 'root'
           ).with_content(
             %r{
 			<\?xml\sversion="1.0"\sencoding="UTF-8"\?>
 			\s+<!--\sFile\smanaged\sby\spuppet\sDO\sNOT\sEDIT\s-->
-			\s+<Adapter>
+            \s+<Adapter\sxmlns:xi="http://www.w3.org/2001/XInclude">
 			\s+<DNS>
 			\s+<Inbound>
-			\s+<RequestTransfer>
-			\s+</RequestTransfer>
-			\s+<AllowNotify>
-			\s+</AllowNotify>
 			\s+</Inbound>
 			\s+<Outbound>
-			\s+<ProvideTransfer>
-			\s+</ProvideTransfer>
-			\s+<Notify>
-			\s+</Notify>
 			\s+</Outbound>
 			\s+</DNS>
 			\s+</Adapter>
@@ -87,7 +79,7 @@ describe 'opendnssec::addns' do
             command: '/usr/bin/yes | /usr/bin/ods-ksmutil update all',
             user: 'root',
             refreshonly: true,
-            subscribe: 'File[/etc/opendnssec/addns-test_addns.xml]'
+            subscribe: 'Exec[write /etc/opendnssec/addns-test_addns.xml]'
           )
         end
       end
@@ -96,28 +88,26 @@ describe 'opendnssec::addns' do
           before { params.merge!(masters: ['master']) }
           it { is_expected.to compile }
           it do
-            is_expected.to contain_file('/etc/opendnssec/addns-test_addns.xml').with(
+            is_expected.to contain_file('/etc/opendnssec/addns-test_addns.xml.tmp').with(
               owner: 'root',
               group: 'root'
             ).with_content(
               %r{
               <\?xml\sversion="1.0"\sencoding="UTF-8"\?>
               \s+<!--\sFile\smanaged\sby\spuppet\sDO\sNOT\sEDIT\s-->
-              \s+<Adapter>
+              \s+<Adapter\sxmlns:xi="http://www.w3.org/2001/XInclude">
               \s+<DNS>
               \s+<Inbound>
               \s+<RequestTransfer>
-              \s+<xi:include\shref="/etc/opendnssec/remotes/master_requesttransfer.xml"\s/>
+              \s+<xi:include\shref="/etc/opendnssec/remotes/master_requesttransfer.xml"
+              \s+xpointer="xpointer\(//RequestTransfer/Remote\)"\s/>
               \s+</RequestTransfer>
               \s+<AllowNotify>
-              \s+<xi:include\shref="/etc/opendnssec/remotes/master_notify_in.xml"\s/>
+              \s+<xi:include\shref="/etc/opendnssec/remotes/master_notify_in.xml"
+              \s+xpointer="xpointer\(//AllowNotify/Peer\)"\s/>
               \s+</AllowNotify>
               \s+</Inbound>
               \s+<Outbound>
-              \s+<ProvideTransfer>
-              \s+</ProvideTransfer>
-              \s+<Notify>
-              \s+</Notify>
               \s+</Outbound>
               \s+</DNS>
               \s+</Adapter>
@@ -130,25 +120,23 @@ describe 'opendnssec::addns' do
           it { is_expected.to compile }
           it do
             is_expected.to contain_file(
-              '/etc/opendnssec/addns-test_addns.xml'
+              '/etc/opendnssec/addns-test_addns.xml.tmp'
             ).with_content(
               %r{
               <\?xml\sversion="1.0"\sencoding="UTF-8"\?>
               \s+<!--\sFile\smanaged\sby\spuppet\sDO\sNOT\sEDIT\s-->
-              \s+<Adapter>
+              \s+<Adapter\sxmlns:xi="http://www.w3.org/2001/XInclude">
               \s+<DNS>
               \s+<Inbound>
-              \s+<RequestTransfer>
-              \s+</RequestTransfer>
-              \s+<AllowNotify>
-              \s+</AllowNotify>
               \s+</Inbound>
               \s+<Outbound>
               \s+<ProvideTransfer>
-              \s+<xi:include\shref="/etc/opendnssec/remotes/provide_xfr_providetransfer.xml"\s/>
+              \s+<xi:include\shref="/etc/opendnssec/remotes/provide_xfr_providetransfer.xml"
+              \s+xpointer="xpointer\(//ProvideTransfer/Peer\)"\s/>
               \s+</ProvideTransfer>
               \s+<Notify>
-              \s+<xi:include\shref="/etc/opendnssec/remotes/provide_xfr_notify_out.xml"\s/>
+              \s+<xi:include\shref="/etc/opendnssec/remotes/provide_xfr_notify_out.xml"
+              \s+xpointer="xpointer\(//Notify/Remote\)"\s/>
               \s+</Notify>
               \s+</Outbound>
               \s+</DNS>
@@ -162,27 +150,31 @@ describe 'opendnssec::addns' do
           it { is_expected.to compile }
           it do
             is_expected.to contain_file(
-              '/etc/opendnssec/addns-test_addns.xml'
+              '/etc/opendnssec/addns-test_addns.xml.tmp'
             ).with_content(
               %r{
               <\?xml\sversion="1.0"\sencoding="UTF-8"\?>
               \s+<!--\sFile\smanaged\sby\spuppet\sDO\sNOT\sEDIT\s-->
-              \s+<Adapter>
+              \s+<Adapter\sxmlns:xi="http://www.w3.org/2001/XInclude">
               \s+<DNS>
               \s+<Inbound>
               \s+<RequestTransfer>
-              \s+<xi:include\shref="/etc/opendnssec/remotes/master_requesttransfer.xml"\s/>
+              \s+<xi:include\shref="/etc/opendnssec/remotes/master_requesttransfer.xml"
+              \s+xpointer="xpointer\(//RequestTransfer/Remote\)"\s/>
               \s+</RequestTransfer>
               \s+<AllowNotify>
-              \s+<xi:include\shref="/etc/opendnssec/remotes/master_notify_in.xml"\s/>
+              \s+<xi:include\shref="/etc/opendnssec/remotes/master_notify_in.xml"
+              \s+xpointer="xpointer\(//AllowNotify/Peer\)"\s/>
               \s+</AllowNotify>
               \s+</Inbound>
               \s+<Outbound>
               \s+<ProvideTransfer>
-              \s+<xi:include\shref="/etc/opendnssec/remotes/provide_xfr_providetransfer.xml"\s/>
+              \s+<xi:include\shref="/etc/opendnssec/remotes/provide_xfr_providetransfer.xml"
+              \s+xpointer="xpointer\(//ProvideTransfer/Peer\)"\s/>
               \s+</ProvideTransfer>
               \s+<Notify>
-              \s+<xi:include\shref="/etc/opendnssec/remotes/provide_xfr_notify_out.xml"\s/>
+              \s+<xi:include\shref="/etc/opendnssec/remotes/provide_xfr_notify_out.xml"
+              \s+xpointer="xpointer\(//Notify/Remote\)"\s/>
               \s+</Notify>
               \s+</Outbound>
               \s+</DNS>
@@ -208,7 +200,7 @@ describe 'opendnssec::addns' do
           it { is_expected.to compile }
           it do
             is_expected.to contain_file(
-              '/etc/opendnssec/addns-test_addns.xml'
+              '/etc/opendnssec/addns-test_addns.xml.tmp'
             ).with_owner('foobar')
           end
           it do
@@ -234,7 +226,7 @@ describe 'opendnssec::addns' do
           it { is_expected.to compile }
           it do
             is_expected.to contain_file(
-              '/etc/opendnssec/addns-test_addns.xml'
+              '/etc/opendnssec/addns-test_addns.xml.tmp'
             ).with_group('foobar')
           end
         end
@@ -255,7 +247,7 @@ describe 'opendnssec::addns' do
           it { is_expected.to compile }
           it do
             is_expected.not_to contain_exec(
-              'Forcing ods-ksmutil to update after modifying addns-test_addns.xml'
+              'Forcing ods-ksmutil to update after modifying addns-test_addns.xml.tmp'
             )
           end
         end
@@ -276,7 +268,7 @@ describe 'opendnssec::addns' do
           it { is_expected.to compile }
           it do
             is_expected.not_to contain_exec(
-              'Forcing ods-ksmutil to update after modifying addns-test_addns.xml'
+              'Forcing ods-ksmutil to update after modifying addns-test_addns.xml.tmp'
             )
           end
         end
@@ -307,29 +299,35 @@ describe 'opendnssec::addns' do
           it { is_expected.to compile }
           it do
             is_expected.to contain_file(
-              '/etc/opendnssec/addns-test_addns.xml'
+              '/etc/opendnssec/addns-test_addns.xml.tmp'
             ).with_content(
               %r{
               <\?xml\sversion="1.0"\sencoding="UTF-8"\?>
               \s+<!--\sFile\smanaged\sby\spuppet\sDO\sNOT\sEDIT\s-->
-              \s+<Adapter>
+              \s+<Adapter\sxmlns:xi="http://www.w3.org/2001/XInclude">
               \s+<DNS>
-              \s+<xi:include\shref="/etc/opendnssec/tsigs/test_tsig_master.xml"\s/>
-              \s+<xi:include\shref="/etc/opendnssec/tsigs/test_tsig_provide_xfr.xml"\s/>
+              \s+<xi:include\shref="/etc/opendnssec/tsigs/test_tsig_master.xml"
+              \s+xpointer="xpointer\(//TSIG\)"\s/>
+              \s+<xi:include\shref="/etc/opendnssec/tsigs/test_tsig_provide_xfr.xml"
+              \s+xpointer="xpointer\(//TSIG\)"\s/>
               \s+<Inbound>
               \s+<RequestTransfer>
-              \s+<xi:include\shref="/etc/opendnssec/remotes/master_requesttransfer.xml"\s/>
+              \s+<xi:include\shref="/etc/opendnssec/remotes/master_requesttransfer.xml"
+              \s+xpointer="xpointer\(//RequestTransfer/Remote\)"\s/>
               \s+</RequestTransfer>
               \s+<AllowNotify>
-              \s+<xi:include\shref="/etc/opendnssec/remotes/master_notify_in.xml"\s/>
+              \s+<xi:include\shref="/etc/opendnssec/remotes/master_notify_in.xml"
+              \s+xpointer="xpointer\(//AllowNotify/Peer\)"\s/>
               \s+</AllowNotify>
               \s+</Inbound>
               \s+<Outbound>
               \s+<ProvideTransfer>
-              \s+<xi:include\shref="/etc/opendnssec/remotes/provide_xfr_providetransfer.xml"\s/>
+              \s+<xi:include\shref="/etc/opendnssec/remotes/provide_xfr_providetransfer.xml"
+              \s+xpointer="xpointer\(//ProvideTransfer/Peer\)"\s/>
               \s+</ProvideTransfer>
               \s+<Notify>
-              \s+<xi:include\shref="/etc/opendnssec/remotes/provide_xfr_notify_out.xml"\s/>
+              \s+<xi:include\shref="/etc/opendnssec/remotes/provide_xfr_notify_out.xml"
+              \s+xpointer="xpointer\(//Notify/Remote\)"\s/>
               \s+</Notify>
               \s+</Outbound>
               \s+</DNS>
@@ -365,72 +363,35 @@ describe 'opendnssec::addns' do
           it { is_expected.to compile }
           it do
             is_expected.to contain_file(
-              '/etc/opendnssec/addns-test_addns.xml'
+              '/etc/opendnssec/addns-test_addns.xml.tmp'
             ).with_content(
               %r{
               <\?xml\sversion="1.0"\sencoding="UTF-8"\?>
               \s+<!--\sFile\smanaged\sby\spuppet\sDO\sNOT\sEDIT\s-->
-              \s+<Adapter>
+              \s+<Adapter\sxmlns:xi="http://www.w3.org/2001/XInclude">
               \s+<DNS>
-              \s+<xi:include\shref="/etc/opendnssec/tsigs/test_tsig_default.xml"\s/>
-              \s+<xi:include\shref="/etc/opendnssec/tsigs/test_tsig_provide_xfr.xml"\s/>
+              \s+<xi:include\shref="/etc/opendnssec/tsigs/test_tsig_default.xml"
+              \s+xpointer="xpointer\(//TSIG\)"\s/>
+              \s+<xi:include\shref="/etc/opendnssec/tsigs/test_tsig_provide_xfr.xml"
+              \s+xpointer="xpointer\(//TSIG\)"\s/>
               \s+<Inbound>
               \s+<RequestTransfer>
-              \s+<xi:include\shref="/etc/opendnssec/remotes/master_requesttransfer.xml"\s/>
+              \s+<xi:include\shref="/etc/opendnssec/remotes/master_requesttransfer.xml"
+              \s+xpointer="xpointer\(//RequestTransfer/Remote\)"\s/>
               \s+</RequestTransfer>
               \s+<AllowNotify>
-              \s+<xi:include\shref="/etc/opendnssec/remotes/master_notify_in.xml"\s/>
+              \s+<xi:include\shref="/etc/opendnssec/remotes/master_notify_in.xml"
+              \s+xpointer="xpointer\(//AllowNotify/Peer\)"\s/>
               \s+</AllowNotify>
               \s+</Inbound>
               \s+<Outbound>
               \s+<ProvideTransfer>
-              \s+<xi:include\shref="/etc/opendnssec/remotes/provide_xfr_providetransfer.xml"\s/>
+              \s+<xi:include\shref="/etc/opendnssec/remotes/provide_xfr_providetransfer.xml"
+              \s+xpointer="xpointer\(//ProvideTransfer/Peer\)"\s/>
               \s+</ProvideTransfer>
               \s+<Notify>
-              \s+<xi:include\shref="/etc/opendnssec/remotes/provide_xfr_notify_out.xml"\s/>
-              \s+</Notify>
-              \s+</Outbound>
-              \s+</DNS>
-              \s+</Adapter>
-              }x
-            )
-          end
-        end
-        context 'opendnssec::xferout_enabled' do
-          before { params.merge!(provide_xfrs: ['provide_xfr']) }
-          let(:pre_condition) do
-            <<-EOF
-            class { '::opendnssec':
-              xferout_enabled => false,
-              policies => {'test_policy' => {} },
-              remotes  => {
-                'master' => { 'address4' => '192.0.2.1' },
-                'provide_xfr' => { 'address4' => '192.0.2.2' },
-              },
-            }
-            EOF
-          end
-
-          it { is_expected.to compile }
-          it do
-            is_expected.to contain_file(
-              '/etc/opendnssec/addns-test_addns.xml'
-            ).with_content(
-              %r{
-              <\?xml\sversion="1.0"\sencoding="UTF-8"\?>
-              \s+<!--\sFile\smanaged\sby\spuppet\sDO\sNOT\sEDIT\s-->
-              \s+<Adapter>
-              \s+<DNS>
-              \s+<Inbound>
-              \s+<RequestTransfer>
-              \s+</RequestTransfer>
-              \s+<AllowNotify>
-              \s+</AllowNotify>
-              \s+</Inbound>
-              \s+<Outbound>
-              \s+<ProvideTransfer>
-              \s+</ProvideTransfer>
-              \s+<Notify>
+              \s+<xi:include\shref="/etc/opendnssec/remotes/provide_xfr_notify_out.xml"
+              \s+xpointer="xpointer\(//Notify/Remote\)"\s/>
               \s+</Notify>
               \s+</Outbound>
               \s+</DNS>

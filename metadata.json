@@ -11,7 +11,7 @@
     {"name":"puppetlabs-stdlib","version_requirement":">= 4.17.0 <5.0.0"},
     {"name":"icann-tea","version_requirement":">= 0.2.11 <1.0.0"},
     {"name":"icann-softhsm","version_requirement":">= 0.2.0 <1.0.0"},
-    {"name":"puppetlabs-mysql","version_requirement":">= 3.11.0 <4.0.0"},
+    {"name":"puppetlabs-mysql","version_requirement":">= 4.0.0 <6.0.0"},
     {"name":"puppetlabs-concat","version_requirement":">= 1.2.0 <2.0.0"}
   ],
   "operatingsystem_support": [

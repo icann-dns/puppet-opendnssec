@@ -61,10 +61,12 @@ describe 'opendnssec::remote' do
           ).with_content(
             %r{
             <\?xml\sversion="1.0"\?>
+            \s+<RequestTransfer>
             \s+<Remote>
             \s+<Address>192.0.2.1</Address>
             \s+<Port>53</Port>
             \s+</Remote>
+            \s+</RequestTransfer>
             }x
           )
         end        
@@ -77,9 +79,11 @@ describe 'opendnssec::remote' do
           ).with_content(
             %r{
             <\?xml\sversion="1.0"\?>
+            \s+<AllowNotify>
             \s+<Peer>
             \s+<Prefix>192.0.2.1</Prefix>
             \s+</Peer>
+            \s+</AllowNotify>
             }x
           )
         end        
@@ -93,9 +97,11 @@ describe 'opendnssec::remote' do
           ).with_content(
             %r{
             <\?xml\sversion="1.0"\?>
+            \s+<ProvideTransfer>
             \s+<Peer>
             \s+<Prefix>192.0.2.1</Prefix>
             \s+</Peer>
+            \s+</ProvideTransfer>
             }x
           )
         end        
@@ -109,10 +115,12 @@ describe 'opendnssec::remote' do
           ).with_content(
             %r{
             <\?xml\sversion="1.0"\?>
-            \s+<Peer>
-            \s+<Prefix>192.0.2.1</Prefix>
+            \s+<Notify>
+            \s+<Remote>
+            \s+<Address>192.0.2.1</Address>
             \s+<Port>53</Port>
-            \s+</Peer>
+            \s+</Remote>
+            \s+</Notify>
             }x
           )
         end        
@@ -142,10 +150,12 @@ describe 'opendnssec::remote' do
             ).with_content(
               %r{
               <\?xml\sversion="1.0"\?>
+              \s+<RequestTransfer>
               \s+<Remote>
               \s+<Address>192.0.2.255</Address>
               \s+<Port>53</Port>
               \s+</Remote>
+              \s+</RequestTransfer>
               }x
             )
           end        
@@ -155,9 +165,11 @@ describe 'opendnssec::remote' do
             ).with_content(
               %r{
               <\?xml\sversion="1.0"\?>
+              \s+<AllowNotify>
               \s+<Peer>
               \s+<Prefix>192.0.2.255</Prefix>
               \s+</Peer>
+              \s+</AllowNotify>
               }x
             )
           end        
@@ -167,9 +179,11 @@ describe 'opendnssec::remote' do
             ).with_content(
               %r{
               <\?xml\sversion="1.0"\?>
+              \s+<ProvideTransfer>
               \s+<Peer>
               \s+<Prefix>192.0.2.255</Prefix>
               \s+</Peer>
+              \s+</ProvideTransfer>
               }x
             )
           end        
@@ -179,10 +193,12 @@ describe 'opendnssec::remote' do
             ).with_content(
               %r{
               <\?xml\sversion="1.0"\?>
-              \s+<Peer>
-              \s+<Prefix>192.0.2.255</Prefix>
+              \s+<Notify>
+              \s+<Remote>
+              \s+<Address>192.0.2.255</Address>
               \s+<Port>53</Port>
-              \s+</Peer>
+              \s+</Remote>
+              \s+</Notify>
               }x
             )
           end        
@@ -196,6 +212,7 @@ describe 'opendnssec::remote' do
             ).with_content(
               %r{
               <\?xml\sversion="1.0"\?>
+              \s+<RequestTransfer>
               \s+<Remote>
               \s+<Address>192.0.2.1</Address>
               \s+<Port>53</Port>
@@ -204,6 +221,7 @@ describe 'opendnssec::remote' do
               \s+<Address>2001:DB8::1</Address>
               \s+<Port>53</Port>
               \s+</Remote>
+              \s+</RequestTransfer>
               }x
             )
           end        
@@ -213,12 +231,14 @@ describe 'opendnssec::remote' do
             ).with_content(
               %r{
               <\?xml\sversion="1.0"\?>
+              \s+<AllowNotify>
               \s+<Peer>
               \s+<Prefix>192.0.2.1</Prefix>
               \s+</Peer>
               \s+<Peer>
               \s+<Prefix>2001:DB8::1</Prefix>
               \s+</Peer>
+              \s+</AllowNotify>
               }x
             )
           end        
@@ -228,12 +248,14 @@ describe 'opendnssec::remote' do
             ).with_content(
               %r{
               <\?xml\sversion="1.0"\?>
+              \s+<ProvideTransfer>
               \s+<Peer>
               \s+<Prefix>192.0.2.1</Prefix>
               \s+</Peer>
               \s+<Peer>
               \s+<Prefix>2001:DB8::1</Prefix>
               \s+</Peer>
+              \s+</ProvideTransfer>
               }x
             )
           end        
@@ -243,14 +265,16 @@ describe 'opendnssec::remote' do
             ).with_content(
               %r{
               <\?xml\sversion="1.0"\?>
-              \s+<Peer>
-              \s+<Prefix>192.0.2.1</Prefix>
+              \s+<Notify>
+              \s+<Remote>
+              \s+<Address>192.0.2.1</Address>
               \s+<Port>53</Port>
-              \s+</Peer>
-              \s+<Peer>
-              \s+<Prefix>2001:DB8::1</Prefix>
+              \s+</Remote>
+              \s+<Remote>
+              \s+<Address>2001:DB8::1</Address>
               \s+<Port>53</Port>
-              \s+</Peer>
+              \s+</Remote>
+              \s+</Notify>
               }x
             )
           end        
@@ -264,10 +288,12 @@ describe 'opendnssec::remote' do
             ).with_content(
               %r{
               <\?xml\sversion="1.0"\?>
+              \s+<RequestTransfer>
               \s+<Remote>
               \s+<Address>2001:DB8::1</Address>
               \s+<Port>53</Port>
               \s+</Remote>
+              \s+</RequestTransfer>
               }x
             )
           end        
@@ -277,9 +303,11 @@ describe 'opendnssec::remote' do
             ).with_content(
               %r{
               <\?xml\sversion="1.0"\?>
+              \s+<AllowNotify>
               \s+<Peer>
               \s+<Prefix>2001:DB8::1</Prefix>
               \s+</Peer>
+              \s+</AllowNotify>
               }x
             )
           end        
@@ -289,9 +317,11 @@ describe 'opendnssec::remote' do
             ).with_content(
               %r{
               <\?xml\sversion="1.0"\?>
+              \s+<ProvideTransfer>
               \s+<Peer>
               \s+<Prefix>2001:DB8::1</Prefix>
               \s+</Peer>
+              \s+</ProvideTransfer>
               }x
             )
           end        
@@ -301,10 +331,12 @@ describe 'opendnssec::remote' do
             ).with_content(
               %r{
               <\?xml\sversion="1.0"\?>
-              \s+<Peer>
-              \s+<Prefix>2001:DB8::1</Prefix>
+              \s+<Notify>
+              \s+<Remote>
+              \s+<Address>2001:DB8::1</Address>
               \s+<Port>53</Port>
-              \s+</Peer>
+              \s+</Remote>
+              \s+</Notify>
               }x
             )
           end        
@@ -318,11 +350,13 @@ describe 'opendnssec::remote' do
             ).with_content(
               %r{
               <\?xml\sversion="1.0"\?>
+              \s+<RequestTransfer>
               \s+<Remote>
               \s+<Address>192.0.2.1</Address>
               \s+<Port>53</Port>
               \s+<Key>foobar</Key>
               \s+</Remote>
+              \s+</RequestTransfer>
               }x
             )
           end        
@@ -332,9 +366,11 @@ describe 'opendnssec::remote' do
             ).with_content(
               %r{
               <\?xml\sversion="1.0"\?>
+              \s+<AllowNotify>
               \s+<Peer>
               \s+<Prefix>192.0.2.1</Prefix>
               \s+</Peer>
+              \s+</AllowNotify>
               }x
             )
           end        
@@ -344,10 +380,12 @@ describe 'opendnssec::remote' do
             ).with_content(
               %r{
               <\?xml\sversion="1.0"\?>
+              \s+<ProvideTransfer>
               \s+<Peer>
               \s+<Prefix>192.0.2.1</Prefix>
               \s+<Key>foobar</Key>
               \s+</Peer>
+              \s+</ProvideTransfer>
               }x
             )
           end        
@@ -357,10 +395,12 @@ describe 'opendnssec::remote' do
             ).with_content(
               %r{
               <\?xml\sversion="1.0"\?>
-              \s+<Peer>
-              \s+<Prefix>192.0.2.1</Prefix>
+              \s+<Notify>
+              \s+<Remote>
+              \s+<Address>192.0.2.1</Address>
               \s+<Port>53</Port>
-              \s+</Peer>
+              \s+</Remote>
+              \s+</Notify>
               }x
             )
           end        
@@ -374,11 +414,13 @@ describe 'opendnssec::remote' do
             ).with_content(
               %r{
               <\?xml\sversion="1.0"\?>
+              \s+<RequestTransfer>
               \s+<Remote>
               \s+<Address>192.0.2.1</Address>
               \s+<Port>53</Port>
               \s+<Key>test_tsig</Key>
               \s+</Remote>
+              \s+</RequestTransfer>
               }x
             )
           end        
@@ -388,9 +430,11 @@ describe 'opendnssec::remote' do
             ).with_content(
               %r{
               <\?xml\sversion="1.0"\?>
+              \s+<AllowNotify>
               \s+<Peer>
               \s+<Prefix>192.0.2.1</Prefix>
               \s+</Peer>
+              \s+</AllowNotify>
               }x
             )
           end        
@@ -400,10 +444,12 @@ describe 'opendnssec::remote' do
             ).with_content(
               %r{
               <\?xml\sversion="1.0"\?>
+              \s+<ProvideTransfer>
               \s+<Peer>
               \s+<Prefix>192.0.2.1</Prefix>
               \s+<Key>test_tsig</Key>
               \s+</Peer>
+              \s+</ProvideTransfer>
               }x
             )
           end        
@@ -413,10 +459,12 @@ describe 'opendnssec::remote' do
             ).with_content(
               %r{
               <\?xml\sversion="1.0"\?>
-              \s+<Peer>
-              \s+<Prefix>192.0.2.1</Prefix>
+              \s+<Notify>
+              \s+<Remote>
+              \s+<Address>192.0.2.1</Address>
               \s+<Port>53</Port>
-              \s+</Peer>
+              \s+</Remote>
+              \s+</Notify>
               }x
             )
           end        
@@ -430,10 +478,12 @@ describe 'opendnssec::remote' do
             ).with_content(
               %r{
               <\?xml\sversion="1.0"\?>
+              \s+<RequestTransfer>
               \s+<Remote>
               \s+<Address>192.0.2.1</Address>
               \s+<Port>5353</Port>
               \s+</Remote>
+              \s+</RequestTransfer>
               }x
             )
           end        
@@ -443,9 +493,11 @@ describe 'opendnssec::remote' do
             ).with_content(
               %r{
               <\?xml\sversion="1.0"\?>
+              \s+<AllowNotify>
               \s+<Peer>
               \s+<Prefix>192.0.2.1</Prefix>
               \s+</Peer>
+              \s+</AllowNotify>
               }x
             )
           end        
@@ -455,9 +507,11 @@ describe 'opendnssec::remote' do
             ).with_content(
               %r{
               <\?xml\sversion="1.0"\?>
+              \s+<ProvideTransfer>
               \s+<Peer>
               \s+<Prefix>192.0.2.1</Prefix>
               \s+</Peer>
+              \s+</ProvideTransfer>
               }x
             )
           end        
@@ -467,10 +521,12 @@ describe 'opendnssec::remote' do
             ).with_content(
               %r{
               <\?xml\sversion="1.0"\?>
-              \s+<Peer>
-              \s+<Prefix>192.0.2.1</Prefix>
+              \s+<Notify>
+              \s+<Remote>
+              \s+<Address>192.0.2.1</Address>
               \s+<Port>5353</Port>
-              \s+</Peer>
+              \s+</Remote>
+              \s+</Notify>
               }x
             )
           end        
@@ -490,6 +546,7 @@ describe 'opendnssec::remote' do
             ).with_content(
               %r{
               <\?xml\sversion="1.0"\?>
+              \s+<RequestTransfer>
               \s+<Remote>
               \s+<Address>192.0.2.1</Address>
               \s+<Port>5353</Port>
@@ -500,6 +557,7 @@ describe 'opendnssec::remote' do
               \s+<Port>5353</Port>
               \s+<Key>test_tsig</Key>
               \s+</Remote>
+              \s+</RequestTransfer>
               }x
             )
           end        
@@ -509,12 +567,14 @@ describe 'opendnssec::remote' do
             ).with_content(
               %r{
               <\?xml\sversion="1.0"\?>
+              \s+<AllowNotify>
               \s+<Peer>
               \s+<Prefix>192.0.2.1</Prefix>
               \s+</Peer>
               \s+<Peer>
               \s+<Prefix>2001:DB8::1</Prefix>
               \s+</Peer>
+              \s+</AllowNotify>
               }x
             )
           end        
@@ -524,6 +584,7 @@ describe 'opendnssec::remote' do
             ).with_content(
               %r{
               <\?xml\sversion="1.0"\?>
+              \s+<ProvideTransfer>
               \s+<Peer>
               \s+<Prefix>192.0.2.1</Prefix>
               \s+<Key>test_tsig</Key>
@@ -532,6 +593,7 @@ describe 'opendnssec::remote' do
               \s+<Prefix>2001:DB8::1</Prefix>
               \s+<Key>test_tsig</Key>
               \s+</Peer>
+              \s+</ProvideTransfer>
               }x
             )
           end        
@@ -541,14 +603,16 @@ describe 'opendnssec::remote' do
             ).with_content(
               %r{
               <\?xml\sversion="1.0"\?>
-              \s+<Peer>
-              \s+<Prefix>192.0.2.1</Prefix>
+              \s+<Notify>
+              \s+<Remote>
+              \s+<Address>192.0.2.1</Address>
               \s+<Port>5353</Port>
-              \s+</Peer>
-              \s+<Peer>
-              \s+<Prefix>2001:DB8::1</Prefix>
+              \s+</Remote>
+              \s+<Remote>
+              \s+<Address>2001:DB8::1</Address>
               \s+<Port>5353</Port>
-              \s+</Peer>
+              \s+</Remote>
+              \s+</Notify>
               }x
             )
           end        
