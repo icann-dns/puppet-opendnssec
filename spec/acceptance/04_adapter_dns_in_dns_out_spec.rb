@@ -90,7 +90,7 @@ describe 'opendnssec dns adapter -> dns adapter' do
     describe command(
       '/usr/sbin/ods-signer queue'
     ) do
-      its(:stdout) { is_expected.to match('I will [sign] zone root-servers.net'}) }
+      its(:stdout) { is_expected.to match('I will [sign] zone root-servers.net')}
     end
     describe command(
       '/usr/bin/dig -p 5353 +dnssec soa root-servers.net @localhost'
