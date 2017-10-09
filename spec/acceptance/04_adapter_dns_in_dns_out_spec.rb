@@ -58,8 +58,8 @@ describe 'opendnssec dns adapter -> dns adapter' do
     describe port(53) do
       it { is_expected.to be_listening }
     end
-    describe command('/usr/bin/ods-signer running') do
-      its(:stdout) { is_expected.to match(%r{'Engine running.'}) }
+    describe command('/usr/sbin/ods-signer running') do
+      its(:stdout) { is_expected.to match(%r{Engine running\.$}) }
     end
     describe command('/usr/bin/ods-hsmutil list') do
       its(:stdout) { is_expected.to match('RSA/1024') }
@@ -87,7 +87,7 @@ describe 'opendnssec dns adapter -> dns adapter' do
       its(:stdout) { is_expected.to match('root-servers.net') }
     end
     describe command('/usr/sbin/ods-signer queue') do
-      its(:stdout) { is_expected.to match(%r{'I will [sign] zone root-servers.net'}) }
+      its(:stdout) { is_expected.to match(%r{I will \[sign\] zone root-servers.net\b}) }
     end
     describe command(
       '/usr/bin/dig -p 5353 +dnssec soa root-servers.net @localhost'
