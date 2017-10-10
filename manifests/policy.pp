@@ -39,7 +39,7 @@ define opendnssec::policy (
   Opendnssec::Timestring   $zone_propagation_delay   = 'PT43200S',
   Opendnssec::Timestring   $zone_soa_ttl             = 'PT3600S',
   Opendnssec::Timestring   $zone_soa_minimum         = 'PT3600S',
-  Opendnssec::Soaserial    $zone_soa_serial          = 'unixtime',
+  Opendnssec::Soaserial    $zone_soa_serial          = 'keep',
 
   Opendnssec::Timestring   $parent_propagation_delay = 'PT9999S',
   Opendnssec::Timestring   $parent_ds_ttl            = 'PT3600S',
