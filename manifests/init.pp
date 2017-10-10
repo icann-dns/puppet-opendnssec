@@ -52,11 +52,10 @@ class opendnssec (
   if $manage_packages {
     ensure_packages(['opendnssec', 'xsltproc'])
     file {'/var/lib/opendnssec':
-      ensure  => 'directory',
-      mode    => '0640',
-      recurse => true,
-      owner   => $user,
-      group   => $group;
+      ensure => 'directory',
+      mode   => '0640',
+      owner  => $user,
+      group  => $group;
     }
   }
   file {$xsl_file:
