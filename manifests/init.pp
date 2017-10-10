@@ -89,13 +89,6 @@ class opendnssec (
       ensure_packages(['opendnssec-enforcer-sqlite'])
     }
   }
-  if $enabled and $manage_service {
-    service {
-      ['opendnssec-enforcer', 'opendnssec-signer']:
-        ensure => running,
-        enable => true,
-    }
-  }
   if $manage_conf {
 
     create_resources(opendnssec::tsig, $tsigs)
@@ -159,5 +152,12 @@ class opendnssec (
   }
   if ! defined(Class['opendnssec::zones']) {
     class { '::opendnssec::zones': zones => $zones }
+  }
+  if $enabled and $manage_service {
+    service {
+      ['opendnssec-enforcer', 'opendnssec-signer']:
+        ensure => running,
+        enable => true,
+    }
   }
 }
