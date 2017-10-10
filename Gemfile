@@ -54,6 +54,9 @@ end
 group :system_tests do
   gem 'beaker', '<= 2.51.0',           :require => false if RUBY_VERSION < '2.2.5'
   gem 'progressbar',                   :require => false
+  gem 'rbnacl', '< 5.0',               :require => false
+  gem 'rbnacl-libsodium',              :require => false
+  gem 'bcrypt_pbkdf',                  :require => false
   if beaker_version = ENV['BEAKER_VERSION']
     gem 'beaker', *location_for(beaker_version)
   end

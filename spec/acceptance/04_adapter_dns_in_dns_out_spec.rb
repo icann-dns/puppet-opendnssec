@@ -58,12 +58,18 @@ describe 'opendnssec dns adapter -> dns adapter' do
     describe port(53) do
       it { is_expected.to be_listening }
     end
+    describe command('/usr/sbin/ods-signer running') do
+      its(:stdout) { is_expected.to match(%r{Engine running\.$}) }
+    end
+    describe command('/usr/bin/ods-hsmutil list') do
+      its(:stdout) { is_expected.to match('RSA/1024') }
+      its(:stdout) { is_expected.to match('RSA/2048') }
+    end
     describe command('/usr/bin/ods-ksmutil repository list') do
       its(:stdout) { is_expected.to match(%r{SoftHSM\s+0\s+No}) }
     end
     describe command('/usr/bin/ods-ksmutil policy list') do
-      its(:stdout) do
-        is_expected.to match(
+      its(:stdout) do is_expected.to match(
           %r{default\s+default - Deny:NSEC3; KSK:RSASHA1-NSEC3-SHA1; ZSK:RSASHA1-NSEC3-SHA1}
         )
       end
@@ -80,9 +86,19 @@ describe 'opendnssec dns adapter -> dns adapter' do
     describe command('/usr/sbin/ods-signer zones') do
       its(:stdout) { is_expected.to match('root-servers.net') }
     end
+    describe command('/usr/sbin/ods-signer queue') do
+      its(:stdout) { is_expected.to match(%r{I will \[sign\] zone root-servers.net\b}) }
+    end
     describe command(
       '/usr/bin/dig -p 5353 +dnssec soa root-servers.net @localhost'
     ) do
+      its(:stdout) { is_expected.to match(%r{\bRRSIG\b}) }
+    end
+    describe command(
+      '/usr/bin/dig -p 5353 +dnssec DNSKEY root-servers.net @localhost'
+    ) do
+      its(:stdout) { is_expected.to match(%r{\bDNSKEY\s+257\b}) }
+      its(:stdout) { is_expected.to match(%r{\bDNSKEY\s+256\b}) }
       its(:stdout) { is_expected.to match(%r{\bRRSIG\b}) }
     end
   end
