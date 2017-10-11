@@ -23,17 +23,17 @@ EOS
         port    => 5353,
         zones   => { 'example.com' => { 'masters' => ['localhost'] } },
         remotes => { 'localhost' => { 'address4' => '127.0.0.1' } },
-        tsigs   => { 
-          'test_tsig' => { 
-            'data' => 'qneKJvaiXqVrfrS4v+Oi/9GpLqrkhSGLTCZkf0dyKZ0=' 
+        tsigs   => {
+          'test_tsig' => {
+            'data' => 'qneKJvaiXqVrfrS4v+Oi/9GpLqrkhSGLTCZkf0dyKZ0='
           },
         },
         default_tsig_name => 'test_tsig',
       }
       class {'::opendnssec':
-        tsigs   => { 
-          'test_tsig' => { 
-            'data' => 'qneKJvaiXqVrfrS4v+Oi/9GpLqrkhSGLTCZkf0dyKZ0=' 
+        tsigs   => {
+          'test_tsig' => {
+            'data' => 'qneKJvaiXqVrfrS4v+Oi/9GpLqrkhSGLTCZkf0dyKZ0='
           },
         },
         zones => {
@@ -44,8 +44,8 @@ EOS
           },
         },
         remotes  => {
-          'localhost' => { 
-            'address4' => '127.0.0.1', 
+          'localhost' => {
+            'address4' => '127.0.0.1',
             'port' => 5353,
             'tsig_name' => 'test_tsig',
           },

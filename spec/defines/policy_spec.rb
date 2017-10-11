@@ -143,7 +143,7 @@ describe 'opendnssec::policy' do
             \s+<SOA>
             \s+<TTL>PT3600S</TTL>
             \s+<Minimum>PT3600S</Minimum>
-            \s+<Serial>unixtime</Serial>
+            \s+<Serial>keep</Serial>
             \s+</SOA>
             \s+</Zone>
             }x
@@ -662,7 +662,7 @@ describe 'opendnssec::policy' do
               \s+<SOA>
               \s+<TTL>PT3600S</TTL>
               \s+<Minimum>PT3600S</Minimum>
-              \s+<Serial>unixtime</Serial>
+              \s+<Serial>keep</Serial>
               \s+</SOA>
               \s+</Zone>
               }x
@@ -681,7 +681,7 @@ describe 'opendnssec::policy' do
               \s+<SOA>
               \s+<TTL>P1D</TTL>
               \s+<Minimum>PT3600S</Minimum>
-              \s+<Serial>unixtime</Serial>
+              \s+<Serial>keep</Serial>
               \s+</SOA>
               \s+</Zone>
               }x
@@ -700,7 +700,7 @@ describe 'opendnssec::policy' do
               \s+<SOA>
               \s+<TTL>PT3600S</TTL>
               \s+<Minimum>P1D</Minimum>
-              \s+<Serial>unixtime</Serial>
+              \s+<Serial>keep</Serial>
               \s+</SOA>
               \s+</Zone>
               }x

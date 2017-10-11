@@ -91,7 +91,6 @@ describe 'opendnssec' do
           is_expected.to contain_file('/var/lib/opendnssec').with(
             ensure: 'directory',
             mode: '0640',
-            recurse: true,
             owner: 'root',
             group: 'root'
           )

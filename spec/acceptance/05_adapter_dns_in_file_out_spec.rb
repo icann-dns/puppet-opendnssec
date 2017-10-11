@@ -33,8 +33,8 @@ EOS
           },
         },
         remotes  => {
-          'localhost' => { 
-            'address4' => '127.0.0.1', 
+          'localhost' => {
+            'address4' => '127.0.0.1',
             'port' => 5353,
           },
         },

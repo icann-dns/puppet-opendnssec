@@ -59,7 +59,7 @@ describe 'opendnssec::zone' do
         it { is_expected.to compile.with_all_deps }
         it do
           is_expected.to contain_file(
-            '/etc/opendnssec/addns-default.xml'
+            '/etc/opendnssec/addns-default.xml.tmp'
           )
         end
         it do
@@ -121,7 +121,7 @@ describe 'opendnssec::zone' do
           it { is_expected.to contain_opendnssec__addns('test_zone-masters') }
           it do
             is_expected.to contain_file(
-              '/etc/opendnssec/addns-test_zone-masters.xml'
+              '/etc/opendnssec/addns-test_zone-masters.xml.tmp'
             )
           end
           it do
@@ -155,7 +155,7 @@ describe 'opendnssec::zone' do
           it { is_expected.to contain_opendnssec__addns('test_zone-provide_xfrs') }
           it do
             is_expected.to contain_file(
-              '/etc/opendnssec/addns-test_zone-provide_xfrs.xml'
+              '/etc/opendnssec/addns-test_zone-provide_xfrs.xml.tmp'
             )
           end
           it do
@@ -217,7 +217,11 @@ describe 'opendnssec::zone' do
         end
         context 'adapter_base_dir File input' do
           before do
-            params.merge!(adapter_base_dir: '/foobar', adapter_input_type: 'File')
+            params.merge!(
+              adapter_base_dir: '/foobar',
+              adapter_input_type: 'File',
+              zone_content: 'bla'
+            )
           end
           it { is_expected.to compile }
           it do
@@ -319,7 +323,8 @@ describe 'opendnssec::zone' do
           before do
             params.merge!(
               adapter_input_file: '/foobar',
-              adapter_input_type: 'File'
+              adapter_input_type: 'File',
+              zone_content: 'bla'
             )
           end
           it { is_expected.to compile }
@@ -373,7 +378,9 @@ describe 'opendnssec::zone' do
           end
         end
         context 'adapter_input_type' do
-          before { params.merge!(adapter_input_type: 'File') }
+          before do
+            params.merge!(adapter_input_type: 'File', zone_content: 'bla')
+          end
           it { is_expected.to compile }
           it do
             is_expected.to contain_concat__fragment(

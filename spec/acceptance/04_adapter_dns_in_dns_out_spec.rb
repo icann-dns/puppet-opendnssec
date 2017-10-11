@@ -38,8 +38,8 @@ describe 'opendnssec dns adapter -> dns adapter' do
             'address4' => '192.0.47.132',
             'address6' => '2620:0:2830:202::132',
           },
-          'localhost' => { 
-            'address4' => '127.0.0.1', 
+          'localhost' => {
+            'address4' => '127.0.0.1',
             'port' => 5353,
           },
         },
@@ -69,7 +69,8 @@ describe 'opendnssec dns adapter -> dns adapter' do
       its(:stdout) { is_expected.to match(%r{SoftHSM\s+0\s+No}) }
     end
     describe command('/usr/bin/ods-ksmutil policy list') do
-      its(:stdout) do is_expected.to match(
+      its(:stdout) do
+        is_expected.to match(
           %r{default\s+default - Deny:NSEC3; KSK:RSASHA1-NSEC3-SHA1; ZSK:RSASHA1-NSEC3-SHA1}
         )
       end

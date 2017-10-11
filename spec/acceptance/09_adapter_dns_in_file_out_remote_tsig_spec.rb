@@ -16,9 +16,9 @@ describe 'opendnssec dns adapter in file adapter out with remote TSIG' do
       }
       class {'::nsd':
         port    => 5353,
-        tsigs   => { 
-          'test_tsig' => { 
-            'data' => 'qneKJvaiXqVrfrS4v+Oi/9GpLqrkhSGLTCZkf0dyKZ0=' 
+        tsigs   => {
+          'test_tsig' => {
+            'data' => 'qneKJvaiXqVrfrS4v+Oi/9GpLqrkhSGLTCZkf0dyKZ0='
           },
         },
         remotes  => {
@@ -30,13 +30,13 @@ describe 'opendnssec dns adapter in file adapter out with remote TSIG' do
             'address4' => '192.0.47.132',
             'address6' => '2620:0:2830:202::132',
           },
-          'localhost' => { 
+          'localhost' => {
             'address4' => '127.0.0.1',
             'tsig_name' => 'test_tsig',
           },
         },
-        zones   => { 
-          'example.org' => { 
+        zones   => {
+          'example.org' => {
             'masters' => [
               'lax.xfr.dns.icann.org',
               'lax.xfr.dns.icann.org',
@@ -46,9 +46,9 @@ describe 'opendnssec dns adapter in file adapter out with remote TSIG' do
         },
       }
       class {'::opendnssec':
-        tsigs   => { 
-          'test_tsig' => { 
-            'data' => 'qneKJvaiXqVrfrS4v+Oi/9GpLqrkhSGLTCZkf0dyKZ0=' 
+        tsigs   => {
+          'test_tsig' => {
+            'data' => 'qneKJvaiXqVrfrS4v+Oi/9GpLqrkhSGLTCZkf0dyKZ0='
           },
         },
         zones => {
@@ -58,8 +58,8 @@ describe 'opendnssec dns adapter in file adapter out with remote TSIG' do
           },
         },
         remotes  => {
-          'localhost' => { 
-            'address4' => '127.0.0.1', 
+          'localhost' => {
+            'address4' => '127.0.0.1',
             'port' => 5353,
             'tsig_name' => 'test_tsig',
           },
