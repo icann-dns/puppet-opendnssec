@@ -90,18 +90,18 @@ describe 'opendnssec::zone' do
       end
       describe 'Change Defaults' do
         context 'signer_policy' do
-        let(:pre_condition) do
-          <<-EOF
-          class { '::opendnssec':
-            policies => {'foobar' => {} },
-            remotes  => {
-              'master' => { 'address4' => '192.0.2.1' },
-              'provide_xfr' => { 'address4' => '192.0.2.2' },
-            },
-          }
-          EOF
-        end
-          
+          let(:pre_condition) do
+            <<-EOF
+            class { '::opendnssec':
+              policies => {'foobar' => {} },
+              remotes  => {
+                'master' => { 'address4' => '192.0.2.1' },
+                'provide_xfr' => { 'address4' => '192.0.2.2' },
+              },
+            }
+            EOF
+          end
+
           before { params.merge!(signer_policy: 'foobar') }
           it { is_expected.to compile }
           it { is_expected.to contain_concat__fragment('policy_foobar') }
