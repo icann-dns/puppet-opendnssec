@@ -18,6 +18,7 @@ define opendnssec::zone (
 
   if $signed {
     include ::opendnssec
+    $enabled   = $::opendnssec::enabled
     $remotes   = $::opendnssec::remotes
     $zone_file = $::opendnssec::zone_file
 

@@ -10,10 +10,10 @@
 <%- end -%>
       </Input>
       <Output>
-<%- if @adapter_output_type == 'DNS' -%>
-          <Adapter type="DNS">/etc/opendnssec/addns-<%= @adapter_provide_xfrs_conf %>.xml</Adapter>
-<%- elsif @adapter_output_type == 'File' -%>
+<%- if @adapter_output_type == 'File' || !@enabled -%>
         <Adapter type="File"><%= @adapter_output_f %></Adapter>
+<%- elsif @adapter_output_type == 'DNS' -%>
+          <Adapter type="DNS">/etc/opendnssec/addns-<%= @adapter_provide_xfrs_conf %>.xml</Adapter>
 <%- end -%>
       </Output>
     </Adapters>
