@@ -24,7 +24,7 @@ describe 'opendnssec::zone' do
   # while all required parameters will require you to add a value
   let(:params) do
     {
-      # policy: 'test_policy',
+      # signer_policy: 'test_signer_policy',
       # :order => '10',
       # :adapter_base_dir => '/var/lib/opendnssec',
       # :adapter_signer_conf => :undef,
@@ -89,12 +89,12 @@ describe 'opendnssec::zone' do
         end
       end
       describe 'Change Defaults' do
-        context 'policy' do
-          let(:pre_condition) { 'opendnssec::policy {\'foobar\': }' }
+        context 'signer_policy' do
+          let(:pre_condition) { 'opendnssec::signer_policy {\'foobar\': }' }
 
-          before { params.merge!(policy: 'foobar') }
+          before { params.merge!(signer_policy: 'foobar') }
           it { is_expected.to compile }
-          it { is_expected.to contain_concat__fragment('policy_foobar') }
+          it { is_expected.to contain_concat__fragment('signer_policy_foobar') }
           it do
             is_expected.to contain_concat__fragment(
               'zone_test_zone'
@@ -427,8 +427,8 @@ describe 'opendnssec::zone' do
         end
       end
       describe 'check bad type' do
-        context 'policy' do
-          before { params.merge!(policy: true) }
+        context 'signer_policy' do
+          before { params.merge!(signer_policy: true) }
           it { expect { subject.call }.to raise_error(Puppet::Error) }
         end
         context 'order' do
