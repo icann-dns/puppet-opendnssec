@@ -34,7 +34,7 @@ define opendnssec::zone (
       default =>  $adapter_output_file,
     }
     $_signer_policy = $signer_policy ? {
-      undef   => $::opendnssec::default_signer_policy_name,
+      undef   => $::opendnssec::default_policy_name,
       default => $signer_policy,
     }
     if $adapter_input_type == 'File' {
@@ -60,7 +60,6 @@ define opendnssec::zone (
         fail("\$::opendnssec::remotes[${provide_xfr}] does not exist but defined in Opendnssec::Zone['${name}'")
       }
     }
-
     if ! defined(Opendnssec::Policy[$_signer_policy]) {
       fail("${name} defines signer_policy ${_signer_policy} however Opendnssec::Policy[${_signer_policy}] is not defined")
     }
