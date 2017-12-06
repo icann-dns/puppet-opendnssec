@@ -57,16 +57,6 @@ describe 'opendnssec::tsig' do
             }x
           )
         end
-        it do
-          is_expected.to contain_exec(
-            'Forcing ods-ksmutil to update after modifying /etc/opendnssec/tsigs/test_tsig.xml'
-          ).with(
-            command: '/usr/bin/yes | /usr/bin/ods-ksmutil update all',
-            user: 'root',
-            refreshonly: true,
-            subscribe: 'File[/etc/opendnssec/tsigs/test_tsig.xml]'
-          )
-        end
       end
       describe 'Change Defaults' do
         context 'key_name' do

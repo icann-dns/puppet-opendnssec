@@ -126,7 +126,7 @@ class opendnssec (
       }
       if $manage_ods_ksmutil {
         exec {'ods-ksmutil updated conf.xml':
-          command     => '/usr/bin/yes | /usr/bin/ods-ksmutil update all',
+          command     => '/usr/bin/yes | /usr/bin/ods-ksmutil update conf',
           user        => $user,
           refreshonly => true,
           subscribe   => $exec_subscribe,
@@ -154,10 +154,17 @@ class opendnssec (
     class { '::opendnssec::zones': zones => $zones }
   }
   if $enabled and $manage_service {
-    service {
-      ['opendnssec-enforcer', 'opendnssec-signer']:
-        ensure => running,
-        enable => true,
+    service {'opendnssec-enforcer':
+      ensure => running,
+      enable => true,
+    } ~> service { 'opendnssec-signer':
+      ensure => running,
+      enable => true,
     }
+    Opendnssec::Tsig<| |> ~> Service['opendnssec-enforcer', 'opendnssec-signer']
+    Opendnssec::Zone<| |> -> Service['opendnssec-enforcer', 'opendnssec-signer']
+    Opendnssec::Addns<| |> ~> Service['opendnssec-enforcer', 'opendnssec-signer']
+    Opendnssec::Policy<| |> -> Service['opendnssec-enforcer', 'opendnssec-signer']
+    Opendnssec::Remote<| |> ~> Service['opendnssec-enforcer', 'opendnssec-signer']
   }
 }

@@ -22,12 +22,4 @@ define opendnssec::tsig (
     group   => $group,
     content => template('opendnssec/etc/opendnssec/tsig.xml.erb'),
   }
-  if $manage_ods_ksmutil and $enabled {
-    exec {"Forcing ods-ksmutil to update after modifying ${base_dir}/${_name}.xml":
-      command     => '/usr/bin/yes | /usr/bin/ods-ksmutil update all',
-      user        => $user,
-      refreshonly => true,
-      subscribe   => File["${base_dir}/${_name}.xml"],
-    }
-  }
 }

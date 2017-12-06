@@ -149,7 +149,7 @@ describe 'opendnssec' do
         end
         it do
           is_expected.to contain_exec('ods-ksmutil updated conf.xml').with(
-            command: '/usr/bin/yes | /usr/bin/ods-ksmutil update all',
+            command: '/usr/bin/yes | /usr/bin/ods-ksmutil update conf',
             user: 'root',
             refreshonly: true,
             subscribe: 'File[/etc/opendnssec/conf.xml]'
