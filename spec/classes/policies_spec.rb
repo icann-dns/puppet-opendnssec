@@ -45,21 +45,20 @@ describe 'opendnssec::policies' do
         it do
           is_expected.to contain_concat('/etc/opendnssec/kasp.xml').with(
             owner: 'root',
-            group: 'root'
           )
         end
         it do
           is_expected.to contain_concat__fragment('policy_header').with(
             target: '/etc/opendnssec/kasp.xml',
             content: "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\n<!-- File managed by puppet DO NOT EDIT -->\n\n<KASP>\n",
-            order: '01'
+            order: '01',
           )
         end
         it do
           is_expected.to contain_concat__fragment('policy_footer').with(
             target: '/etc/opendnssec/kasp.xml',
             content: "</KASP>\n",
-            order: '99'
+            order: '99',
           )
         end
         it do
@@ -67,13 +66,13 @@ describe 'opendnssec::policies' do
             command: '/usr/bin/yes | /usr/bin/ods-ksmutil update all',
             user: 'root',
             refreshonly: true,
-            subscribe: 'Concat[/etc/opendnssec/kasp.xml]'
+            subscribe: 'Concat[/etc/opendnssec/kasp.xml]',
           )
         end
       end
       describe 'Change Defaults' do
         context 'policies' do
-          before { params.merge!(policies: {}) }
+          before(:each) { params.merge!(policies: {}) }
           it { is_expected.to compile }
           # Add Check to validate change was successful
         end
@@ -83,12 +82,12 @@ describe 'opendnssec::policies' do
           it { is_expected.to compile }
           it do
             is_expected.to contain_concat(
-              '/etc/opendnssec/kasp.xml'
+              '/etc/opendnssec/kasp.xml',
             ).with_owner('foobar')
           end
           it do
             is_expected.to contain_exec(
-              'ods-ksmutil updated kasp.xml'
+              'ods-ksmutil updated kasp.xml',
             ).with_user('foobar')
           end
         end
@@ -98,7 +97,7 @@ describe 'opendnssec::policies' do
           it { is_expected.to compile }
           it do
             is_expected.to contain_concat(
-              '/etc/opendnssec/kasp.xml'
+              '/etc/opendnssec/kasp.xml',
             ).with_group('foobar')
           end
         end
@@ -111,12 +110,12 @@ describe 'opendnssec::policies' do
           it { is_expected.to contain_concat('/foobar') }
           it do
             is_expected.to contain_concat__fragment('policy_header').with_target(
-              '/foobar'
+              '/foobar',
             )
           end
           it do
             is_expected.to contain_concat__fragment('policy_footer').with_target(
-              '/foobar'
+              '/foobar',
             )
           end
         end
@@ -128,7 +127,7 @@ describe 'opendnssec::policies' do
           it { is_expected.to compile }
           it do
             is_expected.not_to contain_exec(
-              'ods-ksmutil updated kasp.xml'
+              'ods-ksmutil updated kasp.xml',
             )
           end
         end
@@ -140,15 +139,15 @@ describe 'opendnssec::policies' do
           it { is_expected.to compile }
           it do
             is_expected.not_to contain_exec(
-              'ods-ksmutil updated kasp.xml'
+              'ods-ksmutil updated kasp.xml',
             )
           end
         end
       end
       describe 'check bad type' do
         context 'policies' do
-          before { params.merge!(policies: true) }
-          it { expect { subject.call }.to raise_error(Puppet::Error) }
+          before(:each) { params.merge!(policies: true) }
+          it { is_expected.to raise_error(Puppet::Error) }
         end
       end
     end
