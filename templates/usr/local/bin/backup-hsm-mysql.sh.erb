@@ -53,9 +53,10 @@ fi
 ods-ksmutil backup prepare|grep -v "There were no keys to mark"
 
 ### MySQL backup
-mysqldump --opt --log-error=${TMP_DIR}/backup-error-${TODAY}.log -c -f -A > ${TMP_DIR}/mysql-${TODAY}.sql
+#mysqldump --opt --log-error=${TMP_DIR}/backup-error-${TODAY}.log -c -f -A > ${TMP_DIR}/mysql-${TODAY}.sql
+mysqldump --opt --log-error=${TMP_DIR}/backup-error-${TODAY}.log -c -f kasp > ${TMP_DIR}/kasp-${TODAY}.sql
 
-tar cvjf ${DIR}/${HOST}-${TODAY}.tar.bz -C ${TMP_DIR} mysql-${TODAY}.sql \
+tar cvjf ${DIR}/${HOST}-${TODAY}.tar.bz -C ${TMP_DIR} mysql-${TODAY}.sql kasp-${TODAY}.sql\
   backup-error-${TODAY}.log  /opt/nfast/kmdata /var/lib/opendnssec \
   /etc/opendnssec /var/log/syslog 
 
