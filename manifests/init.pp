@@ -30,11 +30,13 @@ class opendnssec (
   String[1,100]         $datastore_password     = 'change_me',
   Stdlib::Absolutepath  $mysql_sql_file         = '/usr/share/opendnssec/database_create.mysql',
 
+  Stdlib::Absolutepath  $base_dir               = $::opendnssec::params::base_dir,
   Stdlib::Absolutepath  $policy_file            = '/etc/opendnssec/kasp.xml',
   Stdlib::Absolutepath  $zone_file              = '/etc/opendnssec/zonelist.xml',
   Stdlib::Absolutepath  $tsigs_dir              = '/etc/opendnssec/tsigs',
   Stdlib::Absolutepath  $remotes_dir            = '/etc/opendnssec/remotes',
   Stdlib::Absolutepath  $xsl_file               = '/usr/share/opendnssec/addns.xsl',
+  Stdlib::Absolutepath  $sqlite_file            = "$base_dir/kasp.db",
 
   Boolean               $xferout_enabled        = true,
 
@@ -46,12 +48,14 @@ class opendnssec (
   String                $default_policy_name    = 'default',
   Array[String]         $default_masters        = [],
   Array[String]         $default_provide_xfrs   = [],
+  Boolean               $notify_boolean          = false,
+  String                $notify_command          = '',
 
 ) inherits opendnssec::params {
 
   if $manage_packages {
-    ensure_packages(['opendnssec', 'xsltproc'])
-    file {'/var/lib/opendnssec':
+    ensure_packages($packages)
+    file {$base_dir:
       ensure => 'directory',
       mode   => '0640',
       owner  => $user,
@@ -83,10 +87,16 @@ class opendnssec (
       }
 
       if $manage_packages {
-        ensure_packages(['opendnssec-enforcer-mysql'])
+        ensure_packages($mysql_packages)
       }
     } elsif $datastore_engine == 'sqlite' {
-      ensure_packages(['opendnssec-enforcer-sqlite'])
+      if $datastore_engine_packages {
+        ensure_packages($sqlite_packages)
+      }
+      exec {'ods-ksmutil setup':
+        command     => "/usr/bin/yes | $ksmutil_path setup",
+        onlyif     => "/bin/test `du $sqlite_file | cut -f1` -eq 0",
+      }
     }
   }
   if $manage_conf {
@@ -126,7 +136,7 @@ class opendnssec (
       }
       if $manage_ods_ksmutil {
         exec {'ods-ksmutil updated conf.xml':
-          command     => '/usr/bin/yes | /usr/bin/ods-ksmutil update all',
+          command     => "/usr/bin/yes | $ksmutil_path update all",
           user        => $user,
           refreshonly => true,
           subscribe   => $exec_subscribe,
@@ -155,7 +165,7 @@ class opendnssec (
   }
   if $enabled and $manage_service {
     service {
-      ['opendnssec-enforcer', 'opendnssec-signer']:
+      $services:
         ensure => running,
         enable => true,
     }
