@@ -54,7 +54,7 @@ class opendnssec (
 ) inherits opendnssec::params {
 
   if $manage_packages {
-    ensure_packages($::packages)
+    ensure_packages($packages)
     file {$base_dir:
       ensure => 'directory',
       mode   => '0640',
@@ -87,14 +87,14 @@ class opendnssec (
       }
 
       if $manage_packages {
-        ensure_packages($::mysql_packages)
+        ensure_packages($mysql_packages)
       }
     } elsif $datastore_engine == 'sqlite' {
-      if $::datastore_engine_packages {
-        ensure_packages($::sqlite_packages)
+      if $datastore_engine_packages {
+        ensure_packages($sqlite_packages)
       }
       exec {'ods-ksmutil setup':
-        command => "/usr/bin/yes | ${::ksmutil_path} setup",
+        command => "/usr/bin/yes | ${ksmutil_path} setup",
         onlyif  => "/bin/test `du ${sqlite_file} | cut -f1` -eq 0",
       }
     }
@@ -136,7 +136,7 @@ class opendnssec (
       }
       if $manage_ods_ksmutil {
         exec {'ods-ksmutil updated conf.xml':
-          command     => "/usr/bin/yes | ${::ksmutil_path} update all",
+          command     => "/usr/bin/yes | ${ksmutil_path} update all",
           user        => $user,
           refreshonly => true,
           subscribe   => $exec_subscribe,
@@ -165,7 +165,7 @@ class opendnssec (
   }
   if $enabled and $manage_service {
     service {
-      $::services:
+      $services:
         ensure => running,
         enable => true,
     }
