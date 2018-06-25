@@ -14,6 +14,11 @@ class opendnssec (
   Integer[1,7]          $logging_level          = 3,
   Tea::Syslogfacility   $logging_facility       = 'local0',
 
+  Array[String]         $packages               = $::opendnssec::params::packages,
+  Array[String]         $services               = $::opendnssec::params::services,
+  Array[String]         $sqlite_packages        = $::opendnssec::params::sqlite_packages,
+  Array[String]         $mysql_packages         = $::opendnssec::params::mysql_packages,
+
   String[1,100]         $repository_name        = 'SoftHSM',
   Stdlib::Absolutepath  $repository_module      = $::opendnssec::params::repository_module,
   String[1,100]         $repository_pin         = '1234',
@@ -37,6 +42,7 @@ class opendnssec (
   Stdlib::Absolutepath  $remotes_dir            = '/etc/opendnssec/remotes',
   Stdlib::Absolutepath  $xsl_file               = '/usr/share/opendnssec/addns.xsl',
   Stdlib::Absolutepath  $sqlite_file            = "${base_dir}/kasp.db",
+  Stdlib::Absolutepath  $ksmutil_path           = $::opendnssec::params::ksmutil_path,
 
   Boolean               $xferout_enabled        = true,
 
@@ -90,9 +96,10 @@ class opendnssec (
         ensure_packages($mysql_packages)
       }
     } elsif $datastore_engine == 'sqlite' {
-      if $datastore_engine_packages {
+      if $manage_packages {
         ensure_packages($sqlite_packages)
       }
+
       exec {'ods-ksmutil setup':
         command => "/usr/bin/yes | ${ksmutil_path} setup",
         onlyif  => "/bin/test `du ${sqlite_file} | cut -f1` -eq 0",
