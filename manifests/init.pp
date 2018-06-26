@@ -42,7 +42,13 @@ class opendnssec (
   Stdlib::Absolutepath  $remotes_dir            = '/etc/opendnssec/remotes',
   Stdlib::Absolutepath  $xsl_file               = '/usr/share/opendnssec/addns.xsl',
   Stdlib::Absolutepath  $sqlite_file            = "${base_dir}/kasp.db",
+  Stdlib::Absolutepath  $working_dir            = "${base_dir}/tmp",
+  Stdlib::Absolutepath  $signconf_dir           = "${base_dir}/signconf",
+  Stdlib::Absolutepath  $signed_dir             = "${base_dir}/signed",
   Stdlib::Absolutepath  $ksmutil_path           = $::opendnssec::params::ksmutil_path,
+
+  Tea::Ip_address       $listener_address       = '',
+  Tea::Port             $listener_port          = 53,
 
   Boolean               $xferout_enabled        = true,
 
@@ -72,24 +78,24 @@ class opendnssec (
     ensure => file,
     source => 'puppet:///modules/opendnssec/usr/share/opendnssec/addns.xsl',
   }
-  file {[$tsigs_dir, $remotes_dir]:
+  file {[$tsigs_dir, $remotes_dir, $signconf_dir, $signed_dir, $working_dir]:
     ensure => 'directory',
     owner  => $user,
     group  => $group,
   }
   if $enabled and $manage_datastore {
+    if $manage_ods_ksmutil and $manage_conf {
+      $datastore_setup_before = Exec['ods-ksmutil updated conf.xml']
+    } else {
+      $datastore_setup_before = undef
+    }
     if $datastore_engine == 'mysql' {
-      if $manage_ods_ksmutil and $manage_conf {
-        $mysql_db_before = Exec['ods-ksmutil updated conf.xml']
-      } else {
-        $mysql_db_before = undef
-      }
       require  ::mysql::server
       mysql::db {$datastore_name:
         user     => $datastore_user,
         password => $datastore_password,
         sql      => $mysql_sql_file,
-        before   => $mysql_db_before,
+        before   => $datastore_setup_before,
       }
 
       if $manage_packages {
@@ -101,8 +107,11 @@ class opendnssec (
       }
 
       exec {'ods-ksmutil setup':
-        command => "/usr/bin/yes | ${ksmutil_path} setup",
-        onlyif  => "/bin/test `du ${sqlite_file} | cut -f1` -eq 0",
+        path     => ['/bin', '/usr/bin', '/sbin', '/usr/sbin', '/usr/local/bin'],
+        provider => 'shell',
+        command  => "/usr/bin/yes | ${ksmutil_path} setup",
+        onlyif   => "if [[ ! -f ${sqlite_file} ]] || [[ `du ${sqlite_file} | cut -f1` -eq 0 ]]; then exit 0; else exit 1; fi",
+        before   => $datastore_setup_before,
       }
     }
   }
