@@ -14,6 +14,11 @@ class opendnssec (
   Integer[1,7]          $logging_level          = 3,
   Tea::Syslogfacility   $logging_facility       = 'local0',
 
+  Array[String]         $packages               = $::opendnssec::params::packages,
+  Array[String]         $services               = $::opendnssec::params::services,
+  Array[String]         $sqlite_packages        = $::opendnssec::params::sqlite_packages,
+  Array[String]         $mysql_packages         = $::opendnssec::params::mysql_packages,
+
   String[1,100]         $repository_name        = 'SoftHSM',
   Stdlib::Absolutepath  $repository_module      = $::opendnssec::params::repository_module,
   String[1,100]         $repository_pin         = '1234',
@@ -30,11 +35,20 @@ class opendnssec (
   String[1,100]         $datastore_password     = 'change_me',
   Stdlib::Absolutepath  $mysql_sql_file         = '/usr/share/opendnssec/database_create.mysql',
 
+  Stdlib::Absolutepath  $base_dir               = $::opendnssec::params::base_dir,
   Stdlib::Absolutepath  $policy_file            = '/etc/opendnssec/kasp.xml',
   Stdlib::Absolutepath  $zone_file              = '/etc/opendnssec/zonelist.xml',
   Stdlib::Absolutepath  $tsigs_dir              = '/etc/opendnssec/tsigs',
   Stdlib::Absolutepath  $remotes_dir            = '/etc/opendnssec/remotes',
   Stdlib::Absolutepath  $xsl_file               = '/usr/share/opendnssec/addns.xsl',
+  Stdlib::Absolutepath  $sqlite_file            = "${base_dir}/kasp.db",
+  Stdlib::Absolutepath  $working_dir            = "${base_dir}/tmp",
+  Stdlib::Absolutepath  $signconf_dir           = "${base_dir}/signconf",
+  Stdlib::Absolutepath  $signed_dir             = "${base_dir}/signed",
+  Stdlib::Absolutepath  $ksmutil_path           = $::opendnssec::params::ksmutil_path,
+
+  Tea::Ip_address       $listener_address       = '',
+  Tea::Port             $listener_port          = 53,
 
   Boolean               $xferout_enabled        = true,
 
@@ -46,12 +60,14 @@ class opendnssec (
   String                $default_policy_name    = 'default',
   Array[String]         $default_masters        = [],
   Array[String]         $default_provide_xfrs   = [],
+  Boolean               $notify_boolean          = false,
+  String                $notify_command          = '',
 
 ) inherits opendnssec::params {
 
   if $manage_packages {
-    ensure_packages(['opendnssec', 'xsltproc'])
-    file {'/var/lib/opendnssec':
+    ensure_packages($packages)
+    file {$base_dir:
       ensure => 'directory',
       mode   => '0640',
       owner  => $user,
@@ -62,31 +78,41 @@ class opendnssec (
     ensure => file,
     source => 'puppet:///modules/opendnssec/usr/share/opendnssec/addns.xsl',
   }
-  file {[$tsigs_dir, $remotes_dir]:
+  file {[$tsigs_dir, $remotes_dir, $signconf_dir, $signed_dir, $working_dir]:
     ensure => 'directory',
     owner  => $user,
     group  => $group,
   }
   if $enabled and $manage_datastore {
+    if $manage_ods_ksmutil and $manage_conf {
+      $datastore_setup_before = Exec['ods-ksmutil updated conf.xml']
+    } else {
+      $datastore_setup_before = undef
+    }
     if $datastore_engine == 'mysql' {
-      if $manage_ods_ksmutil and $manage_conf {
-        $mysql_db_before = Exec['ods-ksmutil updated conf.xml']
-      } else {
-        $mysql_db_before = undef
-      }
       require  ::mysql::server
       mysql::db {$datastore_name:
         user     => $datastore_user,
         password => $datastore_password,
         sql      => $mysql_sql_file,
-        before   => $mysql_db_before,
+        before   => $datastore_setup_before,
       }
 
       if $manage_packages {
-        ensure_packages(['opendnssec-enforcer-mysql'])
+        ensure_packages($mysql_packages)
       }
     } elsif $datastore_engine == 'sqlite' {
-      ensure_packages(['opendnssec-enforcer-sqlite'])
+      if $manage_packages {
+        ensure_packages($sqlite_packages)
+      }
+
+      exec {'ods-ksmutil setup':
+        path     => ['/bin', '/usr/bin', '/sbin', '/usr/sbin', '/usr/local/bin'],
+        provider => 'shell',
+        command  => "/usr/bin/yes | ${ksmutil_path} setup",
+        onlyif   => "if [[ ! -f ${sqlite_file} ]] || [[ `du ${sqlite_file} | cut -f1` -eq 0 ]]; then exit 0; else exit 1; fi",
+        before   => $datastore_setup_before,
+      }
     }
   }
   if $manage_conf {
@@ -126,7 +152,7 @@ class opendnssec (
       }
       if $manage_ods_ksmutil {
         exec {'ods-ksmutil updated conf.xml':
-          command     => '/usr/bin/yes | /usr/bin/ods-ksmutil update all',
+          command     => "/usr/bin/yes | ${ksmutil_path} update all",
           user        => $user,
           refreshonly => true,
           subscribe   => $exec_subscribe,
@@ -155,7 +181,7 @@ class opendnssec (
   }
   if $enabled and $manage_service {
     service {
-      ['opendnssec-enforcer', 'opendnssec-signer']:
+      $services:
         ensure => running,
         enable => true,
     }
