@@ -4,7 +4,7 @@ require 'spec_helper_acceptance'
 
 # this test is flaxy due to a bug in opendnssec but
 # i have never seen centos-7 work in travis-ci
-describe 'opendnssec dns adapter -> dns adapter', tier_low: true do
+describe 'opendnssec dns adapter -> dns adapter', tier_high: true do
   context 'defaults' do
     if fact('osfamily') == 'RedHat'
       enforcer = 'ods-enforcerd'

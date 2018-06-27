@@ -2,7 +2,7 @@
 
 require 'spec_helper_acceptance'
 
-describe 'opendnssec file adapter in dns adapter out with remote TSIG', tier_high: true do
+describe 'opendnssec file adapter in dns adapter out with remote TSIG', tier_disable: true do
   context 'defaults' do
     if fact('osfamily') == 'RedHat'
       enforcer = 'ods-enforcerd'
