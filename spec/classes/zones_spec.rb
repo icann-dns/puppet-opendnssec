@@ -45,21 +45,20 @@ describe 'opendnssec::zones' do
         it do
           is_expected.to contain_concat('/etc/opendnssec/zonelist.xml').with(
             owner: 'root',
-            group: 'root'
           )
         end
         it do
           is_expected.to contain_concat__fragment('zone_header').with(
             target: '/etc/opendnssec/zonelist.xml',
             content: "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\n<!-- File managed by Puppet DO NOT EDIT -->\n\n<ZoneList>\n",
-            order: '01'
+            order: '01',
           )
         end
         it do
           is_expected.to contain_concat__fragment('zone_footer') .with(
             target: '/etc/opendnssec/zonelist.xml',
             content: "</ZoneList>\n",
-            order: '99'
+            order: '99',
           )
         end
         it do
@@ -67,13 +66,13 @@ describe 'opendnssec::zones' do
             command: '/usr/bin/yes | /usr/bin/ods-ksmutil update all',
             user: 'root',
             refreshonly: true,
-            subscribe: 'Concat[/etc/opendnssec/zonelist.xml]'
+            subscribe: 'Concat[/etc/opendnssec/zonelist.xml]',
           )
         end
       end
       describe 'Change Defaults' do
         context 'zones' do
-          before { params.merge!(zones: {}) }
+          before(:each) { params.merge!(zones: {}) }
           it { is_expected.to compile }
           # Add Check to validate change was successful
         end
@@ -83,12 +82,12 @@ describe 'opendnssec::zones' do
           it { is_expected.to compile }
           it do
             is_expected.to contain_concat(
-              '/etc/opendnssec/zonelist.xml'
+              '/etc/opendnssec/zonelist.xml',
             ).with_owner('foobar')
           end
           it do
             is_expected.to contain_exec(
-              'ods-ksmutil updated zonelist.xml'
+              'ods-ksmutil updated zonelist.xml',
             ).with_user('foobar')
           end
         end
@@ -98,7 +97,7 @@ describe 'opendnssec::zones' do
           it { is_expected.to compile }
           it do
             is_expected.to contain_concat(
-              '/etc/opendnssec/zonelist.xml'
+              '/etc/opendnssec/zonelist.xml',
             ).with_group('foobar')
           end
         end
@@ -111,12 +110,12 @@ describe 'opendnssec::zones' do
           it { is_expected.to contain_concat('/foobar') }
           it do
             is_expected.to contain_concat__fragment('zone_header').with_target(
-              '/foobar'
+              '/foobar',
             )
           end
           it do
             is_expected.to contain_concat__fragment('zone_footer').with_target(
-              '/foobar'
+              '/foobar',
             )
           end
         end
@@ -128,7 +127,7 @@ describe 'opendnssec::zones' do
           it { is_expected.to compile }
           it do
             is_expected.not_to contain_exec(
-              'ods-ksmutil updated zonelist.xml'
+              'ods-ksmutil updated zonelist.xml',
             )
           end
         end
@@ -140,15 +139,15 @@ describe 'opendnssec::zones' do
           it { is_expected.to compile }
           it do
             is_expected.not_to contain_exec(
-              'ods-ksmutil updated zonelist.xml'
+              'ods-ksmutil updated zonelist.xml',
             )
           end
         end
       end
       describe 'check bad type' do
         context 'zones' do
-          before { params.merge!(zones: true) }
-          it { expect { subject.call }.to raise_error(Puppet::Error) }
+          before(:each) { params.merge!(zones: true) }
+          it { is_expected.to raise_error(Puppet::Error) }
         end
       end
     end
