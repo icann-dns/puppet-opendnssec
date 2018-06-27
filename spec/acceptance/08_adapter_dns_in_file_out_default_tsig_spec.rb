@@ -2,8 +2,17 @@
 
 require 'spec_helper_acceptance'
 
-describe 'opendnssec dns adapter in file adapter out with default TSIG' do
+describe 'opendnssec dns adapter in file adapter out with default TSIG', tier_low: true do
   context 'defaults' do
+    if fact('osfamily') == 'RedHat'
+      enforcer = 'ods-enforcerd'
+      signer = 'ods-signerd'
+      base_dir = '/var/opendnssec'
+    else
+      enforcer = 'opendnssec-enforcer'
+      signer = 'opendnssec-signer'
+      base_dir = '/var/lib/opendnssec'
+    end
     it 'work with no errors' do
       pp = <<-EOF
       class {'::softhsm':
@@ -70,10 +79,10 @@ describe 'opendnssec dns adapter in file adapter out with default TSIG' do
       apply_manifest(pp, catch_failures: true)
       expect(apply_manifest(pp, catch_failures: true).exit_code).to eq 0
     end
-    describe service('opendnssec-enforcer') do
+    describe service(enforcer) do
       it { is_expected.to be_running }
     end
-    describe service('opendnssec-signer') do
+    describe service(signer) do
       it { is_expected.to be_running }
     end
     describe port(53) do
@@ -85,7 +94,7 @@ describe 'opendnssec dns adapter in file adapter out with default TSIG' do
     describe command('/usr/bin/ods-ksmutil policy list') do
       its(:stdout) do
         is_expected.to match(
-          %r{default\s+default - Deny:NSEC3; KSK:RSASHA1-NSEC3-SHA1; ZSK:RSASHA1-NSEC3-SHA1}
+          %r{default\s+default - Deny:NSEC3; KSK:RSASHA1-NSEC3-SHA1; ZSK:RSASHA1-NSEC3-SHA1},
         )
       end
     end
@@ -102,7 +111,7 @@ describe 'opendnssec dns adapter in file adapter out with default TSIG' do
       its(:stdout) { is_expected.to match('example.net') }
     end
     describe command(
-      '/bin/grep RRSIG /var/lib/opendnssec/signed/example.net'
+      "/bin/grep RRSIG #{base_dir}/signed/example.net",
     ) do
       its(:exit_status) { is_expected.to eq 0 }
     end
