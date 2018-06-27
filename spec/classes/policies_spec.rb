@@ -39,6 +39,13 @@ describe 'opendnssec::policies' do
         facts
       end
 
+      case facts[:os]['family']
+      when 'Debian'
+        let(:ksmutil_path) { '/usr/bin/ods-ksmutil' }
+      when 'RedHat'
+        let(:ksmutil_path) { '/bin/ods-ksmutil' }
+      end
+
       describe 'check default config' do
         it { is_expected.to compile.with_all_deps }
         it { is_expected.to contain_class('opendnssec::policies') }
@@ -63,7 +70,7 @@ describe 'opendnssec::policies' do
         end
         it do
           is_expected.to contain_exec('ods-ksmutil updated kasp.xml').with(
-            command: '/usr/bin/yes | /usr/bin/ods-ksmutil update all',
+            command: "/usr/bin/yes | #{ksmutil_path} update all",
             user: 'root',
             refreshonly: true,
             subscribe: 'Concat[/etc/opendnssec/kasp.xml]',
