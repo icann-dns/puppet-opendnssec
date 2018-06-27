@@ -2,7 +2,7 @@
 
 require 'spec_helper_acceptance'
 
-# this test is flaxy due to a bug in opendnssec but 
+# this test is flaxy due to a bug in opendnssec but
 # i have never seen centos-7 work in travis-ci
 unless fact('osfamily') == 'RedHat'
   describe 'opendnssec dns adapter -> dns adapter', tier_low: true do
