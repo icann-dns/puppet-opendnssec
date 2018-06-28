@@ -2,7 +2,6 @@
 #
 class opendnssec::zones (
   Hash $zones = {},
-
 ) {
 
   include ::opendnssec

@@ -102,7 +102,7 @@ describe 'opendnssec' do
           it do
             is_expected.to contain_exec('ods-ksmutil setup').with(
               command: "/usr/bin/yes | #{ksmutil_path} setup",
-              onlyif: "/bin/test `du #{base_dir}/kasp.db | cut -f1` -eq 0",
+              unless: "test -s #{base_dir}/kasp.db",
             )
           end
         end
@@ -155,7 +155,13 @@ describe 'opendnssec' do
             \s+</Privileges>
             }x,
           ).with_content(
-            %r{<Port>53</Port>},
+            %r{
+            <Listener>
+            \s+<Interface>
+            \s+<Port>53</Port>
+            \s+</Interface>
+            \s+</Listener>
+            }x,
           )
         end
         if facts[:os]['family'] == 'RedHat'
@@ -574,6 +580,58 @@ describe 'opendnssec' do
           it do
             is_expected.to contain_file('/etc/opendnssec/conf.xml').with_content(
               %r{<ZoneListFile>/foobar</ZoneListFile>},
+            )
+          end
+        end
+        context 'listener_address' do
+          before(:each) { params.merge!(listener_address: '192.0.2.1') }
+          it { is_expected.to compile }
+          it do
+            is_expected.to contain_file('/etc/opendnssec/conf.xml').with_content(
+              %r{
+              <Listener>
+              \s+<Interface>
+              \s+<Address>192.0.2.1</Address>
+              \s+<Port>53</Port>
+              \s+</Interface>
+              \s+</Listener>
+              }x,
+            )
+          end
+        end
+        context 'listener_port' do
+          before(:each) { params.merge!(listener_port: 42) }
+          it { is_expected.to compile }
+          it do
+            is_expected.to contain_file('/etc/opendnssec/conf.xml').with_content(
+              %r{
+              <Listener>
+              \s+<Interface>
+              \s+<Port>42</Port>
+              \s+</Interface>
+              \s+</Listener>
+              }x,
+            )
+          end
+        end
+        context 'listener_address and port' do
+          before(:each) do
+            params.merge!(
+              listener_address: '192.0.2.1',
+              listener_port: 42,
+            )
+          end
+          it { is_expected.to compile }
+          it do
+            is_expected.to contain_file('/etc/opendnssec/conf.xml').with_content(
+              %r{
+              <Listener>
+              \s+<Interface>
+              \s+<Address>192.0.2.1</Address>
+              \s+<Port>42</Port>
+              \s+</Interface>
+              \s+</Listener>
+              }x,
             )
           end
         end

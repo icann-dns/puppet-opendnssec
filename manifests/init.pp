@@ -48,7 +48,7 @@ class opendnssec (
   Stdlib::Absolutepath  $unsigned_dir           = "${base_dir}/unsigned",
   Stdlib::Absolutepath  $ksmutil_path           = $::opendnssec::params::ksmutil_path,
 
-  Tea::Ip_address       $listener_address       = '',
+  Optional[Tea::Ip_address] $listener_address   = undef,
   Tea::Port             $listener_port          = 53,
 
   Boolean               $xferout_enabled        = true,
@@ -114,7 +114,7 @@ class opendnssec (
         path     => ['/bin', '/usr/bin', '/sbin', '/usr/sbin', '/usr/local/bin'],
         provider => 'shell',
         command  => "/usr/bin/yes | ${ksmutil_path} setup",
-        onlyif   => "if [[ ! -f ${sqlite_file} ]] || [[ `du ${sqlite_file} | cut -f1` -eq 0 ]]; then exit 0; else exit 1; fi",
+        unless   => "test -s ${sqlite_file}",
         before   => $datastore_setup_before,
       }
     }
