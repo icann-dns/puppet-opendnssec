@@ -76,12 +76,17 @@
 
     <!-- <PidFile>/var/run/opendnssec/signerd.pid</PidFile> -->
     <!-- <SocketFile>/var/run/opendnssec/engine.sock</SocketFile> -->
-    <WorkingDirectory><%= @working_dir %>/tmp</WorkingDirectory>
+    <WorkingDirectory><%= @working_dir %></WorkingDirectory>
     <WorkerThreads>4</WorkerThreads>
     <!-- <SignerThreads>4</SignerThreads> -->
 
     <Listener>
-      <Interface><Port>53</Port></Interface>
+      <Interface>
+      <%- if @listener_address -%>
+        <Address><%= @listener_address %></Address>
+      <%- end -%>
+        <Port><%= @listener_port %></Port>
+      </Interface>
     </Listener>
 
 	<!-- the <NotifyCommmand> will expand the following variables:
