@@ -37,6 +37,7 @@ describe 'opendnssec' do
       #:datastore_name => 'kasp',
       #:datastore_user => 'opendnssec',
       #:datastore_password => 'change_me',
+      #:listener_port => '53',
       #:policy_file => '/etc/opendnssec/kasp.xml',
       #:zone_file => '/etc/opendnssec/zonelist.xml',
       #:addns_file => '/etc/opendnssec/addns.xml',
@@ -153,6 +154,8 @@ describe 'opendnssec' do
             \s+<Group>(opendnssec|ods)</Group>
             \s+</Privileges>
             }x,
+          ).with_content(
+            %r{<Port>53</Port>},
           )
         end
         if facts[:os]['family'] == 'RedHat'
