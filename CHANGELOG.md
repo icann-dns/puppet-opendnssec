@@ -1,3 +1,7 @@
+### 2018-06-28 0.4.0
+* Add support abbility to configuere listening port and address  [sarc0](https://github.com/sacr0)
+* Add support abbility to configuere working directories  [sarc0](https://github.com/sacr0)
+
 ### 2018-06-28 0.3.1
 * disable an additional centos test untill we find a fix for [1](https://github.com/icann-dns/puppet-opendnssec/issues/1)
 
