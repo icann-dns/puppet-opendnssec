@@ -1,3 +1,6 @@
+### 2018-06-28 1.0.0
+* convert modue to use hiera version 5 data source instead of inheriting from params
+
 ### 2018-06-28 0.4.0
 * Add support abbility to configuere listening port and address  [sarc0](https://github.com/sacr0)
 * Add support abbility to configuere working directories  [sarc0](https://github.com/sacr0)
