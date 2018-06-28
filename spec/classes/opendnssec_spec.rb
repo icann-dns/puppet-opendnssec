@@ -91,7 +91,6 @@ describe 'opendnssec' do
       describe 'check default config' do
         it { is_expected.to compile.with_all_deps }
         it { is_expected.to contain_class('opendnssec') }
-        it { is_expected.to contain_class('opendnssec::params') }
         it { is_expected.to contain_opendnssec__addns('default') }
         it { is_expected.to contain_opendnssec__policy('default') }
         it { is_expected.to contain_concat__fragment('policy_default') }
