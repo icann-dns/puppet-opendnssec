@@ -1,14 +1,14 @@
 # Class Opendnssed::backup
 #
 class opendnssec::backup_cron (
-  Tea::Host            $backup_host,
-  String[1,32]         $backup_user = 'backup',
-  String               $backup_glob = '*.tar.bz2',
-  String               $date_format = '%Y%m%d-%H%M',
-  Integer              $retention   = 500,
-  Stdlib::Absolutepath $backup_dir  = '/opt/backup',
-  Stdlib::Absolutepath $tmp_dirbase = '/opt/tmp',
-  Stdlib::Absolutepath $script_path = '/usr/local/bin/backup-hsm-mysql.sh',
+  Stdlib::Host         $backup_host,
+  String[1,32]         $backup_user,
+  String               $backup_glob,
+  String               $date_format,
+  Integer              $retention,
+  Stdlib::Absolutepath $backup_dir,
+  Stdlib::Absolutepath $tmp_dirbase,
+  Stdlib::Absolutepath $script_path,
 
 ) {
   include ::opendnssec
