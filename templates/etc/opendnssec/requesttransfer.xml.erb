@@ -4,8 +4,8 @@
         <Remote>
           <Address><%= @address4 %></Address>
           <Port><%= @port %></Port>
-  <%- if @_tsig_name != 'NOKEY' -%>
-          <Key><%= @_tsig_name %></Key>
+  <%- if @_tsig_name_transfer_request != 'NOKEY' -%>
+          <Key><%= @_tsig_name_transfer_request %></Key>
   <%- end -%>
         </Remote>
 <%- end -%>
@@ -13,8 +13,8 @@
         <Remote>
           <Address><%= @address6 %></Address>
           <Port><%= @port %></Port>
-  <%- if @_tsig_name != 'NOKEY' -%>
-          <Key><%= @_tsig_name %></Key>
+  <%- if @_tsig_name_transfer_request != 'NOKEY' -%>
+          <Key><%= @_tsig_name_transfer_request %></Key>
   <%- end -%>
         </Remote>
 <%- end -%>
