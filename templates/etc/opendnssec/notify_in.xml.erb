@@ -3,11 +3,17 @@
 <%- if @address4 -%>
         <Peer>
           <Prefix><%= @address4 %></Prefix>
+  <%- if @_tsig_name != 'NOKEY' -%>
+          <Key><%= @_tsig_name %></Key>
+  <%- end -%>
         </Peer>
 <%- end -%>
 <%- if @address6 -%>
         <Peer>
           <Prefix><%= @address6 %></Prefix>
+  <%- if @_tsig_name != 'NOKEY' -%>
+          <Key><%= @_tsig_name %></Key>
+  <%- end -%>
         </Peer>
 <%- end -%>
       </AllowNotify>
