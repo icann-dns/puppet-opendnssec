@@ -47,16 +47,16 @@ define opendnssec::remote (
       fail("${name}: you must define tsig_name when you define tsig")
     }
 
-    if ! $tsig_name_notify_in {
-      fail("${name}: you must define tsig_name when you define tsig")
-    } else {
+    if $tsig_name_notify_in and $tsig_name_notify_in != '' {
       $_tsig_name_notify_in = $tsig_name_notify_in
+    } else {
+      $_tsig_name_notify_in = $::opendnssec::default_tsig_name
     }
 
-    if ! $tsig_name_notify_out {
-      fail("${name}: you must define tsig_name when you define tsig")
-    } else {
+    if $tsig_name_notify_out and $tsig_name_notify_out != '' {
       $_tsig_name_notify_out = $tsig_name_notify_out
+    } else {
+      $_tsig_name_notify_out = $::opendnssec::default_tsig_name
     }
   } else {
     if $tsig_name and $tsig_name != '' {

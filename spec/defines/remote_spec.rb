@@ -16,7 +16,10 @@ describe 'opendnssec::remote' do
       # tsig: :undef,
       # tsig_name: :undef,
       # port: "53",
-
+      # tsig_name_transfer_request: :undef,
+      # tsig_name_transfer_provide: :undef,
+      # tsig_name_notify_in: :undef,
+      # tsig_name_notify_out: :undef,
     }
   end
   # add these two lines in a single test block to enable puppet and hiera debug mode
@@ -514,6 +517,79 @@ describe 'opendnssec::remote' do
             )
           end
         end
+        context 'different tsigs' do
+          before(:each) do
+            params.merge!(
+              tsig_name_transfer_request: 'test_tsig_transfer_request',
+              tsig_name_transfer_provide: 'test_tsig_transfer_provide',
+              tsig_name_notify_in: 'test_tsig_notify_in',
+              tsig_name_notify_out: 'test_tsig_notify_out',
+            )
+          end
+          it { is_expected.to compile }
+          it do
+            is_expected.to contain_file(
+              '/etc/opendnssec/remotes/test_remote_requesttransfer.xml',
+            ).with_content(
+              %r{
+              <\?xml\sversion="1.0"\?>
+              \s+<RequestTransfer>
+              \s+<Remote>
+              \s+<Address>192.0.2.1</Address>
+              \s+<Port>53</Port>
+              \s+<Key>test_tsig_transfer_request</Key>
+              \s+</Remote>
+              \s+</RequestTransfer>
+              }x,
+            )
+          end
+          it do
+            is_expected.to contain_file(
+              '/etc/opendnssec/remotes/test_remote_notify_in.xml',
+            ).with_content(
+              %r{
+              <\?xml\sversion="1.0"\?>
+              \s+<AllowNotify>
+              \s+<Peer>
+              \s+<Prefix>192.0.2.1</Prefix>
+              \s+<Key>test_tsig_notify_in</Key>
+              \s+</Peer>
+              \s+</AllowNotify>
+              }x,
+            )
+          end
+          it do
+            is_expected.to contain_file(
+              '/etc/opendnssec/remotes/test_remote_providetransfer.xml',
+            ).with_content(
+              %r{
+              <\?xml\sversion="1.0"\?>
+              \s+<ProvideTransfer>
+              \s+<Peer>
+              \s+<Prefix>192.0.2.1</Prefix>
+              \s+<Key>test_tsig_transfer_provide</Key>
+              \s+</Peer>
+              \s+</ProvideTransfer>
+              }x,
+            )
+          end
+          it do
+            is_expected.to contain_file(
+              '/etc/opendnssec/remotes/test_remote_notify_out.xml',
+            ).with_content(
+              %r{
+              <\?xml\sversion="1.0"\?>
+              \s+<Notify>
+              \s+<Remote>
+              \s+<Address>192.0.2.1</Address>
+              \s+<Port>53</Port>
+              \s+<Key>test_tsig_notify_out</Key>
+              \s+</Remote>
+              \s+</Notify>
+              }x,
+            )
+          end
+        end
         context 'All params' do
           before(:each) do
             params.merge!(
@@ -628,6 +704,10 @@ describe 'opendnssec::remote' do
         end
         context 'tsig_name' do
           before(:each) { params.merge!(tsig_name: true) }
+          it { is_expected.to raise_error(Puppet::Error) }
+        end
+        context 'tsig_name_notify_in' do
+          before(:each) { params.merge!(tsig_name_notify_in: true) }
           it { is_expected.to raise_error(Puppet::Error) }
         end
         context 'port' do
