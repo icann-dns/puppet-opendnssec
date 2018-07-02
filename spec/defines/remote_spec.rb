@@ -28,7 +28,11 @@ describe 'opendnssec::remote' do
   let(:pre_condition) do
     <<-PUPPET_POLICY
     class {'::opendnssec':
-      tsigs => { 'test_tsig' => { 'data' => 'AAAA' } }
+      tsigs => {
+        'test_tsig' => { 'data' => 'AAAA' },
+        'test_tsig_inbound' => { 'data' => 'BBBB' },
+        'test_tsig_outbound' => { 'data' => 'CCCC' }
+      }
     }
     PUPPET_POLICY
   end
@@ -520,10 +524,10 @@ describe 'opendnssec::remote' do
         context 'different tsigs' do
           before(:each) do
             params.merge!(
-              tsig_name_transfer_request: 'test_tsig_transfer_request',
-              tsig_name_transfer_provide: 'test_tsig_transfer_provide',
-              tsig_name_notify_in: 'test_tsig_notify_in',
-              tsig_name_notify_out: 'test_tsig_notify_out',
+              tsig_name_transfer_request: 'test_tsig_inbound',
+              tsig_name_transfer_provide: 'test_tsig_outbound',
+              tsig_name_notify_in: 'test_tsig_inbound',
+              tsig_name_notify_out: 'test_tsig_outbound',
             )
           end
           it { is_expected.to compile }
@@ -537,7 +541,7 @@ describe 'opendnssec::remote' do
               \s+<Remote>
               \s+<Address>192.0.2.1</Address>
               \s+<Port>53</Port>
-              \s+<Key>test_tsig_transfer_request</Key>
+              \s+<Key>test_tsig_inbound</Key>
               \s+</Remote>
               \s+</RequestTransfer>
               }x,
@@ -552,7 +556,7 @@ describe 'opendnssec::remote' do
               \s+<AllowNotify>
               \s+<Peer>
               \s+<Prefix>192.0.2.1</Prefix>
-              \s+<Key>test_tsig_notify_in</Key>
+              \s+<Key>test_tsig_inbound</Key>
               \s+</Peer>
               \s+</AllowNotify>
               }x,
@@ -567,7 +571,7 @@ describe 'opendnssec::remote' do
               \s+<ProvideTransfer>
               \s+<Peer>
               \s+<Prefix>192.0.2.1</Prefix>
-              \s+<Key>test_tsig_transfer_provide</Key>
+              \s+<Key>test_tsig_outbound</Key>
               \s+</Peer>
               \s+</ProvideTransfer>
               }x,
@@ -583,7 +587,7 @@ describe 'opendnssec::remote' do
               \s+<Remote>
               \s+<Address>192.0.2.1</Address>
               \s+<Port>53</Port>
-              \s+<Key>test_tsig_notify_out</Key>
+              \s+<Key>test_tsig_outbound</Key>
               \s+</Remote>
               \s+</Notify>
               }x,
