@@ -1,3 +1,6 @@
+### 2018-06-28 1.1.0
+* Add support abbility to sign notifies, thanks [sarc0](https://github.com/sacr0)
+`
 ### 2018-06-28 1.0.0
 * convert modue to use hiera version 5 data source instead of inheriting from params
 

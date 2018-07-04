@@ -1,6 +1,6 @@
 {
   "name": "icann-opendnssec",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "author": "Mauricio Vergara Ereche <mauricio.vergara@icann.org>",
   "summary": "OpenDNSSEC configuration for GSI infrastructure ICANN",
   "license": "Apache-2.0",
