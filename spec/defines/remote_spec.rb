@@ -16,7 +16,7 @@ describe 'opendnssec::remote' do
       # tsig: :undef,
       # tsig_name: :undef,
       # port: "53",
-
+      # sign_notifies: false,
     }
   end
   # add these two lines in a single test block to enable puppet and hiera debug mode
@@ -389,7 +389,12 @@ describe 'opendnssec::remote' do
           end
         end
         context 'tsig_name' do
-          before(:each) { params.merge!(tsig_name: 'test_tsig') }
+          before(:each) do
+            params.merge!(
+              tsig_name: 'test_tsig',
+              sign_notifies: true,
+            )
+          end
           it { is_expected.to compile }
           it do
             is_expected.to contain_file(
@@ -416,6 +421,7 @@ describe 'opendnssec::remote' do
               \s+<AllowNotify>
               \s+<Peer>
               \s+<Prefix>192.0.2.1</Prefix>
+              \s+<Key>test_tsig</Key>
               \s+</Peer>
               \s+</AllowNotify>
               }x,
@@ -446,6 +452,7 @@ describe 'opendnssec::remote' do
               \s+<Remote>
               \s+<Address>192.0.2.1</Address>
               \s+<Port>53</Port>
+              \s+<Key>test_tsig</Key>
               \s+</Remote>
               \s+</Notify>
               }x,
@@ -520,6 +527,7 @@ describe 'opendnssec::remote' do
               address6: '2001:DB8::1',
               port: 5353,
               tsig_name: 'test_tsig',
+              sign_notifies: true,
             )
           end
           it { is_expected.to compile }
@@ -553,9 +561,11 @@ describe 'opendnssec::remote' do
               \s+<AllowNotify>
               \s+<Peer>
               \s+<Prefix>192.0.2.1</Prefix>
+              \s+<Key>test_tsig</Key>
               \s+</Peer>
               \s+<Peer>
               \s+<Prefix>2001:DB8::1</Prefix>
+              \s+<Key>test_tsig</Key>
               \s+</Peer>
               \s+</AllowNotify>
               }x,
@@ -590,10 +600,12 @@ describe 'opendnssec::remote' do
               \s+<Remote>
               \s+<Address>192.0.2.1</Address>
               \s+<Port>5353</Port>
+              \s+<Key>test_tsig</Key>
               \s+</Remote>
               \s+<Remote>
               \s+<Address>2001:DB8::1</Address>
               \s+<Port>5353</Port>
+              \s+<Key>test_tsig</Key>
               \s+</Remote>
               \s+</Notify>
               }x,
