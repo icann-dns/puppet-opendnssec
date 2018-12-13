@@ -25,7 +25,6 @@ class opendnssec (
   Optional[Integer]             $repository_capacity,
   String[1,32]                  $repository_token_label,
   Boolean                       $skip_publickey,
-  Boolean                       $require_backup,
 
   Opendnssec::Datastore         $datastore_engine,
   Stdlib::Host                  $datastore_host,
@@ -63,10 +62,8 @@ class opendnssec (
   Array[String]                 $default_provide_xfrs,
   Boolean                       $notify_boolean,
   String                        $notify_command,
-
+  Boolean                       $require_backup       = false,
 ) {
-
-  $require_backup = false
 
   if $facts['os']['family'] == 'RedHat' and $datastore_engine == 'mysql' {
     fail('RedHat does not support mysql')

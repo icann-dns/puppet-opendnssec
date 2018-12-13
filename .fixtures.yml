@@ -6,4 +6,4 @@ fixtures:
       concat: "puppetlabs/concat"
       mysql: "puppetlabs/mysql"
       tea: "icann/tea"
-
+      cron_core: "puppetlabs/cron_core"
