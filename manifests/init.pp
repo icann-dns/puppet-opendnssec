@@ -66,7 +66,7 @@ class opendnssec (
 
 ) {
 
-  require_backup = false
+  $require_backup = false
 
   if $facts['os']['family'] == 'RedHat' and $datastore_engine == 'mysql' {
     fail('RedHat does not support mysql')
