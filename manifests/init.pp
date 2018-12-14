@@ -62,7 +62,7 @@ class opendnssec (
   Array[String]                 $default_provide_xfrs,
   Boolean                       $notify_boolean,
   String                        $notify_command,
-  Boolean                       $require_backup       = false,
+  Boolean                       $require_backup       = true,
 ) {
 
   if $facts['os']['family'] == 'RedHat' and $datastore_engine == 'mysql' {

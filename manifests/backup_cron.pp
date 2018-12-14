@@ -1,4 +1,4 @@
-# Class Opendnssed::backup
+# Class Opendnssec::backup
 #
 class opendnssec::backup_cron (
   Stdlib::Host         $backup_host,
@@ -16,6 +16,7 @@ class opendnssec::backup_cron (
   $group            = $::opendnssec::group
   $datastore_engine = $::opendnssec::datastore_engine
   $require_backup   = $::opendnssec::require_backup
+  
   file {[$backup_dir, $tmp_dirbase]:
     ensure => directory,
     owner  => $user,
