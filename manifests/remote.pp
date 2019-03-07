@@ -60,17 +60,4 @@ define opendnssec::remote (
     group   => $group,
     content => template('opendnssec/etc/opendnssec/notify_out.xml.erb'),
   }
-  if $manage_ods_ksmutil and $enabled {
-    exec {"Forcing ods-ksmutil to update after modifying remote ${name}":
-      command     => '/usr/bin/yes | /usr/bin/ods-ksmutil update all',
-      user        => $user,
-      refreshonly => true,
-      subscribe   => File[
-        "${base_dir}/${name}_notify_out.xml",
-        "${base_dir}/${name}_providetransfer.xml",
-        "${base_dir}/${name}_notify_in.xml",
-        "${base_dir}/${name}_requesttransfer.xml",
-      ],
-    }
-  }
 }

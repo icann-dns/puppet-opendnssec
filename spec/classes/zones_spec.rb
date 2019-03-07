@@ -70,7 +70,7 @@ describe 'opendnssec::zones' do
         end
         it do
           is_expected.to contain_exec('ods-ksmutil updated zonelist.xml').with(
-            command: "/usr/bin/yes | #{ksmutil_path} update all",
+            command: "/usr/bin/yes | #{ksmutil_path} update zonelist",
             user: 'root',
             refreshonly: true,
             subscribe: 'Concat[/etc/opendnssec/zonelist.xml]',

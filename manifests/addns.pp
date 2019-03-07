@@ -37,12 +37,4 @@ define opendnssec::addns (
     command     => "/usr/bin/xsltproc --xinclude ${xsl_file} /etc/opendnssec/addns-${name}.xml.tmp | sed 's/\sxml:base[^>]*//g' > /etc/opendnssec/addns-${name}.xml",
     refreshonly => true,
   }
-  if $manage_ods_ksmutil and $enabled {
-    exec {"Forcing ods-ksmutil to update after modifying addns-${name}.xml":
-      command     => '/usr/bin/yes | /usr/bin/ods-ksmutil update all',
-      user        => $user,
-      refreshonly => true,
-      subscribe   => Exec["write /etc/opendnssec/addns-${name}.xml"],
-    }
-  }
 }

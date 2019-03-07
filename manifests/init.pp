@@ -15,7 +15,8 @@ class opendnssec (
   Tea::Syslogfacility           $logging_facility,
 
   Array[String]                 $packages,
-  Array[String]                 $services,
+  String[1,100]                 $service_enforcer,
+  String[1,100]                 $service_signer,
   Array[String]                 $sqlite_packages,
   Array[String]                 $mysql_packages,
 
@@ -156,7 +157,7 @@ class opendnssec (
       }
       if $manage_ods_ksmutil {
         exec {'ods-ksmutil updated conf.xml':
-          command     => "/usr/bin/yes | ${ksmutil_path} update all",
+          command     => "/usr/bin/yes | ${ksmutil_path} update conf",
           user        => $user,
           refreshonly => true,
           subscribe   => $exec_subscribe,
@@ -183,11 +184,19 @@ class opendnssec (
   if ! defined(Class['opendnssec::zones']) {
     class { '::opendnssec::zones': zones => $zones }
   }
+
   if $enabled and $manage_service {
-    service {
-      $services:
+    service { $service_enforcer:
+        ensure => running,
+        enable => true,
+    } ~> service { $service_signer:
         ensure => running,
         enable => true,
     }
+    Opendnssec::Tsig   <| |> ~> Service[$service_enforcer, $service_signer]
+    Opendnssec::Zone   <| |> -> Service[$service_enforcer, $service_signer]
+    Opendnssec::Addns  <| |> ~> Service[$service_enforcer, $service_signer]
+    Opendnssec::Policy <| |> -> Service[$service_enforcer, $service_signer]
+    Opendnssec::Remote <| |> ~> Service[$service_enforcer, $service_signer]
   }
 }
