@@ -11,9 +11,8 @@ opendnssec::logging_facility: 'local0'
 opendnssec::packages:
   - opendnssec
   - xsltproc
-opendnssec::services:
-  - opendnssec-enforcer
-  - opendnssec-signer
+opendnssec::service_enforcer: opendnssec-enforcer
+opendnssec::service_signer: opendnssec-signer
 opendnssec::sqlite_packages: []
 opendnssec::mysql_packages: []
 opendnssec::repository_name: 'SoftHSM'

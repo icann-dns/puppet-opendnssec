@@ -70,11 +70,6 @@ describe 'opendnssec::zone' do
           )
         end
         it do
-          is_expected.to contain_exec(
-            'Forcing ods-ksmutil to update after modifying addns-default.xml',
-          )
-        end
-        it do
           is_expected.to contain_concat__fragment('zone_test_zone').with(
             target: '/etc/opendnssec/zonelist.xml',
             order: '10',
@@ -142,11 +137,6 @@ describe 'opendnssec::zone' do
             )
           end
           it do
-            is_expected.to contain_exec(
-              'Forcing ods-ksmutil to update after modifying addns-test_zone-masters.xml',
-            )
-          end
-          it do
             is_expected.to contain_concat__fragment(
               'zone_test_zone',
             ).with_content(
@@ -173,11 +163,6 @@ describe 'opendnssec::zone' do
           it do
             is_expected.to contain_file(
               '/etc/opendnssec/addns-test_zone-provide_xfrs.xml.tmp',
-            )
-          end
-          it do
-            is_expected.to contain_exec(
-              'Forcing ods-ksmutil to update after modifying addns-test_zone-provide_xfrs.xml',
             )
           end
           it do

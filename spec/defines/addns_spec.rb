@@ -71,16 +71,6 @@ describe 'opendnssec::addns' do
             }x,
           )
         end
-        it do
-          is_expected.to contain_exec(
-            'Forcing ods-ksmutil to update after modifying addns-test_addns.xml',
-          ).with(
-            command: '/usr/bin/yes | /usr/bin/ods-ksmutil update all',
-            user: 'root',
-            refreshonly: true,
-            subscribe: 'Exec[write /etc/opendnssec/addns-test_addns.xml]',
-          )
-        end
       end
       describe 'Change Defaults' do
         context 'masters' do
@@ -200,11 +190,6 @@ describe 'opendnssec::addns' do
             is_expected.to contain_file(
               '/etc/opendnssec/addns-test_addns.xml.tmp',
             ).with_owner('foobar')
-          end
-          it do
-            is_expected.to contain_exec(
-              'Forcing ods-ksmutil to update after modifying addns-test_addns.xml',
-            ).with_user('foobar')
           end
         end
         context 'opendnssec::group' do
