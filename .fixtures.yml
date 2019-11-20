@@ -8,4 +8,4 @@ fixtures:
       tea: "icann/tea"
       cron_core: "puppetlabs/cron_core"
     repositories:
-      "augeas": "https://github.com/camptocamp/puppet-augeas.git"
+      augeas: "https://github.com/camptocamp/puppet-augeas.git"
