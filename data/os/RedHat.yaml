@@ -2,9 +2,8 @@ opendnssec::group: ods
 opendnssec::packages:
   - opendnssec
   - libxslt
-opendnssec::services:
-  - ods-enforcerd
-  - ods-signerd
+opendnssec::service_enforcer: ods-enforcerd
+opendnssec::service_signer: ods-signerd
 opendnssec::repository_module: /usr/lib64/pkcs11/libsofthsm2.so
 opendnssec::datastore_engine: sqlite
 opendnssec::base_dir: /var/opendnssec

@@ -30,7 +30,7 @@ class opendnssec::policies (
   create_resources(opendnssec::policy, $policies)
   if $manage_ods_ksmutil and $enabled {
     exec {'ods-ksmutil updated kasp.xml':
-      command     => "/usr/bin/yes | ${ksmutil_path} update all",
+      command     => "/usr/bin/yes | ${ksmutil_path} update kasp",
       user        => $user,
       refreshonly => true,
       subscribe   => Concat[$policy_file];

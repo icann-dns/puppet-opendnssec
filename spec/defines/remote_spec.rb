@@ -107,21 +107,6 @@ describe 'opendnssec::remote' do
             }x,
           )
         end
-        it do
-          is_expected.to contain_exec(
-            'Forcing ods-ksmutil to update after modifying remote test_remote',
-          ).with(
-            command: '/usr/bin/yes | /usr/bin/ods-ksmutil update all',
-            user: 'root',
-            refreshonly: true,
-            subscribe: [
-              'File[/etc/opendnssec/remotes/test_remote_notify_out.xml]',
-              'File[/etc/opendnssec/remotes/test_remote_providetransfer.xml]',
-              'File[/etc/opendnssec/remotes/test_remote_notify_in.xml]',
-              'File[/etc/opendnssec/remotes/test_remote_requesttransfer.xml]',
-            ],
-          )
-        end
       end
       describe 'Change Defaults' do
         context 'address4' do
