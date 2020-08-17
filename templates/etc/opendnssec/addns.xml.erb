@@ -44,7 +44,7 @@
       </ProvideTransfer>
       <Notify>
   <%- @provide_xfrs.each do |provide_xfr| -%>
-    <%- if @remotes[provide_xfr].include?('address4') -%>
+    <%- if @remotes[provide_xfr].fetch("send_notifies", true) -%>
         <xi:include href="<%= @remotes_dir %>/<%= provide_xfr %>_notify_out.xml"
             xpointer="xpointer(//Notify/Remote)" />
     <%- end -%>

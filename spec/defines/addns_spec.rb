@@ -255,6 +255,43 @@ describe 'opendnssec::addns' do
             )
           end
         end
+        context 'opendnssec::remotes disable notifies' do
+          before(:each) { params.merge!(provide_xfrs: ['slave', 'dummy']) }
+          let(:pre_condition) do
+            <<-EOF
+            class { '::opendnssec':
+              tsigs => {
+                'tsig_slave' => { 'data' => 'AAAA', 'algo' => 'hmac-sha1' },
+                'tsig_dummy' => { 'data' => 'BBBB', 'algo' => 'hmac-sha1' },
+              },
+              remotes => {
+                slave => {
+                  'address4' => '192.168.0.1',
+                  'tsig_name' => 'tsig_slave',
+                },
+                dummy => {
+                  'address4' => '192.168.0.20',
+                  'tsig_name' => 'tsig_dummy',
+                  'send_notifies' => false,
+                }
+              }
+            }
+            EOF
+          end
+          it { is_expected.to compile }
+          it do
+            is_expected.to contain_file(
+              '/etc/opendnssec/addns-test_addns.xml.tmp',
+            ).with_content(
+              %r{
+                \s+<Notify>
+                \s+<xi:include\shref="/etc/opendnssec/remotes/slave_notify_out.xml"
+                \s+xpointer="xpointer\(//Notify/Remote\)"\s/>
+                \s+</Notify>
+              }x
+            )
+          end
+        end
         context 'opendnssec::remotes Tsig name' do
           before(:each) { params.merge!(provide_xfrs: ['provide_xfr'], masters: ['master']) }
           let(:pre_condition) do
