@@ -277,6 +277,7 @@ describe 'opendnssec::addns' do
               }
             }
             EOF
+  
           end
           it { is_expected.to compile }
           it do
