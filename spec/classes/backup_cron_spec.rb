@@ -15,7 +15,7 @@ describe 'opendnssec::backup_cron' do
       # :backup_dir => '/opt/backup',
       # :tmp_dirbase => '/opt/tmp',
       # :script_path => '/usr/local/bin/backup-hsm-mysql.sh',
-
+      # :require_backup => true,
     }
   end
 
@@ -198,8 +198,8 @@ describe 'opendnssec::backup_cron' do
         end
       end
       describe 'check bad type' do
-        context 'ackup_host' do
-          before(:each) { params.merge!(ackup_host: true) }
+        context 'backup_host' do
+          before(:each) { params.merge!(backup_host: true) }
           it { is_expected.to raise_error(Puppet::Error) }
         end
         context 'backup_user' do
