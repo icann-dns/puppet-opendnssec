@@ -6,6 +6,7 @@ define opendnssec::remote (
   Optional[String]                             $tsig          = undef,
   Optional[String]                             $tsig_name     = undef,
   Boolean                                      $sign_notifies = false,
+  Boolean                                      $send_notifies = true,
   Tea::Port                                    $port          = 53,
 ) {
   include ::opendnssec
@@ -42,22 +43,27 @@ define opendnssec::remote (
     group   => $group,
     content => template('opendnssec/etc/opendnssec/requesttransfer.xml.erb'),
   }
-  file{ "${base_dir}/${name}_notify_in.xml":
-    ensure  => file,
-    owner   => $user,
-    group   => $group,
-    content => template('opendnssec/etc/opendnssec/notify_in.xml.erb'),
+
+  if $send_notifies {
+    file{ "${base_dir}/${name}_notify_in.xml":
+      ensure  => file,
+      owner   => $user,
+      group   => $group,
+      content => template('opendnssec/etc/opendnssec/notify_in.xml.erb'),
+    }
+
+    file{ "${base_dir}/${name}_notify_out.xml":
+      ensure  => file,
+      owner   => $user,
+      group   => $group,
+      content => template('opendnssec/etc/opendnssec/notify_out.xml.erb'),
+    }
   }
+
   file{ "${base_dir}/${name}_providetransfer.xml":
     ensure  => file,
     owner   => $user,
     group   => $group,
     content => template('opendnssec/etc/opendnssec/providetransfer.xml.erb'),
-  }
-  file{ "${base_dir}/${name}_notify_out.xml":
-    ensure  => file,
-    owner   => $user,
-    group   => $group,
-    content => template('opendnssec/etc/opendnssec/notify_out.xml.erb'),
   }
 }
