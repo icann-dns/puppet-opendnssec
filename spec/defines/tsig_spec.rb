@@ -45,7 +45,6 @@ describe 'opendnssec::tsig' do
           is_expected.to contain_file('/etc/opendnssec/tsigs/test_tsig.xml').with(
             ensure: 'file',
             owner: 'root',
-            group: 'root'
           ).with_content(
             %r{
             <\?xml\sversion="1.0"\?>
@@ -60,13 +59,12 @@ describe 'opendnssec::tsig' do
       end
       describe 'Change Defaults' do
         context 'key_name' do
-          before { params.merge!(key_name: 'foobar') }
+          before(:each) { params.merge!(key_name: 'foobar') }
           it { is_expected.to compile }
           it do
             is_expected.to contain_file('/etc/opendnssec/tsigs/foobar.xml').with(
               ensure: 'file',
               owner: 'root',
-              group: 'root'
             ).with_content(
               %r{
               <\?xml\sversion="1.0"\?>
@@ -75,23 +73,23 @@ describe 'opendnssec::tsig' do
               \s+<Algorithm>hmac-sha256</Algorithm>
               \s+<Secret>AAAA</Secret>
               \s+</TSIG>
-              }x
+              }x,
             )
           end
         end
       end
       describe 'check bad type' do
         context 'data' do
-          before { params.merge!(data: true) }
-          it { expect { subject.call }.to raise_error(Puppet::Error) }
+          before(:each) { params.merge!(data: true) }
+          it { is_expected.to raise_error(Puppet::Error) }
         end
         context 'algo' do
-          before { params.merge!(algo: true) }
-          it { expect { subject.call }.to raise_error(Puppet::Error) }
+          before(:each) { params.merge!(algo: true) }
+          it { is_expected.to raise_error(Puppet::Error) }
         end
         context 'key_name' do
-          before { params.merge!(key_name: true) }
-          it { expect { subject.call }.to raise_error(Puppet::Error) }
+          before(:each) { params.merge!(key_name: true) }
+          it { is_expected.to raise_error(Puppet::Error) }
         end
       end
     end

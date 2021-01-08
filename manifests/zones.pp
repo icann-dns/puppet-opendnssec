@@ -2,7 +2,6 @@
 #
 class opendnssec::zones (
   Hash $zones = {},
-
 ) {
 
   include ::opendnssec
@@ -11,6 +10,7 @@ class opendnssec::zones (
   $group              = $::opendnssec::group
   $zone_file          = $::opendnssec::zone_file
   $manage_ods_ksmutil = $::opendnssec::manage_ods_ksmutil
+  $ksmutil_path       = $::opendnssec::ksmutil_path
   $enabled            = $::opendnssec::enabled
 
   concat {$zone_file:
@@ -30,7 +30,7 @@ class opendnssec::zones (
   create_resources(opendnssec::zone, $zones)
   if $manage_ods_ksmutil and $enabled {
     exec {'ods-ksmutil updated zonelist.xml':
-      command     => '/usr/bin/yes | /usr/bin/ods-ksmutil update zonelist',
+      command     => "/usr/bin/yes | ${ksmutil_path} update zonelist",
       user        => $user,
       refreshonly => true,
       subscribe   => Concat[$zone_file];

@@ -30,7 +30,7 @@
         <Facility><%= @logging_facility %></Facility>
       </Syslog>
 	</Logging>
-		
+
     <PolicyFile><%= @policy_file %></PolicyFile>
     <ZoneListFile><%= @zone_file %></ZoneListFile>
   </Common>
@@ -48,7 +48,7 @@
   <!-- <PidFile>/var/run/opendnssec/enforcerd.pid</PidFile> -->
     <Datastore>
 <%- if @datastore_engine == 'sqlite' -%>
-      <SQLite><%= @file %></SQLite>
+      <SQLite><%= @sqlite_file %></SQLite>
 <%- elsif @datastore_engine == 'mysql' -%>
       <MySQL>
         <Host port="<%= @datastore_port %>"><%= @datastore_host %></Host>
@@ -61,7 +61,7 @@
     <Interval>PT3600S</Interval>
     <!-- <ManualKeyGeneration/> -->
     <!-- <RolloverNotification>P14D</RolloverNotification> -->
-    
+
     <!-- the <DelegationSignerSubmitCommand> will get all current
      DNSKEYs (as a RRset) on standard input (with optional CKA_ID)
     -->
@@ -76,12 +76,17 @@
 
     <!-- <PidFile>/var/run/opendnssec/signerd.pid</PidFile> -->
     <!-- <SocketFile>/var/run/opendnssec/engine.sock</SocketFile> -->
-    <WorkingDirectory>/var/lib/opendnssec/tmp</WorkingDirectory>
+    <WorkingDirectory><%= @working_dir %></WorkingDirectory>
     <WorkerThreads>4</WorkerThreads>
     <!-- <SignerThreads>4</SignerThreads> -->
 
     <Listener>
-      <Interface><Port>53</Port></Interface>
+      <Interface>
+      <%- if @listener_address -%>
+        <Address><%= @listener_address %></Address>
+      <%- end -%>
+        <Port><%= @listener_port %></Port>
+      </Interface>
     </Listener>
 
 	<!-- the <NotifyCommmand> will expand the following variables:
@@ -94,6 +99,9 @@
 <!--
     <NotifyCommand>/usr/sbin/rndc reload %zone</NotifyCommand>
 -->
+<%- if @notify_boolean -%>
+    <NotifyCommand><%= @notify_command %></NotifyCommand>
+<%- end -%>
   </Signer>
 
 </Configuration>

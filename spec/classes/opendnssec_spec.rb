@@ -3,24 +3,8 @@
 require 'spec_helper'
 
 describe 'opendnssec' do
-  # by default the hiera integration uses hiera data from the shared_contexts.rb file
-  # but basically to mock hiera you first need to add a key/value pair
-  # to the specific context in the spec/shared_contexts.rb file
-  # Note: you can only use a single hiera context per describe/context block
-  # rspec-puppet does not allow you to swap out hiera data on a per test block
-  # include_context :hiera
   let(:node) { 'opendnssec.example.com' }
-
-  # below is the facts hash that gives you the ability to mock
-  # facts on a per describe/context block.  If you use a fact in your
-  # manifest you should mock the facts below.
-  let(:facts) do
-    {}
-  end
-
-  # below is a list of the resource parameters that you can override.
-  # By default all non-required parameters are commented out,
-  # while all required parameters will require you to add a value
+  let(:facts) { {} }
   let(:params) do
     {
       #:enabled => true,
@@ -53,6 +37,7 @@ describe 'opendnssec' do
       #:datastore_name => 'kasp',
       #:datastore_user => 'opendnssec',
       #:datastore_password => 'change_me',
+      #:listener_port => '53',
       #:policy_file => '/etc/opendnssec/kasp.xml',
       #:zone_file => '/etc/opendnssec/zonelist.xml',
       #:addns_file => '/etc/opendnssec/addns.xml',
@@ -71,48 +56,80 @@ describe 'opendnssec' do
         facts
       end
 
-      case facts[:lsbdistcodename]
-      when 'trusty'
-        let(:repository_module) { '/usr/lib/softhsm/libsofthsm.so' }
+      case facts[:os]['family']
+      when 'Debian'
+        case facts[:os]['release']['major']
+        when '14.04'
+          let(:repository_module) { '/usr/lib/softhsm/libsofthsm.so' }
+        else
+          let(:repository_module) { '/usr/lib/x86_64-linux-gnu/softhsm/libsofthsm2.so' }
+        end
+        let(:packages) { ['opendnssec', 'xsltproc'] }
+        let(:services) { ['opendnssec-enforcer', 'opendnssec-signer'] }
+        let(:base_dir) { '/var/lib/opendnssec' }
+        let(:sqlite_packages) { ['opendnssec-enforcer-sqlite'] }
+        let(:mysql_packages) { ['opendnssec-enforcer-mysql'] }
+        let(:ksmutil_path) { '/usr/bin/ods-ksmutil' }
+      when 'RedHat'
+        let(:packages) { ['opendnssec', 'libxslt'] }
+        let(:services) { ['ods-enforcerd', 'ods-signerd'] }
+        let(:base_dir) { '/var/opendnssec' }
+        let(:repository_module) { '/usr/lib64/pkcs11/libsofthsm2.so' }
+        let(:sqlite_packages) { [] }
+        let(:mysql_packages) { [] }
+        let(:ksmutil_path) { '/bin/ods-ksmutil' }
       else
+        let(:packages) { ['opendnssec', 'xsltproc'] }
+        let(:services) { ['opendnssec-enforcer', 'opendnssec-signer'] }
+        let(:base_dir) { '/var/lib/opendnssec' }
         let(:repository_module) { '/usr/lib/x86_64-linux-gnu/softhsm/libsofthsm2.so' }
+        let(:sqlite_packages) { ['opendnssec-enforcer-sqlite'] }
+        let(:mysql_packages) { ['opendnssec-enforcer-mysql'] }
+        let(:ksmutil_path) { '/usr/bin/ods-ksmutil' }
       end
+
       describe 'check default config' do
         it { is_expected.to compile.with_all_deps }
         it { is_expected.to contain_class('opendnssec') }
-        it { is_expected.to contain_class('opendnssec::params') }
         it { is_expected.to contain_opendnssec__addns('default') }
         it { is_expected.to contain_opendnssec__policy('default') }
         it { is_expected.to contain_concat__fragment('policy_default') }
-        it { is_expected.to contain_class('mysql::server') }
-        it { is_expected.to contain_package('opendnssec') }
-        it { is_expected.to contain_package('opendnssec-enforcer-mysql') }
+        if facts[:os]['family'] != 'RedHat'
+          it { is_expected.to contain_class('mysql::server') }
+        else
+          it { is_expected.not_to contain_class('mysql::server') }
+          it do
+            is_expected.to contain_exec('ods-ksmutil setup').with(
+              command: "/usr/bin/yes | #{ksmutil_path} setup",
+              unless: "test -s #{base_dir}/kasp.db",
+            )
+          end
+        end
+        it 'test packages' do
+          (packages + mysql_packages).each do |package|
+            is_expected.to contain_package(package)
+          end
+        end
         it do
-          is_expected.to contain_file('/var/lib/opendnssec').with(
+          is_expected.to contain_file(base_dir).with(
             ensure: 'directory',
             mode: '0640',
             owner: 'root',
-            group: 'root'
           )
         end
-        it do
-          is_expected.to contain_service('opendnssec-enforcer').with(
-            ensure: 'running',
-            enable: true
-          )
-        end
-        it do
-          is_expected.to contain_service('opendnssec-signer').with(
-            ensure: 'running',
-            enable: true
-          )
+        it 'test services' do
+          services.each do |service|
+            is_expected.to contain_service(service).with(
+              ensure: 'running',
+              enable: true,
+            )
+          end
         end
         it do
           is_expected.to contain_file('/etc/opendnssec/conf.xml').with(
             ensure: 'file',
             mode: '0644',
             owner: 'root',
-            group: 'root'
           ).with_content(
             %r{<Repository\s+name="SoftHSM">
             \s+<Module>#{repository_module}</Module>
@@ -120,39 +137,68 @@ describe 'opendnssec' do
             \s+<PIN>1234</PIN>
             \s+<SkipPublicKey/>
             \s+</Repository>
-            }x
+            }x,
           ).with_content(
             %r{<Verbosity>3</Verbosity>
             \s+<Syslog>
             \s+<Facility>local0</Facility>
-            }x
+            }x,
           ).with_content(
-            %r{<PolicyFile>/etc/opendnssec/kasp.xml</PolicyFile>}
+            %r{<PolicyFile>/etc/opendnssec/kasp.xml</PolicyFile>},
           ).with_content(
-            %r{<ZoneListFile>/etc/opendnssec/zonelist.xml</ZoneListFile>}
+            %r{<ZoneListFile>/etc/opendnssec/zonelist.xml</ZoneListFile>},
           ).with_content(
             %r{<Privileges>
             \s+<User>root</User>
-            \s+<Group>root</Group>
+            \s+<Group>(opendnssec|ods)</Group>
             \s+</Privileges>
-            }x
+            }x,
           ).with_content(
-            %r{<Datastore>
-            \s+<MySQL>
-            \s+<Host\s+port="3306">localhost</Host>
-            \s+<Database>kasp</Database>
-            \s+<Username>opendnssec</Username>
-            \s+<Password>change_me</Password>
-            \s+</MySQL>
-            }x
+            %r{
+            <Listener>
+            \s+<Interface>
+            \s+<Port>53</Port>
+            \s+</Interface>
+            \s+</Listener>
+            }x,
           )
+        end
+        if facts[:os]['family'] == 'RedHat'
+          it do
+            is_expected.to contain_file(
+              '/etc/opendnssec/conf.xml',
+            ).with_content(
+              %r{
+              <Datastore>
+              \s+<SQLite>#{base_dir}/kasp.db</SQLite>
+              \s+</Datastore>
+              }x,
+            )
+          end
+        else
+          it do
+            is_expected.to contain_file(
+              '/etc/opendnssec/conf.xml',
+            ).with_content(
+              %r{
+              <Datastore>
+              \s+<MySQL>
+              \s+<Host\s+port="3306">localhost</Host>
+              \s+<Database>kasp</Database>
+              \s+<Username>opendnssec</Username>
+              \s+<Password>change_me</Password>
+              \s+</MySQL>
+              \s+</Datastore>
+              }x,
+            )
+          end
         end
         it do
           is_expected.to contain_exec('ods-ksmutil updated conf.xml').with(
-            command: '/usr/bin/yes | /usr/bin/ods-ksmutil update conf',
+            command: "/usr/bin/yes | #{ksmutil_path} update conf",
             user: 'root',
             refreshonly: true,
-            subscribe: 'File[/etc/opendnssec/conf.xml]'
+            subscribe: 'File[/etc/opendnssec/conf.xml]',
           )
         end
         it do
@@ -160,58 +206,61 @@ describe 'opendnssec' do
             ensure: 'file',
             mode: '0644',
             owner: 'root',
-            group: 'root'
           )
         end
-        it do
-          is_expected.to contain_mysql__db('kasp').with(
-            user: 'opendnssec',
-            password: 'change_me'
-          )
+        if facts[:os]['family'] == 'RedHat'
+          it { is_expected.not_to contain_mysql__db('kasp') }
+        else
+          it do
+            is_expected.to contain_mysql__db('kasp').with(
+              user: 'opendnssec',
+              password: 'change_me',
+            )
+          end
         end
       end
       describe 'Change Defaults' do
         context 'enabled' do
-          before { params.merge!(enabled: false) }
+          before(:each) { params.merge!(enabled: false) }
           it { is_expected.to compile }
           it do
             is_expected.to contain_file(
-              '/etc/opendnssec/MASTER'
+              '/etc/opendnssec/MASTER',
             ).with_ensure('absent')
           end
           it { is_expected.not_to contain_exec('ods-ksmutil updated conf.xml') }
         end
         context 'user' do
-          before { params.merge!(user: 'foobar') }
+          before(:each) { params.merge!(user: 'foobar') }
           it { is_expected.to compile }
           it do
-            is_expected.to contain_file('/var/lib/opendnssec').with_owner('foobar')
+            is_expected.to contain_file(base_dir).with_owner('foobar')
           end
           it do
             is_expected.to contain_file(
-              '/etc/opendnssec/conf.xml'
+              '/etc/opendnssec/conf.xml',
             ).with_owner('foobar')
           end
           it do
             is_expected.to contain_exec(
-              'ods-ksmutil updated conf.xml'
+              'ods-ksmutil updated conf.xml',
             ).with_user('foobar')
           end
           it do
             is_expected.to contain_file(
-              '/etc/opendnssec/MASTER'
+              '/etc/opendnssec/MASTER',
             ).with_owner('foobar')
           end
         end
         context 'group' do
-          before { params.merge!(group: 'foobar') }
+          before(:each) { params.merge!(group: 'foobar') }
           it { is_expected.to compile }
           it do
-            is_expected.to contain_file('/var/lib/opendnssec').with_group('foobar')
+            is_expected.to contain_file(base_dir).with_group('foobar')
           end
           it do
             is_expected.to contain_file(
-              '/etc/opendnssec/conf.xml'
+              '/etc/opendnssec/conf.xml',
             ).with_group('foobar')
           end
           it do
@@ -219,60 +268,69 @@ describe 'opendnssec' do
           end
         end
         context 'manage_packages' do
-          before { params.merge!(manage_packages: false) }
+          before(:each) { params.merge!(manage_packages: false) }
           it { is_expected.to compile }
-          it { is_expected.not_to contain_package('opendnssec') }
-          it { is_expected.not_to contain_package('opendnssec-enforcer-mysql') }
+          it 'test packages' do
+            (packages + mysql_packages + sqlite_packages).each do |package|
+              is_expected.not_to contain_package(package)
+            end
+          end
         end
         context 'manage_datastore' do
-          before { params.merge!(manage_datastore: false) }
+          before(:each) { params.merge!(manage_datastore: false) }
+          it 'test packages' do
+            (mysql_packages + sqlite_packages).each do |package|
+              is_expected.not_to contain_package(package)
+            end
+          end
           it { is_expected.to compile }
-          it { is_expected.not_to contain_package('opendnssec-enforcer-mysql') }
           it { is_expected.not_to contain_mysql__db('kasp') }
-          it { is_expected.not_to contain_package('opendnssec-enforcer-sqlite') }
         end
         context 'manage_service' do
-          before { params.merge!(manage_service: false) }
+          before(:each) { params.merge!(manage_service: false) }
           it { is_expected.to compile }
-          it { is_expected.not_to contain_service('opendnssec-signer') }
-          it { is_expected.not_to contain_service('opendnssec-enforcer') }
+          it 'test services' do
+            services.each do |service|
+              is_expected.not_to contain_service(service)
+            end
+          end
         end
         context 'manage_ods_ksmutil' do
-          before { params.merge!(manage_ods_ksmutil: false) }
+          before(:each) { params.merge!(manage_ods_ksmutil: false) }
           it { is_expected.to compile }
           it { is_expected.not_to contain_exec('ods-ksmutil updated conf.xml') }
         end
         context 'manage_conf' do
-          before { params.merge!(manage_conf: false) }
+          before(:each) { params.merge!(manage_conf: false) }
           it { is_expected.to compile }
           it { is_expected.not_to contain_file('/etc/opendnssec/conf.xml') }
         end
         context 'logging_level' do
-          before { params.merge!(logging_level: 5) }
+          before(:each) { params.merge!(logging_level: 5) }
           it { is_expected.to compile }
           it do
             is_expected.to contain_file('/etc/opendnssec/conf.xml').with_content(
               %r{<Verbosity>5</Verbosity>
               \s+<Syslog>
               \s+<Facility>local0</Facility>
-              }x
+              }x,
             )
           end
         end
         context 'logging_facility' do
-          before { params.merge!(logging_facility: 'cron') }
+          before(:each) { params.merge!(logging_facility: 'cron') }
           it { is_expected.to compile }
           it do
             is_expected.to contain_file('/etc/opendnssec/conf.xml').with_content(
               %r{<Verbosity>3</Verbosity>
               \s+<Syslog>
               \s+<Facility>cron</Facility>
-              }x
+              }x,
             )
           end
         end
         context 'repository_name' do
-          before { params.merge!(repository_name: 'foobar') }
+          before(:each) { params.merge!(repository_name: 'foobar') }
           it { is_expected.to compile }
           it do
             is_expected.to contain_file('/etc/opendnssec/conf.xml').with_content(
@@ -282,12 +340,12 @@ describe 'opendnssec' do
               \s+<PIN>1234</PIN>
               \s+<SkipPublicKey/>
               \s+</Repository>
-              }x
+              }x,
             )
           end
         end
         context 'repository_module' do
-          before { params.merge!(repository_module: '/foobar') }
+          before(:each) { params.merge!(repository_module: '/foobar') }
           it { is_expected.to compile }
           it do
             is_expected.to contain_file('/etc/opendnssec/conf.xml').with_content(
@@ -297,12 +355,12 @@ describe 'opendnssec' do
               \s+<PIN>1234</PIN>
               \s+<SkipPublicKey/>
               \s+</Repository>
-              }x
+              }x,
             )
           end
         end
         context 'repository_pin' do
-          before { params.merge!(repository_pin: 'foobar') }
+          before(:each) { params.merge!(repository_pin: 'foobar') }
           it { is_expected.to compile }
           it do
             is_expected.to contain_file('/etc/opendnssec/conf.xml').with_content(
@@ -312,12 +370,12 @@ describe 'opendnssec' do
               \s+<PIN>foobar</PIN>
               \s+<SkipPublicKey/>
               \s+</Repository>
-              }x
+              }x,
             )
           end
         end
         context 'repository_capacity' do
-          before { params.merge!(repository_capacity: 1) }
+          before(:each) { params.merge!(repository_capacity: 1) }
           it { is_expected.to compile }
           it do
             is_expected.to contain_file('/etc/opendnssec/conf.xml').with_content(
@@ -328,12 +386,12 @@ describe 'opendnssec' do
               \s+<Capacity>1</Capacity>
               \s+<SkipPublicKey/>
               \s+</Repository>
-              }x
+              }x,
             )
           end
         end
         context 'repository_token_label' do
-          before { params.merge!(repository_token_label: 'foobar') }
+          before(:each) { params.merge!(repository_token_label: 'foobar') }
           it { is_expected.to compile }
           it do
             is_expected.to contain_file('/etc/opendnssec/conf.xml').with_content(
@@ -343,12 +401,12 @@ describe 'opendnssec' do
               \s+<PIN>1234</PIN>
               \s+<SkipPublicKey/>
               \s+</Repository>
-              }x
+              }x,
             )
           end
         end
         context 'skip_publickey' do
-          before { params.merge!(skip_publickey: false) }
+          before(:each) { params.merge!(skip_publickey: false) }
           it { is_expected.to compile }
           it do
             is_expected.to contain_file('/etc/opendnssec/conf.xml').with_content(
@@ -357,12 +415,12 @@ describe 'opendnssec' do
               \s+<TokenLabel>OpenDNSSEC</TokenLabel>
               \s+<PIN>1234</PIN>
               \s+</Repository>
-              }x
+              }x,
             )
           end
         end
         context 'repository_capacity' do
-          before { params.merge!(require_backup: true) }
+          before(:each) { params.merge!(require_backup: true) }
           it { is_expected.to compile }
           it do
             is_expected.to contain_file('/etc/opendnssec/conf.xml').with_content(
@@ -373,266 +431,342 @@ describe 'opendnssec' do
               \s+<RequireBackup/>
               \s+<SkipPublicKey/>
               \s+</Repository>
-              }x
+              }x,
             )
           end
         end
         context 'datastore_engine' do
-          before { params.merge!(datastore_engine: 'sqlite') }
+          before(:each) { params.merge!(datastore_engine: 'sqlite') }
           it { is_expected.to compile }
-          it { is_expected.not_to contain_package('opendnssec-enforcer-mysql') }
+          it 'test sql packages' do
+            mysql_packages.each do |package|
+              is_expected.not_to contain_package(package)
+            end
+            sqlite_packages.each do |package|
+              is_expected.to contain_package(package)
+            end
+          end
           it { is_expected.not_to contain_mysql__db('kasp') }
-          it { is_expected.to contain_package('opendnssec-enforcer-sqlite') }
         end
         context 'datastore_host' do
-          before { params.merge!(datastore_host: 'foobar') }
-          it { is_expected.to compile }
-          it do
-            is_expected.to contain_file('/etc/opendnssec/conf.xml').with_content(
-              %r{<Datastore>
-              \s+<MySQL>
-              \s+<Host\s+port="3306">foobar</Host>
-              \s+<Database>kasp</Database>
-              \s+<Username>opendnssec</Username>
-              \s+<Password>change_me</Password>
-              \s+</MySQL>
-              }x
-            )
+          before(:each) { params.merge!(datastore_host: 'foobar') }
+          if facts[:os]['family'] != 'RedHat'
+            it { is_expected.to compile }
+            it do
+              is_expected.to contain_file(
+                '/etc/opendnssec/conf.xml',
+              ).with_content(
+                %r{<Datastore>
+                \s+<MySQL>
+                \s+<Host\s+port="3306">foobar</Host>
+                \s+<Database>kasp</Database>
+                \s+<Username>opendnssec</Username>
+                \s+<Password>change_me</Password>
+                \s+</MySQL>
+                }x,
+              )
+            end
           end
         end
         context 'datastore_port' do
-          before { params.merge!(datastore_port: 1337) }
-          it { is_expected.to compile }
-          it do
-            is_expected.to contain_file('/etc/opendnssec/conf.xml').with_content(
-              %r{<Datastore>
-              \s+<MySQL>
-              \s+<Host\s+port="1337">localhost</Host>
-              \s+<Database>kasp</Database>
-              \s+<Username>opendnssec</Username>
-              \s+<Password>change_me</Password>
-              \s+</MySQL>
-              }x
-            )
+          before(:each) { params.merge!(datastore_port: 1337) }
+          if facts[:os]['family'] != 'RedHat'
+            it { is_expected.to compile }
+            it do
+              is_expected.to contain_file(
+                '/etc/opendnssec/conf.xml',
+              ).with_content(
+                %r{<Datastore>
+                \s+<MySQL>
+                \s+<Host\s+port="1337">localhost</Host>
+                \s+<Database>kasp</Database>
+                \s+<Username>opendnssec</Username>
+                \s+<Password>change_me</Password>
+                \s+</MySQL>
+                }x,
+              )
+            end
           end
         end
         context 'datastore_name' do
-          before { params.merge!(datastore_name: 'foobar') }
-          it { is_expected.to compile }
-          it do
-            is_expected.to contain_mysql__db('foobar').with(
-              user: 'opendnssec',
-              password: 'change_me'
-            )
-          end
-          it do
-            is_expected.to contain_file('/etc/opendnssec/conf.xml').with_content(
-              %r{<Datastore>
-              \s+<MySQL>
-              \s+<Host\s+port="3306">localhost</Host>
-              \s+<Database>foobar</Database>
-              \s+<Username>opendnssec</Username>
-              \s+<Password>change_me</Password>
-              \s+</MySQL>
-              }x
-            )
+          before(:each) { params.merge!(datastore_name: 'foobar') }
+          if facts[:os]['family'] != 'RedHat'
+            it { is_expected.to compile }
+            it do
+              is_expected.to contain_mysql__db('foobar').with(
+                user: 'opendnssec',
+                password: 'change_me',
+              )
+            end
+            it do
+              is_expected.to contain_file(
+                '/etc/opendnssec/conf.xml',
+              ).with_content(
+                %r{<Datastore>
+                \s+<MySQL>
+                \s+<Host\s+port="3306">localhost</Host>
+                \s+<Database>foobar</Database>
+                \s+<Username>opendnssec</Username>
+                \s+<Password>change_me</Password>
+                \s+</MySQL>
+                }x,
+              )
+            end
           end
         end
         context 'datastore_user' do
-          before { params.merge!(datastore_user: 'foobar') }
-          it { is_expected.to compile }
-          it do
-            is_expected.to contain_mysql__db('kasp').with(
-              user: 'foobar',
-              password: 'change_me'
-            )
-          end
-          it do
-            is_expected.to contain_file('/etc/opendnssec/conf.xml').with_content(
-              %r{<Datastore>
-              \s+<MySQL>
-              \s+<Host\s+port="3306">localhost</Host>
-              \s+<Database>kasp</Database>
-              \s+<Username>foobar</Username>
-              \s+<Password>change_me</Password>
-              \s+</MySQL>
-              }x
-            )
+          before(:each) { params.merge!(datastore_user: 'foobar') }
+          if facts[:os]['family'] != 'RedHat'
+            it { is_expected.to compile }
+            it do
+              is_expected.to contain_mysql__db('kasp').with(
+                user: 'foobar',
+                password: 'change_me',
+              )
+            end
+            it do
+              is_expected.to contain_file(
+                '/etc/opendnssec/conf.xml',
+              ).with_content(
+                %r{<Datastore>
+                \s+<MySQL>
+                \s+<Host\s+port="3306">localhost</Host>
+                \s+<Database>kasp</Database>
+                \s+<Username>foobar</Username>
+                \s+<Password>change_me</Password>
+                \s+</MySQL>
+                }x,
+              )
+            end
           end
         end
         context 'datastore_password' do
-          before { params.merge!(datastore_password: 'foobar') }
-          it { is_expected.to compile }
-          it do
-            is_expected.to contain_mysql__db('kasp').with(
-              user: 'opendnssec',
-              password: 'foobar'
-            )
-          end
-          it do
-            is_expected.to contain_file('/etc/opendnssec/conf.xml').with_content(
-              %r{<Datastore>
-              \s+<MySQL>
-              \s+<Host\s+port="3306">localhost</Host>
-              \s+<Database>kasp</Database>
-              \s+<Username>opendnssec</Username>
-              \s+<Password>foobar</Password>
-              \s+</MySQL>
-              }x
-            )
+          before(:each) { params.merge!(datastore_password: 'foobar') }
+          if facts[:os]['family'] != 'RedHat'
+            it { is_expected.to compile }
+            it do
+              is_expected.to contain_mysql__db('kasp').with(
+                user: 'opendnssec',
+                password: 'foobar',
+              )
+            end
+            it do
+              is_expected.to contain_file('/etc/opendnssec/conf.xml').with_content(
+                %r{<Datastore>
+                \s+<MySQL>
+                \s+<Host\s+port="3306">localhost</Host>
+                \s+<Database>kasp</Database>
+                \s+<Username>opendnssec</Username>
+                \s+<Password>foobar</Password>
+                \s+</MySQL>
+                }x,
+              )
+            end
           end
         end
         context 'policy_file' do
-          before { params.merge!(policy_file: '/foobar') }
+          before(:each) { params.merge!(policy_file: '/foobar') }
           it { is_expected.to compile }
           it do
             is_expected.to contain_file('/etc/opendnssec/conf.xml').with_content(
-              %r{<PolicyFile>/foobar</PolicyFile>}
+              %r{<PolicyFile>/foobar</PolicyFile>},
             )
           end
         end
         context 'zone_file' do
-          before { params.merge!(zone_file: '/foobar') }
+          before(:each) { params.merge!(zone_file: '/foobar') }
           it { is_expected.to compile }
           it do
             is_expected.to contain_file('/etc/opendnssec/conf.xml').with_content(
-              %r{<ZoneListFile>/foobar</ZoneListFile>}
+              %r{<ZoneListFile>/foobar</ZoneListFile>},
+            )
+          end
+        end
+        context 'listener_address' do
+          before(:each) { params.merge!(listener_address: '192.0.2.1') }
+          it { is_expected.to compile }
+          it do
+            is_expected.to contain_file('/etc/opendnssec/conf.xml').with_content(
+              %r{
+              <Listener>
+              \s+<Interface>
+              \s+<Address>192.0.2.1</Address>
+              \s+<Port>53</Port>
+              \s+</Interface>
+              \s+</Listener>
+              }x,
+            )
+          end
+        end
+        context 'listener_port' do
+          before(:each) { params.merge!(listener_port: 42) }
+          it { is_expected.to compile }
+          it do
+            is_expected.to contain_file('/etc/opendnssec/conf.xml').with_content(
+              %r{
+              <Listener>
+              \s+<Interface>
+              \s+<Port>42</Port>
+              \s+</Interface>
+              \s+</Listener>
+              }x,
+            )
+          end
+        end
+        context 'listener_address and port' do
+          before(:each) do
+            params.merge!(
+              listener_address: '192.0.2.1',
+              listener_port: 42,
+            )
+          end
+          it { is_expected.to compile }
+          it do
+            is_expected.to contain_file('/etc/opendnssec/conf.xml').with_content(
+              %r{
+              <Listener>
+              \s+<Interface>
+              \s+<Address>192.0.2.1</Address>
+              \s+<Port>42</Port>
+              \s+</Interface>
+              \s+</Listener>
+              }x,
             )
           end
         end
       end
       describe 'check bad type' do
         context 'enabled' do
-          before { params.merge!(enabled: 'foobar') }
-          it { expect { subject.call }.to raise_error(Puppet::Error) }
+          before(:each) { params.merge!(enabled: 'foobar') }
+          it { is_expected.to raise_error(Puppet::Error) }
         end
         context 'xferout_enabled' do
-          before { params.merge!(xferout_enabled: 'foobar') }
-          it { expect { subject.call }.to raise_error(Puppet::Error) }
+          before(:each) { params.merge!(xferout_enabled: 'foobar') }
+          it { is_expected.to raise_error(Puppet::Error) }
         end
         context 'user' do
-          before { params.merge!(user: true) }
-          it { expect { subject.call }.to raise_error(Puppet::Error) }
+          before(:each) { params.merge!(user: true) }
+          it { is_expected.to raise_error(Puppet::Error) }
         end
         context 'group' do
-          before { params.merge!(group: true) }
-          it { expect { subject.call }.to raise_error(Puppet::Error) }
+          before(:each) { params.merge!(group: true) }
+          it { is_expected.to raise_error(Puppet::Error) }
         end
         context 'manage_packages' do
-          before { params.merge!(manage_packages: 'foobar') }
-          it { expect { subject.call }.to raise_error(Puppet::Error) }
+          before(:each) { params.merge!(manage_packages: 'foobar') }
+          it { is_expected.to raise_error(Puppet::Error) }
         end
         context 'manage_datastore' do
-          before { params.merge!(manage_datastore: 'foobar') }
-          it { expect { subject.call }.to raise_error(Puppet::Error) }
+          before(:each) { params.merge!(manage_datastore: 'foobar') }
+          it { is_expected.to raise_error(Puppet::Error) }
         end
         context 'manage_service' do
-          before { params.merge!(manage_service: 'foobar') }
-          it { expect { subject.call }.to raise_error(Puppet::Error) }
+          before(:each) { params.merge!(manage_service: 'foobar') }
+          it { is_expected.to raise_error(Puppet::Error) }
         end
         context 'manage_ods_ksmutil' do
-          before { params.merge!(manage_ods_ksmutil: 'foobar') }
-          it { expect { subject.call }.to raise_error(Puppet::Error) }
+          before(:each) { params.merge!(manage_ods_ksmutil: 'foobar') }
+          it { is_expected.to raise_error(Puppet::Error) }
         end
         context 'manage_conf' do
-          before { params.merge!(manage_conf: 'foobar') }
-          it { expect { subject.call }.to raise_error(Puppet::Error) }
+          before(:each) { params.merge!(manage_conf: 'foobar') }
+          it { is_expected.to raise_error(Puppet::Error) }
         end
         context 'manage_policies' do
-          before { params.merge!(manage_policies: 'foobar') }
-          it { expect { subject.call }.to raise_error(Puppet::Error) }
+          before(:each) { params.merge!(manage_policies: 'foobar') }
+          it { is_expected.to raise_error(Puppet::Error) }
         end
         context 'policies' do
-          before { params.merge!(policies: true) }
-          it { expect { subject.call }.to raise_error(Puppet::Error) }
+          before(:each) { params.merge!(policies: true) }
+          it { is_expected.to raise_error(Puppet::Error) }
         end
         context 'manage_zones' do
-          before { params.merge!(manage_zones: 'foobar') }
-          it { expect { subject.call }.to raise_error(Puppet::Error) }
+          before(:each) { params.merge!(manage_zones: 'foobar') }
+          it { is_expected.to raise_error(Puppet::Error) }
         end
         context 'zones' do
-          before { params.merge!(zones: true) }
-          it { expect { subject.call }.to raise_error(Puppet::Error) }
+          before(:each) { params.merge!(zones: true) }
+          it { is_expected.to raise_error(Puppet::Error) }
         end
         context 'manage_addns' do
-          before { params.merge!(manage_addns: 'foobar') }
-          it { expect { subject.call }.to raise_error(Puppet::Error) }
+          before(:each) { params.merge!(manage_addns: 'foobar') }
+          it { is_expected.to raise_error(Puppet::Error) }
         end
         context 'addns_tsigs' do
-          before { params.merge!(addns_tsigs: true) }
-          it { expect { subject.call }.to raise_error(Puppet::Error) }
+          before(:each) { params.merge!(addns_tsigs: true) }
+          it { is_expected.to raise_error(Puppet::Error) }
         end
         context 'addns_xfers_in' do
-          before { params.merge!(addns_xfers_in: true) }
-          it { expect { subject.call }.to raise_error(Puppet::Error) }
+          before(:each) { params.merge!(addns_xfers_in: true) }
+          it { is_expected.to raise_error(Puppet::Error) }
         end
         context 'addns_xfers_out' do
-          before { params.merge!(addns_xfers_out: true) }
-          it { expect { subject.call }.to raise_error(Puppet::Error) }
+          before(:each) { params.merge!(addns_xfers_out: true) }
+          it { is_expected.to raise_error(Puppet::Error) }
         end
         context 'logging_level' do
-          before { params.merge!(logging_level: true) }
-          it { expect { subject.call }.to raise_error(Puppet::Error) }
+          before(:each) { params.merge!(logging_level: true) }
+          it { is_expected.to raise_error(Puppet::Error) }
         end
         context 'logging_facility' do
-          before { params.merge!(logging_facility: true) }
-          it { expect { subject.call }.to raise_error(Puppet::Error) }
+          before(:each) { params.merge!(logging_facility: true) }
+          it { is_expected.to raise_error(Puppet::Error) }
         end
         context 'repository_name' do
-          before { params.merge!(repository_name: true) }
-          it { expect { subject.call }.to raise_error(Puppet::Error) }
+          before(:each) { params.merge!(repository_name: true) }
+          it { is_expected.to raise_error(Puppet::Error) }
         end
         context 'repository_module' do
-          before { params.merge!(repository_module: true) }
-          it { expect { subject.call }.to raise_error(Puppet::Error) }
+          before(:each) { params.merge!(repository_module: true) }
+          it { is_expected.to raise_error(Puppet::Error) }
         end
         context 'repository_pin' do
-          before { params.merge!(repository_pin: true) }
-          it { expect { subject.call }.to raise_error(Puppet::Error) }
+          before(:each) { params.merge!(repository_pin: true) }
+          it { is_expected.to raise_error(Puppet::Error) }
         end
         context 'repository_capacity' do
-          before { params.merge!(repository_capacity: true) }
-          it { expect { subject.call }.to raise_error(Puppet::Error) }
+          before(:each) { params.merge!(repository_capacity: true) }
+          it { is_expected.to raise_error(Puppet::Error) }
         end
         context 'repository_token_label' do
-          before { params.merge!(repository_token_label: true) }
-          it { expect { subject.call }.to raise_error(Puppet::Error) }
+          before(:each) { params.merge!(repository_token_label: true) }
+          it { is_expected.to raise_error(Puppet::Error) }
         end
         context 'datastore_engine' do
-          before { params.merge!(datastore_engine: true) }
-          it { expect { subject.call }.to raise_error(Puppet::Error) }
+          before(:each) { params.merge!(datastore_engine: true) }
+          it { is_expected.to raise_error(Puppet::Error) }
         end
         context 'datastore_host' do
-          before { params.merge!(datastore_host: true) }
-          it { expect { subject.call }.to raise_error(Puppet::Error) }
+          before(:each) { params.merge!(datastore_host: true) }
+          it { is_expected.to raise_error(Puppet::Error) }
         end
         context 'datastore_port' do
-          before { params.merge!(datastore_port: true) }
-          it { expect { subject.call }.to raise_error(Puppet::Error) }
+          before(:each) { params.merge!(datastore_port: true) }
+          it { is_expected.to raise_error(Puppet::Error) }
         end
         context 'datastore_name' do
-          before { params.merge!(datastore_name: true) }
-          it { expect { subject.call }.to raise_error(Puppet::Error) }
+          before(:each) { params.merge!(datastore_name: true) }
+          it { is_expected.to raise_error(Puppet::Error) }
         end
         context 'datastore_user' do
-          before { params.merge!(datastore_user: true) }
-          it { expect { subject.call }.to raise_error(Puppet::Error) }
+          before(:each) { params.merge!(datastore_user: true) }
+          it { is_expected.to raise_error(Puppet::Error) }
         end
         context 'datastore_password' do
-          before { params.merge!(datastore_password: true) }
-          it { expect { subject.call }.to raise_error(Puppet::Error) }
+          before(:each) { params.merge!(datastore_password: true) }
+          it { is_expected.to raise_error(Puppet::Error) }
         end
         context 'policy_file' do
-          before { params.merge!(policy_file: true) }
-          it { expect { subject.call }.to raise_error(Puppet::Error) }
+          before(:each) { params.merge!(policy_file: true) }
+          it { is_expected.to raise_error(Puppet::Error) }
         end
         context 'zone_file' do
-          before { params.merge!(zone_file: true) }
-          it { expect { subject.call }.to raise_error(Puppet::Error) }
+          before(:each) { params.merge!(zone_file: true) }
+          it { is_expected.to raise_error(Puppet::Error) }
         end
         context 'addns_file' do
-          before { params.merge!(addns_file: true) }
-          it { expect { subject.call }.to raise_error(Puppet::Error) }
+          before(:each) { params.merge!(addns_file: true) }
+          it { is_expected.to raise_error(Puppet::Error) }
         end
       end
     end
