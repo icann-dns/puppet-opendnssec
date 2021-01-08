@@ -104,7 +104,7 @@ describe 'opendnssec::remote' do
             \s+<Port>53</Port>
             \s+</Remote>
             \s+</Notify>
-            }x,
+            }x
           )
         end
       end

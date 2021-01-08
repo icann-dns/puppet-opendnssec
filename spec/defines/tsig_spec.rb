@@ -53,7 +53,7 @@ describe 'opendnssec::tsig' do
             \s+<Algorithm>hmac-sha256</Algorithm>
             \s+<Secret>AAAA</Secret>
             \s+</TSIG>
-            }x,
+            }x
           )
         end
       end

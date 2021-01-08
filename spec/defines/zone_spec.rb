@@ -66,7 +66,7 @@ describe 'opendnssec::zone' do
         it { is_expected.to compile.with_all_deps }
         it do
           is_expected.to contain_file(
-            '/etc/opendnssec/addns-default.xml.tmp',
+            '/etc/opendnssec/addns-default.xml.tmp'
           )
         end
         it do
@@ -133,7 +133,7 @@ describe 'opendnssec::zone' do
           it { is_expected.to contain_opendnssec__addns('test_zone-masters') }
           it do
             is_expected.to contain_file(
-              '/etc/opendnssec/addns-test_zone-masters.xml.tmp',
+              '/etc/opendnssec/addns-test_zone-masters.xml.tmp'
             )
           end
           it do
@@ -162,7 +162,7 @@ describe 'opendnssec::zone' do
           it { is_expected.to contain_opendnssec__addns('test_zone-provide_xfrs') }
           it do
             is_expected.to contain_file(
-              '/etc/opendnssec/addns-test_zone-provide_xfrs.xml.tmp',
+              '/etc/opendnssec/addns-test_zone-provide_xfrs.xml.tmp'
             )
           end
           it do

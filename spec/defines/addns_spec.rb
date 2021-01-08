@@ -68,7 +68,7 @@ describe 'opendnssec::addns' do
 			\s+</Outbound>
 			\s+</DNS>
 			\s+</Adapter>
-            }x,
+            }x
           )
         end
       end

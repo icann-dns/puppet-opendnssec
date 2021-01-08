@@ -186,7 +186,6 @@ class opendnssec (
   }
 
   if $enabled and $manage_service {
-
     service { $service_enforcer:
         ensure => running,
         enable => true,
