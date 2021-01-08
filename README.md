@@ -5,7 +5,7 @@
 
 #### Table of Contents
 
-1. [Overview](#overview)
+1. [Overview](#overview) 
 2. [Module Description - What the module does and why it is useful](#module-description)
 3. [Setup - The basics of getting started with opendnssec](#setup)
     * [What opendnssec affects](#what-opendnssec-affects)
@@ -458,3 +458,8 @@ Create addns files based on masters and provide\_xfrs configuered on zones
 ## Limitations
 
 This module is tested on Ubuntu 14.04, and 16.04
+
+## Contributors
+* [b4ldr](https://github.com/b4ldr/)
+* [mave007](https://github.com/mave007)
+* [sacr0](https://github.com/sacr0)

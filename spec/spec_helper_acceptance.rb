@@ -9,9 +9,10 @@ modules = [
   'puppetlabs-stdlib',
   'puppetlabs-concat',
   'puppetlabs-mysql',
+  'stahnma-epel',
   'icann-tea',
   'icann-softhsm',
-  'icann-nsd'
+  'icann-nsd',
 ]
 git_repos = []
 # git_repos = [
@@ -40,6 +41,9 @@ hosts.each do |host|
     # default installs incorect version
     host.install_package('sysutils/puppet4')
     host.install_package('dns/bind-tools')
+  elsif host['platform'] =~ %r{el-7}
+    host.install_package('vim')
+    host.install_package('bind-utils')
   else
     host.install_package('vim')
     host.install_package('dnsutils')
@@ -73,10 +77,13 @@ else
     install_puppet_on(
       host,
       version: '4',
-      puppet_agent_version: '1.6.1',
-      default_action: 'gem_install'
+      puppet_agent_version: '1.9.1',
+      default_action: 'gem_install',
     )
     install_modules(host, modules, git_repos)
+    if host['platform'] =~ %r{^el-}
+      apply_manifest_on(host, 'include epel', catch_failures: true)
+    end
   end
 end
 RSpec.configure do |c|

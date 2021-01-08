@@ -1,57 +1,78 @@
 # == Class: opendnssec
 #
 class opendnssec (
-  Boolean               $enabled                = true,
-  String[1,32]          $user                   = 'root',
-  String[1,32]          $group                  = 'root',
+  Boolean                       $enabled,
+  String[1,32]                  $user,
+  String[1,32]                  $group,
 
-  Boolean               $manage_packages        = true,
-  Boolean               $manage_datastore       = true,
-  Boolean               $manage_service         = true,
-  Boolean               $manage_ods_ksmutil     = true,
-  Boolean               $manage_conf            = true,
+  Boolean                       $manage_packages,
+  Boolean                       $manage_datastore,
+  Boolean                       $manage_service,
+  Boolean                       $manage_ods_ksmutil,
+  Boolean                       $manage_conf,
 
-  Integer[1,7]          $logging_level          = 3,
-  Tea::Syslogfacility   $logging_facility       = 'local0',
+  Integer[1,7]                  $logging_level,
+  Tea::Syslogfacility           $logging_facility,
 
-  String[1,100]         $repository_name        = 'SoftHSM',
-  Stdlib::Absolutepath  $repository_module      = $::opendnssec::params::repository_module,
-  String[1,100]         $repository_pin         = '1234',
-  Optional[Integer]     $repository_capacity    = undef,
-  String[1,32]          $repository_token_label = 'OpenDNSSEC',
-  Boolean               $skip_publickey         = true,
-  Boolean               $require_backup         = false,
+  Array[String]                 $packages,
+  String[1,100]                 $service_enforcer,
+  String[1,100]                 $service_signer,
+  Array[String]                 $sqlite_packages,
+  Array[String]                 $mysql_packages,
 
-  Opendnssec::Datastore $datastore_engine       = 'mysql',
-  Tea::Host             $datastore_host         = 'localhost',
-  Tea::Port             $datastore_port         = 3306,
-  String[1,100]         $datastore_name         = 'kasp',
-  String[1,100]         $datastore_user         = 'opendnssec',
-  String[1,100]         $datastore_password     = 'change_me',
-  Stdlib::Absolutepath  $mysql_sql_file         = '/usr/share/opendnssec/database_create.mysql',
+  String[1,100]                 $repository_name,
+  Stdlib::Absolutepath          $repository_module,
+  String[1,100]                 $repository_pin,
+  Optional[Integer]             $repository_capacity,
+  String[1,32]                  $repository_token_label,
+  Boolean                       $skip_publickey,
 
-  Stdlib::Absolutepath  $policy_file            = '/etc/opendnssec/kasp.xml',
-  Stdlib::Absolutepath  $zone_file              = '/etc/opendnssec/zonelist.xml',
-  Stdlib::Absolutepath  $tsigs_dir              = '/etc/opendnssec/tsigs',
-  Stdlib::Absolutepath  $remotes_dir            = '/etc/opendnssec/remotes',
-  Stdlib::Absolutepath  $xsl_file               = '/usr/share/opendnssec/addns.xsl',
+  Opendnssec::Datastore         $datastore_engine,
+  Stdlib::Host                  $datastore_host,
+  Stdlib::Port                  $datastore_port,
+  String[1,100]                 $datastore_name,
+  String[1,100]                 $datastore_user,
+  String[1,100]                 $datastore_password,
+  Stdlib::Absolutepath          $mysql_sql_file,
 
-  Boolean               $xferout_enabled        = true,
+  Stdlib::Absolutepath          $base_dir,
+  Stdlib::Absolutepath          $policy_file,
+  Stdlib::Absolutepath          $zone_file,
+  Stdlib::Absolutepath          $tsigs_dir,
+  Stdlib::Absolutepath          $remotes_dir,
+  Stdlib::Absolutepath          $xsl_file,
+  Stdlib::Absolutepath          $sqlite_file,
+  Stdlib::Absolutepath          $working_dir,
+  Stdlib::Absolutepath          $signconf_dir,
+  Stdlib::Absolutepath          $signed_dir,
+  Stdlib::Absolutepath          $unsigned_dir,
+  Stdlib::Absolutepath          $ksmutil_path,
 
-  Hash                  $zones                  = {},
-  Hash                  $policies               = {},
-  Hash                  $remotes                = {},
-  Hash                  $tsigs                  = {},
-  String                $default_tsig_name      = 'NOKEY',
-  String                $default_policy_name    = 'default',
-  Array[String]         $default_masters        = [],
-  Array[String]         $default_provide_xfrs   = [],
+  Optional[Stdlib::Ip::Address] $listener_address,
+  Stdlib::Port                  $listener_port,
 
-) inherits opendnssec::params {
+  Boolean                       $xferout_enabled,
+
+  Hash                          $zones,
+  Hash                          $policies,
+  Hash                          $remotes,
+  Hash                          $tsigs,
+  String                        $default_tsig_name,
+  String                        $default_policy_name,
+  Array[String]                 $default_masters,
+  Array[String]                 $default_provide_xfrs,
+  Boolean                       $notify_boolean,
+  String                        $notify_command,
+  Boolean                       $require_backup       = true,
+) {
+
+  if $facts['os']['family'] == 'RedHat' and $datastore_engine == 'mysql' {
+    fail('RedHat does not support mysql')
+  }
 
   if $manage_packages {
-    ensure_packages(['opendnssec', 'xsltproc'])
-    file {'/var/lib/opendnssec':
+    ensure_packages($packages)
+    file {[$base_dir, $signed_dir, $unsigned_dir]:
       ensure => 'directory',
       mode   => '0640',
       owner  => $user,
@@ -62,31 +83,41 @@ class opendnssec (
     ensure => file,
     source => 'puppet:///modules/opendnssec/usr/share/opendnssec/addns.xsl',
   }
-  file {[$tsigs_dir, $remotes_dir]:
+  file {[$tsigs_dir, $remotes_dir, $signconf_dir, $working_dir]:
     ensure => 'directory',
     owner  => $user,
     group  => $group,
   }
   if $enabled and $manage_datastore {
+    if $manage_ods_ksmutil and $manage_conf {
+      $datastore_setup_before = Exec['ods-ksmutil updated conf.xml']
+    } else {
+      $datastore_setup_before = undef
+    }
     if $datastore_engine == 'mysql' {
-      if $manage_ods_ksmutil and $manage_conf {
-        $mysql_db_before = Exec['ods-ksmutil updated conf.xml']
-      } else {
-        $mysql_db_before = undef
-      }
       require  ::mysql::server
       mysql::db {$datastore_name:
         user     => $datastore_user,
         password => $datastore_password,
         sql      => $mysql_sql_file,
-        before   => $mysql_db_before,
+        before   => $datastore_setup_before,
       }
 
       if $manage_packages {
-        ensure_packages(['opendnssec-enforcer-mysql'])
+        ensure_packages($mysql_packages)
       }
     } elsif $datastore_engine == 'sqlite' {
-      ensure_packages(['opendnssec-enforcer-sqlite'])
+      if $manage_packages {
+        ensure_packages($sqlite_packages)
+      }
+
+      exec {'ods-ksmutil setup':
+        path     => ['/bin', '/usr/bin', '/sbin', '/usr/sbin', '/usr/local/bin'],
+        provider => 'shell',
+        command  => "/usr/bin/yes | ${ksmutil_path} setup",
+        unless   => "test -s ${sqlite_file}",
+        before   => $datastore_setup_before,
+      }
     }
   }
   if $manage_conf {
@@ -126,7 +157,7 @@ class opendnssec (
       }
       if $manage_ods_ksmutil {
         exec {'ods-ksmutil updated conf.xml':
-          command     => '/usr/bin/yes | /usr/bin/ods-ksmutil update all',
+          command     => "/usr/bin/yes | ${ksmutil_path} update conf",
           user        => $user,
           refreshonly => true,
           subscribe   => $exec_subscribe,
@@ -153,18 +184,20 @@ class opendnssec (
   if ! defined(Class['opendnssec::zones']) {
     class { '::opendnssec::zones': zones => $zones }
   }
+
   if $enabled and $manage_service {
-    service {'opendnssec-enforcer':
-      ensure => running,
-      enable => true,
-    } ~> service { 'opendnssec-signer':
-      ensure => running,
-      enable => true,
+
+    service { $service_enforcer:
+        ensure => running,
+        enable => true,
+    } ~> service { $service_signer:
+        ensure => running,
+        enable => true,
     }
-    Opendnssec::Tsig<| |> -> Service['opendnssec-enforcer', 'opendnssec-signer']
-    Opendnssec::Zone<| |> -> Service['opendnssec-enforcer', 'opendnssec-signer']
-    Opendnssec::Addns<| |> -> Service['opendnssec-enforcer', 'opendnssec-signer']
-    Opendnssec::Policy<| |> -> Service['opendnssec-enforcer', 'opendnssec-signer']
-    Opendnssec::Remote<| |> -> Service['opendnssec-enforcer', 'opendnssec-signer']
+    Opendnssec::Tsig   <| |> ~> Service[$service_enforcer, $service_signer]
+    Opendnssec::Zone   <| |> -> Service[$service_enforcer, $service_signer]
+    Opendnssec::Addns  <| |> ~> Service[$service_enforcer, $service_signer]
+    Opendnssec::Policy <| |> -> Service[$service_enforcer, $service_signer]
+    Opendnssec::Remote <| |> ~> Service[$service_enforcer, $service_signer]
   }
 }

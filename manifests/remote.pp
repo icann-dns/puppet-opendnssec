@@ -1,15 +1,16 @@
 # == Define: opendnssec::tsig
 #
 define opendnssec::remote (
-  Optional[Variant[Tea::Ipv4, Tea::Ipv4_cidr]] $address4  = undef,
-  Optional[Variant[Tea::Ipv6, Tea::Ipv6_cidr]] $address6  = undef,
-  Optional[String]                             $tsig      = undef,
-  Optional[String]                             $tsig_name = undef,
-  Tea::Port                                    $port      = 53,
+  Optional[Variant[Tea::Ipv4, Tea::Ipv4_cidr]] $address4      = undef,
+  Optional[Variant[Tea::Ipv6, Tea::Ipv6_cidr]] $address6      = undef,
+  Optional[String]                             $tsig          = undef,
+  Optional[String]                             $tsig_name     = undef,
+  Boolean                                      $sign_notifies = false,
+  Tea::Port                                    $port          = 53,
 ) {
   include ::opendnssec
   $user               = $::opendnssec::user
-  $group              = $::opendnssec::user
+  $group              = $::opendnssec::group
   $manage_ods_ksmutil = $::opendnssec::manage_ods_ksmutil
   $enabled            = $::opendnssec::enabled
   $base_dir           = $::opendnssec::remotes_dir
@@ -58,18 +59,5 @@ define opendnssec::remote (
     owner   => $user,
     group   => $group,
     content => template('opendnssec/etc/opendnssec/notify_out.xml.erb'),
-  }
-  if $manage_ods_ksmutil and $enabled {
-    exec {"Forcing ods-ksmutil to update after modifying remote ${name}":
-      command     => '/usr/bin/yes | /usr/bin/ods-ksmutil update all',
-      user        => $user,
-      refreshonly => true,
-      subscribe   => File[
-        "${base_dir}/${name}_notify_out.xml",
-        "${base_dir}/${name}_providetransfer.xml",
-        "${base_dir}/${name}_notify_in.xml",
-        "${base_dir}/${name}_requesttransfer.xml",
-      ],
-    }
   }
 }

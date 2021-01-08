@@ -1,0 +1,4 @@
+opendnssec::sqlite_packages:
+  - opendnssec-enforcer-sqlite
+opendnssec::mysql_packages:
+  - opendnssec-enforcer-mysql
