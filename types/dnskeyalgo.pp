@@ -3,4 +3,5 @@ type Opendnssec::Dnskeyalgo = Enum[
   'RSASHA256',
   'RSASHA512',
   'RSASHA1-NSEC3-SHA1',
+  'ECDSAP256SHA256'
 ]
