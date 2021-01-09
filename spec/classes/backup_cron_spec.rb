@@ -8,6 +8,7 @@ describe 'opendnssec::backup_cron' do
   let(:params) do
     {
       backup_host: 'foobar.example.com',
+      require_backup: true,
       # :backup_user => 'backup',
       # :backup_glob => '*.tar.bz2',
       # :date_format => '%Y%m%d-%H%M',
