@@ -15,7 +15,7 @@ describe 'opendnssec::backup_cron' do
       # :backup_dir => '/opt/backup',
       # :tmp_dirbase => '/opt/tmp',
       # :script_path => '/usr/local/bin/backup-hsm-mysql.sh',
-      # :require_backup => true,
+      # :require_backup => false,
     }
   end
 
