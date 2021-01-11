@@ -1,5 +1,4 @@
 ---
-sudo: false
 dist: trusty
 language: ruby
 cache: bundler
@@ -33,7 +32,6 @@ jobs:
       rvm: 2.7.2
       script: bundle exec rake beaker
       services: docker
-      sudo: required
     - stage: acceptence
       bundler_args: 
       dist: trusty
@@ -41,7 +39,6 @@ jobs:
       rvm: 2.7.2
       script: bundle exec rake beaker
       services: docker
-      sudo: required
     - stage: acceptence
       bundler_args: 
       dist: trusty
@@ -49,7 +46,6 @@ jobs:
       rvm: 2.7.2
       script: bundle exec rake beaker
       services: docker
-      sudo: required
     - stage: acceptence
       bundler_args: 
       dist: trusty
@@ -57,7 +53,6 @@ jobs:
       rvm: 2.7.2
       script: bundle exec rake beaker
       services: docker
-      sudo: required
     - stage: acceptence
       bundler_args: 
       dist: trusty
@@ -65,7 +60,6 @@ jobs:
       rvm: 2.7.2
       script: bundle exec rake beaker
       services: docker
-      sudo: required
     - stage: acceptence
       bundler_args: 
       dist: trusty
@@ -73,7 +67,6 @@ jobs:
       rvm: 2.7.2
       script: bundle exec rake beaker
       services: docker
-      sudo: required
     - stage: acceptence
       bundler_args: 
       dist: trusty
@@ -81,7 +74,6 @@ jobs:
       rvm: 2.7.2
       script: bundle exec rake beaker
       services: docker
-      sudo: required
     - stage: acceptence
       bundler_args: 
       dist: trusty
@@ -89,7 +81,6 @@ jobs:
       rvm: 2.7.2
       script: bundle exec rake beaker
       services: docker
-      sudo: required
     - stage: deploy
       env: PUPPET_VERSION="~> 4.0" CHECK=build DEPLOY_TO_FORGE=yes
 notifications:
