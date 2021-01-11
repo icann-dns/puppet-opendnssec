@@ -9,12 +9,12 @@ class opendnssec::backup_cron (
   Stdlib::Absolutepath $backup_dir,
   Stdlib::Absolutepath $tmp_dirbase,
   Stdlib::Absolutepath $script_path,
+  Boolean              $require_backup,
 ) {
   include ::opendnssec
   $user             = $::opendnssec::user
   $group            = $::opendnssec::group
   $datastore_engine = $::opendnssec::datastore_engine
-  $require_backup   = $::opendnssec::require_backup
 
   file {[$backup_dir, $tmp_dirbase]:
     ensure => directory,

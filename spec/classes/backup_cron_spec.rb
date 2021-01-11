@@ -21,8 +21,8 @@ describe 'opendnssec::backup_cron' do
   end
 
   # add these two lines in a single test block to enable puppet and hiera debug mode
-  # Puppet::Util::Log.level = :debug
-  # Puppet::Util::Log.newdestination(:console)
+  Puppet::Util::Log.level = :debug
+  Puppet::Util::Log.newdestination(:console)
   # This will need to get moved
   # it { pp catalogue.resources }
   on_supported_os.each do |os, facts|
