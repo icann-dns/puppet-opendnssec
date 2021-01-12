@@ -37,7 +37,7 @@ group :development do
 end
 group :system_tests do
   gem "puppet-module-posix-system-r#{minor_version}",                            require: false, platforms: [:ruby]
-  gem "beaker", *location_for(ENV['BEAKER_VERSION'] || '~> 3.13')
+  gem "beaker", *location_for(ENV['BEAKER_VERSION'] || '>= 3.13')
   gem "beaker-pe",                                                               require: false
   gem "beaker-hostgenerator"
   gem "beaker-rspec"
