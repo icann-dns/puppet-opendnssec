@@ -34,6 +34,8 @@ group :development do
   gem "puppet-module-win-default-r#{minor_version}",   require: false, platforms: [:mswin, :mingw, :x64_mingw]
   gem "puppet-module-win-dev-r#{minor_version}",       require: false, platforms: [:mswin, :mingw, :x64_mingw]
   gem "puppet-lint-version_comparison-check",          require: false
+  gem "beaker-rspec"
+  gem "beaker-puppet"
 end
 group :system_tests do
   gem "puppet-module-posix-system-r#{minor_version}",                            require: false, platforms: [:ruby]
@@ -41,6 +43,7 @@ group :system_tests do
   gem "beaker-pe",                                                               require: false
   gem "beaker-hostgenerator"
   gem "beaker-rspec"
+  gem "beaker-puppet"
   gem "beaker-testmode_switcher",                                                require: false
   gem "progressbar",                                                             require: false
 end
