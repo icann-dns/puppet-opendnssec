@@ -1,13 +1,17 @@
 # frozen_string_literal: true
 
+require 'beaker-pe'
 require 'beaker-puppet'
 require 'puppet'
 require 'beaker/puppet_install_helper'
 require 'beaker/testmode_switcher'
 require 'beaker-rspec'
+require 'beaker-rspec/version'
+require 'beaker-rspec/spec_helper'
+require 'beaker-rspec/helpers/serverspec'
 require 'beaker/testmode_switcher/dsl'
-require 'beaker-pe'
 require 'progressbar'
+
 
 modules = [
   'puppetlabs-stdlib',
@@ -41,9 +45,9 @@ end
 hosts.each do |host|
   step "install packages on #{host}"
   host.install_package('git')
+  run_puppet_install_helper
   if host['platform'] =~ %r{freebsd}
     # default installs incorect version
-    host.install_package('sysutils/puppet4')
     host.install_package('dns/bind-tools')
   elsif host['platform'] =~ %r{el-7}
     host.install_package('vim')
@@ -80,8 +84,8 @@ else
   hosts.each do |host|
     install_puppet_on(
       host,
-      version: '4',
-      puppet_agent_version: '1.9.1',
+      version: '5',
+      puppet_agent_version: '5.5.8',
       default_action: 'gem_install',
     )
     install_modules(host, modules, git_repos)
