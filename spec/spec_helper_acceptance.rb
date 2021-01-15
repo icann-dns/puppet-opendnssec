@@ -1,14 +1,14 @@
 # frozen_string_literal: true
 
-require 'beaker-pe'
 require 'beaker-puppet'
+require 'beaker-pe'
 require 'puppet'
 require 'beaker/puppet_install_helper'
 require 'beaker/testmode_switcher'
-require 'beaker-rspec'
+# require 'beaker-rspec'
 require 'beaker-rspec/version'
-require 'beaker-rspec/spec_helper'
-require 'beaker-rspec/helpers/serverspec'
+# require 'beaker-rspec/spec_helper'
+# require 'beaker-rspec/helpers/serverspec'
 require 'beaker/testmode_switcher/dsl'
 require 'progressbar'
 

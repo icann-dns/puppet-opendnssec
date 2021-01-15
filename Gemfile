@@ -38,15 +38,15 @@ end
 group :system_tests do
   gem "puppet-module-posix-system-r#{minor_version}",                            require: false, platforms: [:ruby]
   gem "beaker", *location_for(ENV['BEAKER_VERSION'] || '>= 3.13')
-  gem "beaker-pe",                                                               require: false
+  gem "beaker-pe", '~> 2.11', '>= 2.11.9'
   gem "beaker-hostgenerator"
   gem "beaker-rspec"
   gem "beaker-puppet"
   gem "beaker-puppet_install_helper"
   gem "beaker-testmode_switcher",                                                require: false
-  gem "beaker-testmode_switcher",                                                require: false
   gem "progressbar",                                                             require: false
 end
+
 
 puppet_version = ENV['PUPPET_GEM_VERSION']
 puppet_type = gem_type(puppet_version)
