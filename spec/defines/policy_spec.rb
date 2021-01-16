@@ -493,6 +493,24 @@ describe 'opendnssec::policy' do
             )
           end
         end
+        context 'ksk_algorithm_ecdsa' do
+          before(:each) { params.merge!(ksk_algorithm: 'ECDSAP256SHA256') }
+          it { is_expected.to compile }
+          it do
+            is_expected.to contain_concat__fragment(
+              'policy_test_policy',
+            ).with_content(
+              %r{<KSK>
+              \s+<Algorithm\slength="2048">13</Algorithm>
+              \s+<Lifetime>P365D</Lifetime>
+              \s+<Repository>SoftHSM</Repository>
+              \s+<Standby>0</Standby>
+              \s+<ManualRollover/>
+              \s+</KSK>
+              }x,
+            )
+          end
+        end
         context 'ksk_algorithm_length' do
           before(:each) { params.merge!(ksk_algorithm_length: 1024) }
           it { is_expected.to compile }
@@ -573,6 +591,23 @@ describe 'opendnssec::policy' do
             ).with_content(
               %r{<ZSK>
               \s+<Algorithm\slength="1024">5</Algorithm>
+              \s+<Lifetime>P90D</Lifetime>
+              \s+<Repository>SoftHSM</Repository>
+              \s+<Standby>0</Standby>
+              \s+</ZSK>
+              }x,
+            )
+          end
+        end
+        context 'zsk_algorithm_ecdsa' do
+          before(:each) { params.merge!(zsk_algorithm: 'ECDSAP256SHA256') }
+          it { is_expected.to compile }
+          it do
+            is_expected.to contain_concat__fragment(
+              'policy_test_policy',
+            ).with_content(
+              %r{<ZSK>
+              \s+<Algorithm\slength="1024">13</Algorithm>
               \s+<Lifetime>P90D</Lifetime>
               \s+<Repository>SoftHSM</Repository>
               \s+<Standby>0</Standby>
@@ -892,6 +927,10 @@ describe 'opendnssec::policy' do
           before(:each) { params.merge!(ksk_algorithm: true) }
           it { is_expected.to raise_error(Puppet::Error) }
         end
+        context 'ksk_algorithm_ecdsa' do
+          before(:each) { params.merge!(ksk_algorithm: true) }
+          it { is_expected.to raise_error(Puppet::Error) }
+        end
         context 'ksk_algorithm_length' do
           before(:each) { params.merge!(ksk_algorithm_length: true) }
           it { is_expected.to raise_error(Puppet::Error) }
@@ -913,6 +952,10 @@ describe 'opendnssec::policy' do
           it { is_expected.to raise_error(Puppet::Error) }
         end
         context 'zsk_algorithm' do
+          before(:each) { params.merge!(zsk_algorithm: true) }
+          it { is_expected.to raise_error(Puppet::Error) }
+        end
+        context 'zsk_algorithm_ecdsa' do
           before(:each) { params.merge!(zsk_algorithm: true) }
           it { is_expected.to raise_error(Puppet::Error) }
         end
