@@ -12,4 +12,3 @@ hierarchy:
     path: "os/%{os.family}.yaml"
   - name: "common"
     path: "common.yaml"
-
