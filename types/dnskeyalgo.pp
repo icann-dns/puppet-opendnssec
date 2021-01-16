@@ -6,5 +6,5 @@ type Opendnssec::Dnskeyalgo = Enum[
   'ECDSAP256SHA256',
   'ECDSAP384SHA384',
   'ED25519',
-  'ED448'
+  'ED448',
 ]
