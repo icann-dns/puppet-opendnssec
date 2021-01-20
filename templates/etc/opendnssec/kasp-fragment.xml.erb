@@ -4,8 +4,8 @@ if not defined?(NSEC_ALGO)
     'SHA1' => 1 
   }
 end
-if not defined?(DNSKEY_ALGO)
-  DNSKEY_ALGO = { 
+if not defined?(DNSKEYALG)
+  DNSKEYALG = { 
     'RSASHA1'            => 5,
     'RSASHA1-NSEC3-SHA1' => 7,
     'RSASHA256'          => 8,
@@ -59,10 +59,10 @@ end
 
       <!-- Parameters for KSK only -->
       <KSK>
-<%- if @ksk_algorithm -%>
-        <!-- KSK Algo <%= @ksk_algorithm %> (<%= DNSKEY_ALGO[@ksk_algorithm] %>) -->
-<%- end -%>
-        <Algorithm length="<%= @ksk_algorithm_length %>"><%= DNSKEY_ALGO[@ksk_algorithm] %></Algorithm>
+<% if @ksk_algorithm %>
+        <!-- KSK Algo <%= @ksk_algorithm %> (<%= DNSKEYALG[@ksk_algorithm] %>) -->
+<% end %>
+        <Algorithm length="<%= @ksk_algorithm_length %>"><%= DNSKEYALG[@ksk_algorithm] %></Algorithm>
         <Lifetime><%= @ksk_lifetime %></Lifetime>
         <Repository><%= @repository_name %></Repository>
         <Standby><%= @ksk_standby %></Standby>
@@ -73,7 +73,7 @@ end
 
       <!-- Parameters for ZSK only -->
       <ZSK>
-        <Algorithm length="<%= @zsk_algorithm_length %>"><%= DNSKEY_ALGO[@zsk_algorithm] %></Algorithm>
+        <Algorithm length="<%= @zsk_algorithm_length %>"><%= DNSKEYALG[@zsk_algorithm] %></Algorithm>
         <Lifetime><%= @zsk_lifetime %></Lifetime>
         <Repository><%= @repository_name %></Repository>
         <Standby><%= @zsk_standby %></Standby>
