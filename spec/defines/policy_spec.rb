@@ -122,6 +122,7 @@ describe 'opendnssec::policy' do
             }x,
           ).with_content(
             %r{<KSK>
+            \s+<!--\sKSK\sAlgo\sRSASHA1-NSEC3-SHA1\s\(7\)\s-->
             \s+<Algorithm\slength="2048">7</Algorithm>
             \s+<Lifetime>P365D</Lifetime>
             \s+<Repository>SoftHSM</Repository>
@@ -483,6 +484,7 @@ describe 'opendnssec::policy' do
               'policy_test_policy',
             ).with_content(
               %r{<KSK>
+              \s+<!--\sKSK\sAlgo\sRSASHA1\s\(5\)\s-->
               \s+<Algorithm\slength="2048">5</Algorithm>
               \s+<Lifetime>P365D</Lifetime>
               \s+<Repository>SoftHSM</Repository>
@@ -501,6 +503,7 @@ describe 'opendnssec::policy' do
               'policy_test_policy',
             ).with_content(
               %r{<KSK>
+              \s+<!--\sKSK\sAlgo\sECDSAP256SHA256\s\(13\)\s-->
               \s+<Algorithm\slength="2048">13</Algorithm>
               \s+<Lifetime>P365D</Lifetime>
               \s+<Repository>SoftHSM</Repository>
@@ -519,6 +522,7 @@ describe 'opendnssec::policy' do
               'policy_test_policy',
             ).with_content(
               %r{<KSK>
+              \s+<!--\sKSK\sAlgo\sRSASHA1-NSEC3-SHA1\s\(7\)\s-->
               \s+<Algorithm\slength="1024">7</Algorithm>
               \s+<Lifetime>P365D</Lifetime>
               \s+<Repository>SoftHSM</Repository>
@@ -537,6 +541,7 @@ describe 'opendnssec::policy' do
               'policy_test_policy',
             ).with_content(
               %r{<KSK>
+              \s+<!--\sKSK\sAlgo\sRSASHA1-NSEC3-SHA1\s\(7\)\s-->
               \s+<Algorithm\slength="2048">7</Algorithm>
               \s+<Lifetime>P1D</Lifetime>
               \s+<Repository>SoftHSM</Repository>
@@ -555,6 +560,7 @@ describe 'opendnssec::policy' do
               'policy_test_policy',
             ).with_content(
               %r{<KSK>
+              \s+<!--\sKSK\sAlgo\sRSASHA1-NSEC3-SHA1\s\(7\)\s-->
               \s+<Algorithm\slength="2048">7</Algorithm>
               \s+<Lifetime>P365D</Lifetime>
               \s+<Repository>SoftHSM</Repository>
@@ -573,6 +579,7 @@ describe 'opendnssec::policy' do
               'policy_test_policy',
             ).with_content(
               %r{<KSK>
+              \s+<!--\sKSK\sAlgo\sRSASHA1-NSEC3-SHA1\s\(7\)\s-->
               \s+<Algorithm\slength="2048">7</Algorithm>
               \s+<Lifetime>P365D</Lifetime>
               \s+<Repository>SoftHSM</Repository>
