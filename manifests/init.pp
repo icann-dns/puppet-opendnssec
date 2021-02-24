@@ -11,7 +11,7 @@ class opendnssec (
   Boolean                       $manage_ods_ksmutil,
   Boolean                       $manage_conf,
 
-  Boolean                       $opendnssec_version_1,
+  String[1,10]                  $opendnssec_version,
 
   Integer[1,7]                  $logging_level,
   Tea::Syslogfacility           $logging_facility,

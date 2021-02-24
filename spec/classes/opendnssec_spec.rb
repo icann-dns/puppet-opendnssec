@@ -16,7 +16,7 @@ describe 'opendnssec' do
       #:manage_service => true,
       #:manage_ods_ksmutil => true,
       #:manage_conf => true,
-	  #:opendnssec_version_1 => true,
+	  #:opendnssec_version => '1',
       #:manage_policies => true,
       #:policies => {},
       #:manage_zones => true,

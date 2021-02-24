@@ -51,9 +51,9 @@
       <SQLite><%= @sqlite_file %></SQLite>
 <%- elsif @datastore_engine == 'mysql' -%>
       <MySQL>
-<%- if @opendnssec_version_1 -%>
+<%- if @opendnssec_version == '1' -%>
         <Host port="<%= @datastore_port %>"><%= @datastore_host %></Host>
-<%- else -%>
+<%- elsif @opendnssec_version == '2' -%>
         <Host Port="<%= @datastore_port %>"><%= @datastore_host %></Host>
 <%- end -%>
         <Database><%= @datastore_name %></Database>
@@ -62,7 +62,7 @@
       </MySQL>
 <%- end -%>
     </Datastore>
-<%- if @opendnssec_version_1 -%>
+<%- if @opendnssec_version == '1' -%>    
     <Interval>PT3600S</Interval>
 <%- end -%>
     <!-- <ManualKeyGeneration/> -->
