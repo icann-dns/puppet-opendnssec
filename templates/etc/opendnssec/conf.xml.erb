@@ -51,14 +51,20 @@
       <SQLite><%= @sqlite_file %></SQLite>
 <%- elsif @datastore_engine == 'mysql' -%>
       <MySQL>
+<%- if @opendnssec_version == '1' -%>
         <Host port="<%= @datastore_port %>"><%= @datastore_host %></Host>
+<%- elsif @opendnssec_version == '2' -%>
+        <Host Port="<%= @datastore_port %>"><%= @datastore_host %></Host>
+<%- end -%>
         <Database><%= @datastore_name %></Database>
         <Username><%= @datastore_user %></Username>
         <Password><%= @datastore_password %></Password>
       </MySQL>
 <%- end -%>
     </Datastore>
+<%- if @opendnssec_version == '1' -%>    
     <Interval>PT3600S</Interval>
+<%- end -%>
     <!-- <ManualKeyGeneration/> -->
     <!-- <RolloverNotification>P14D</RolloverNotification> -->
 

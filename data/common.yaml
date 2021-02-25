@@ -6,6 +6,7 @@ opendnssec::manage_datastore: true
 opendnssec::manage_service: true
 opendnssec::manage_ods_ksmutil: true
 opendnssec::manage_conf: true
+opendnssec::opendnssec_version: '1'
 opendnssec::logging_level: 3
 opendnssec::logging_facility: 'local0'
 opendnssec::packages:
