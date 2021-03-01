@@ -10,6 +10,7 @@ class opendnssec::params {
       $sqlite_packages = []
       $mysql_packages = []
       $ksmutil_path = '/bin/ods-ksmutil'
+      $enforcer_path = '/usr/sbin/ods-enforcer'
       $datastore_engine = 'sqlite'
       $group = 'ods'
     }
@@ -30,6 +31,7 @@ class opendnssec::params {
       $sqlite_packages = ['opendnssec-enforcer-sqlite']
       $mysql_packages = ['opendnssec-enforcer-mysql']
       $ksmutil_path = '/usr/bin/ods-ksmutil'
+      $enforcer_path = '/usr/sbin/ods-enforcer'
     }
     default: {
       $datastore_engine = 'mysql'
@@ -40,6 +42,7 @@ class opendnssec::params {
       $sqlite_packages = ['opendnssec-enforcer-sqlite']
       $mysql_packages = ['opendnssec-enforcer-mysql']
       $ksmutil_path = '/usr/bin/ods-ksmutil'
+      $enforcer_path = '/usr/sbin/ods-enforcer'
     }
   }
 
