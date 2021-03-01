@@ -42,6 +42,7 @@ opendnssec::signconf_dir: "%{hiera('opendnssec::base_dir')}/signconf"
 opendnssec::signed_dir: "%{hiera('opendnssec::base_dir')}/signed"
 opendnssec::unsigned_dir: "%{hiera('opendnssec::base_dir')}/unsigned"
 opendnssec::ksmutil_path: /usr/bin/ods-ksmutil
+opendnssec::enforcer_path: /usr/sbin/ods-enforcer
 opendnssec::listener_address: ~
 opendnssec::listener_port: 53
 opendnssec::xferout_enabled: true
