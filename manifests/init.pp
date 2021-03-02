@@ -49,6 +49,7 @@ class opendnssec (
   Stdlib::Absolutepath          $signed_dir,
   Stdlib::Absolutepath          $unsigned_dir,
   Stdlib::Absolutepath          $ksmutil_path,
+  Stdlib::Absolutepath          $enforcer_path,
 
   Optional[Stdlib::Ip::Address] $listener_address,
   Stdlib::Port                  $listener_port,
@@ -91,9 +92,17 @@ class opendnssec (
     group  => $group,
   }
   if $enabled and $manage_datastore {
-    if $manage_ods_ksmutil and $manage_conf {
-      $datastore_setup_before = Exec['ods-ksmutil updated conf.xml']
-    } else {
+    if $manage_conf {
+      if $manage_ods_ksmutil and ( versioncmp($opendnssec_version, '1') >= 0 ) {
+        $datastore_setup_before = Exec['ods-ksmutil updated conf.xml']
+      } elsif ( versioncmp($opendnssec_version, '2') >= 0 ) {
+        $datastore_setup_before = Exec['ods-enforcer updated conf.xml']
+      }
+      else {
+        $datastore_setup_before = undef
+      }
+    }
+    else {
       $datastore_setup_before = undef
     }
     if $datastore_engine == 'mysql' {
@@ -112,13 +121,22 @@ class opendnssec (
       if $manage_packages {
         ensure_packages($sqlite_packages)
       }
-
-      exec {'ods-ksmutil setup':
-        path     => ['/bin', '/usr/bin', '/sbin', '/usr/sbin', '/usr/local/bin'],
-        provider => 'shell',
-        command  => "/usr/bin/yes | ${ksmutil_path} setup",
-        unless   => "test -s ${sqlite_file}",
-        before   => $datastore_setup_before,
+      if ( $manage_ods_ksmutil and ( versioncmp($opendnssec_version, '1') >= 0 ) ) {
+        exec {'ods-ksmutil setup':
+          path     => ['/bin', '/usr/bin', '/sbin', '/usr/sbin', '/usr/local/bin'],
+          provider => 'shell',
+          command  => "/usr/bin/yes | ${ksmutil_path} setup",
+          unless   => "test -s ${sqlite_file}",
+          before   => $datastore_setup_before,
+        }
+      } elsif ( versioncmp($opendnssec_version, '2') >= 0) {
+        exec {'ods-enforcer-db-setup':
+          path     => ['/sbin', '/usr/sbin', '/usr/local/sbin'],
+          provider => 'shell',
+          command  => "/usr/bin/yes | ${enforcer_path} setup",
+          unless   => "test -s ${sqlite_file}",
+          before   => $datastore_setup_before,
+        }
       }
     }
   }
@@ -157,9 +175,16 @@ class opendnssec (
       } else {
         $exec_subscribe = undef
       }
-      if $manage_ods_ksmutil {
+      if $manage_ods_ksmutil and ( versioncmp($opendnssec_version, '1') >= 0 ) {
         exec {'ods-ksmutil updated conf.xml':
           command     => "/usr/bin/yes | ${ksmutil_path} update conf",
+          user        => $user,
+          refreshonly => true,
+          subscribe   => $exec_subscribe,
+        }
+      } elsif ( versioncmp($opendnssec_version, '2') >= 0) {
+        exec {'ods-enforcer updated conf.xml':
+          command     => "/usr/bin/yes | ${enforcer_path} update conf",
           user        => $user,
           refreshonly => true,
           subscribe   => $exec_subscribe,
@@ -185,6 +210,12 @@ class opendnssec (
   }
   if ! defined(Class['opendnssec::zones']) {
     class { '::opendnssec::zones': zones => $zones }
+  }
+  file { '/var/lib/opendnssec/enforcer/zones.xml':
+    ensure  => 'link',
+    target  => '/etc/opendnssec/zonelist.xml',
+    replace => true,
+    links   => manage,
   }
 
   if $enabled and $manage_service {

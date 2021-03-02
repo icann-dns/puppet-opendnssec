@@ -12,6 +12,8 @@ class opendnssec::policies (
   $manage_ods_ksmutil = $::opendnssec::manage_ods_ksmutil
   $ksmutil_path       = $::opendnssec::ksmutil_path
   $enabled            = $::opendnssec::enabled
+  $opendnssec_version = $::opendnssec::opendnssec_version
+  $enforcer_path      = $::opendnssec::enforcer_path
 
   concat {$policy_file:
     owner => $user,
@@ -28,12 +30,21 @@ class opendnssec::policies (
     order   => '99',
   }
   create_resources(opendnssec::policy, $policies)
-  if $manage_ods_ksmutil and $enabled {
-    exec {'ods-ksmutil updated kasp.xml':
-      command     => "/usr/bin/yes | ${ksmutil_path} update kasp",
-      user        => $user,
-      refreshonly => true,
-      subscribe   => Concat[$policy_file];
+  if $enabled {
+    if ( $manage_ods_ksmutil and ( versioncmp($opendnssec_version, '1') >= 0 ) ) {
+      exec {'ods-ksmutil updated kasp.xml':
+        command     => "/usr/bin/yes | ${ksmutil_path} update kasp",
+        user        => $user,
+        refreshonly => true,
+        subscribe   => Concat[$policy_file];
+      }
+    } elsif ( versioncmp($opendnssec_version, '2') >= 0) {
+      exec {'ods-enforcer updated kasp.xml':
+        command     => "/usr/bin/yes | ${enforcer_path} update kasp",
+        user        => $user,
+        refreshonly => true,
+        subscribe   => Concat[$policy_file];
+      }
     }
   }
 }
