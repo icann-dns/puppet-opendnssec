@@ -1,0 +1,21 @@
+name: CI
+
+on: [push]
+
+jobs:
+  bundler:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Check versions and initial cleanup
+        run: |
+          bundle -v 
+          rm -f Gemfile.lock 
+          gem update --system 
+          gem --version
+      - name: Check Lint
+        run: bundle exec rake validate lint
+      - name: Rubocop
+        run: bundle exec rake rubocop
+      - name: RSPEC
+        run: bundle exec rake spec
