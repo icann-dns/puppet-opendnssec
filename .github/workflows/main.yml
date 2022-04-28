@@ -6,7 +6,7 @@ on:
 
 env:
   BUNDLE_WITHOUT: release
-  BEAKER_PUPPET_COLLECTION=puppet6
+  BEAKER_PUPPET_COLLECTION: puppet6
 
 jobs:
   tests:
