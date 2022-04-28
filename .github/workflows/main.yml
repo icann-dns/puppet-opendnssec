@@ -6,11 +6,15 @@ on:
 
 env:
   BUNDLE_WITHOUT: release
+  BEAKER_PUPPET_COLLECTION=puppet6
 
 jobs:
-
   tests:
-    runs-on: ubuntu-latest
+    runs-on: 
+      - ubuntu-18.04
+      - ubuntu-20.04
+      - ubuntu-latest
+    timeout-minutes: 20
     strategy:
       fail-fast: false
       matrix:
@@ -19,8 +23,8 @@ jobs:
           - ruby: "2.5"
           - ruby: "2.6"
           - ruby: "2.7"
-          - ruby: "3.0"
-            coverage: "yes"
+          #- ruby: "3.0"
+          #  coverage: "yes"
     env:
       COVERAGE: ${{ matrix.coverage }}
     steps:
@@ -38,7 +42,7 @@ jobs:
       #    gem --version
       - name: Check Lint
         run: bundle exec rake validate lint
-      - name: Rubocop
+      - name: Check Rubocop
         run: bundle exec rake rubocop
       - name: RSPEC
-        run: bundle exec rake spec
+        run: bundle exec rake parallel_spec
