@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/icann-dns/puppet-opendnssec.svg?branch=master)](https://travis-ci.org/icann-dns/puppet-opendnssec)
+[![Build Status](https://github.com/icann-dns/puppet-opendnssec/actions/workflows/main.yml/badge.svg)](https://github.com/icann-dns/puppet-opendnssec/actions/workflows/main.yml)
 [![Puppet Forge](https://img.shields.io/puppetforge/v/icann/opendnssec.svg?maxAge=2592000)](https://forge.puppet.com/icann/opendnssec)
 [![Puppet Forge Downloads](https://img.shields.io/puppetforge/dt/icann/opendnssec.svg?maxAge=2592000)](https://forge.puppet.com/icann/opendnssec)
 # opendnssec
