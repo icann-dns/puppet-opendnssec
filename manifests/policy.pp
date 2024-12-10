@@ -15,8 +15,8 @@ define opendnssec::policy (
   Boolean                  $denial_optout            = false,
   Opendnssec::Timestring   $denial_resalt            = 'P100D',
   Opendnssec::Nsec3algo    $denial_algorithm         = 'SHA1',
-  Integer                  $denial_iterations        = 5,
-  Integer                  $denial_salt_length       = 8,
+  Integer                  $denial_iterations        = 0,
+  Integer                  $denial_salt_length       = 0,
 
   Opendnssec::Timestring   $key_ttl                  = 'PT3600S',
   Opendnssec::Timestring   $key_retire_safty         = 'PT3600S',
