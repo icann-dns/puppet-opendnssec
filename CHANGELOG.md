@@ -1,3 +1,6 @@
+### 2024-12-10 2.0.0
+* update nsec3 policy defaults to match RFC 9276
+
 ### 2018-12-13 1.2.0
 * Backup is now off by default, [Issue #11](https://github.com/icann-dns/puppet-opendnssec/issues/11)
 
