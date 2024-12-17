@@ -33,14 +33,14 @@ class opendnssec::policies (
   if $enabled {
     if ( $manage_ods_ksmutil and ( versioncmp($opendnssec_version, '1') >= 0 ) ) {
       exec {'ods-ksmutil updated kasp.xml':
-        command     => "/usr/bin/yes | ${ksmutil_path} update kasp",
+        command     => "${ksmutil_path} update all",
         user        => $user,
         refreshonly => true,
         subscribe   => Concat[$policy_file];
       }
     } elsif ( versioncmp($opendnssec_version, '2') >= 0) {
       exec {'ods-enforcer updated kasp.xml':
-        command     => "/usr/bin/yes | ${enforcer_path} update kasp",
+        command     => "${enforcer_path} update all",
         user        => $user,
         refreshonly => true,
         subscribe   => Concat[$policy_file];
