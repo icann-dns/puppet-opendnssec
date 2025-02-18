@@ -1,4 +1,5 @@
-# == Class: opendnssec
+# @summary Manage OpenDNSSEC zones
+# @param zones Hash of zones to add
 #
 class opendnssec::zones (
   Hash $zones = {},

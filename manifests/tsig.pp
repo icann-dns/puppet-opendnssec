@@ -1,4 +1,7 @@
-# == Define: opendnssec::tsig
+# @summary Add a new tsig configuration
+# @param data TSIG key data
+# @param algo TSIG key algorithm
+# @param key_name TSIG key name
 #
 define opendnssec::tsig (
     String           $data,

@@ -1,34 +1,84 @@
-# == Class: opendnssec
+# @summary class to manage opendnssec
+# @param enabled enable this module
+# @param user user to run opendnssec
+# @param group group to run opendnssec
+# @param manage_packages manage packages
+# @param manage_datastore manage datastore
+# @param manage_service manage service
+# @param manage_ods_ksmutil manage ods-ksmutil
+# @param manage_conf manage conf
+# @param opendnssec_version opendnssec version
+# @param logging_level logging level
+# @param logging_facility logging facility
+# @param packages packages to install
+# @param service_enforcer service enforcer
+# @param service_signer service signer
+# @param sqlite_packages sqlite packages
+# @param mysql_packages mysql packages
+# @param repository_name repository name
+# @param repository_module repository module
+# @param repository_pin repository pin
+# @param repository_capacity repository capacity
+# @param repository_token_label repository token label
+# @param skip_publickey skip publickey
+# @param datastore_engine datastore engine
+# @param datastore_host datastore host
+# @param datastore_port datastore port
+# @param datastore_name datastore name
+# @param datastore_user datastore user
+# @param datastore_password datastore password
+# @param mysql_sql_file mysql sql file
+# @param base_dir base dir
+# @param policy_file policy file
+# @param zone_file zone file
+# @param tsigs_dir tsigs dir
+# @param remotes_dir remotes dir
+# @param xsl_file xsl file
+# @param sqlite_file sqlite file
+# @param working_dir working dir
+# @param signconf_dir signconf dir
+# @param signed_dir signed dir
+# @param unsigned_dir unsigned dir
+# @param ksmutil_path ksmutil path
+# @param enforcer_path enforcer path
+# @param listener_address listener address
+# @param listener_port listener port
+# @param xferout_enabled xferout enabled
+# @param zones zones
+# @param policies policies
+# @param remotes remotes
+# @param tsigs tsigs
+# @param default_tsig_name default tsig name
+# @param default_policy_name default policy name
+# @param default_masters default masters
+# @param default_provide_xfrs default provide xfrs
+# @param notify_boolean notify boolean
+# @param notify_command notify command
+# @param require_backup require backup
 #
 class opendnssec (
   Boolean                       $enabled,
   String[1,32]                  $user,
   String[1,32]                  $group,
-
   Boolean                       $manage_packages,
   Boolean                       $manage_datastore,
   Boolean                       $manage_service,
   Boolean                       $manage_ods_ksmutil,
   Boolean                       $manage_conf,
-
   String[1,10]                  $opendnssec_version,
-
   Integer[1,7]                  $logging_level,
   Tea::Syslogfacility           $logging_facility,
-
   Array[String]                 $packages,
   String[1,100]                 $service_enforcer,
   String[1,100]                 $service_signer,
   Array[String]                 $sqlite_packages,
   Array[String]                 $mysql_packages,
-
   String[1,100]                 $repository_name,
   Stdlib::Absolutepath          $repository_module,
   String[1,100]                 $repository_pin,
   Optional[Integer]             $repository_capacity,
   String[1,32]                  $repository_token_label,
   Boolean                       $skip_publickey,
-
   Opendnssec::Datastore         $datastore_engine,
   Stdlib::Host                  $datastore_host,
   Stdlib::Port                  $datastore_port,
@@ -36,7 +86,6 @@ class opendnssec (
   String[1,100]                 $datastore_user,
   String[1,100]                 $datastore_password,
   Stdlib::Absolutepath          $mysql_sql_file,
-
   Stdlib::Absolutepath          $base_dir,
   Stdlib::Absolutepath          $policy_file,
   Stdlib::Absolutepath          $zone_file,
@@ -50,12 +99,9 @@ class opendnssec (
   Stdlib::Absolutepath          $unsigned_dir,
   Stdlib::Absolutepath          $ksmutil_path,
   Stdlib::Absolutepath          $enforcer_path,
-
   Optional[Stdlib::Ip::Address] $listener_address,
   Stdlib::Port                  $listener_port,
-
   Boolean                       $xferout_enabled,
-
   Hash                          $zones,
   Hash                          $policies,
   Hash                          $remotes,

@@ -1,4 +1,42 @@
-# == Class: opendnssec
+# @summary Add a new policy configuration
+# @param order Order of the policy
+# @param description Description of the policy
+# @param resign Resign interval
+# @param refresh Refresh interval
+# @param validity_default Default validity
+# @param validity_denial Denial validity
+# @param jitter Jitter
+# @param inception_offset Inception offset
+# @param denial_policy Denial policy
+# @param denial_optout Denial optout
+# @param denial_resalt Denial resalt
+# @param denial_algorithm Denial algorithm
+# @param denial_iterations Denial iterations
+# @param denial_salt_length Denial salt length
+# @param key_ttl Key TTL
+# @param key_retire_safty Key retire safty
+# @param key_publish_safty Key publish safty
+# @param key_share_keys Key share keys
+# @param key_purge Key purge
+# @param ksk_algorithm KSK algorithm
+# @param ksk_algorithm_length KSK algorithm length
+# @param ksk_lifetime KSK lifetime
+# @param ksk_standby KSK standby
+# @param ksk_manual_rollover KSK manual rollover
+# @param zsk_algorithm ZSK algorithm
+# @param zsk_algorithm_length ZSK algorithm length
+# @param zsk_lifetime ZSK lifetime
+# @param zsk_standby ZSK standby
+# @param zsk_manual_rollover ZSK manual rollover
+# @param zone_propagation_delay Zone propagation delay
+# @param zone_soa_ttl Zone SOA TTL
+# @param zone_soa_minimum Zone SOA minimum
+# @param zone_soa_serial Zone SOA serial
+# @param parent_propagation_delay Parent propagation delay
+# @param parent_ds_ttl Parent DS TTL
+# @param parent_soa_ttl Parent SOA TTL
+# @param parent_soa_minimum Parent SOA minimum
+
 #
 define opendnssec::policy (
   String                   $order                    = '10',

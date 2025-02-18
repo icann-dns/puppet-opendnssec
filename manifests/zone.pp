@@ -1,4 +1,17 @@
-# == Define: opendnssec::zone
+# @summary Add a new zone configuration
+# @param signed Whether the zone is signed
+# @param signer_policy Signer policy
+# @param masters Array of masters to add
+# @param provide_xfrs Array of masters to provide xfrs to
+# @param order Order of the zone
+# @param adapter_base_dir Base directory for the adapter
+# @param adapter_signer_conf Signer configuration file
+# @param adapter_input_file Input file for the adapter
+# @param adapter_output_file Output file for the adapter
+# @param zone_source Source of the zone file
+# @param zone_content Content of the zone file
+# @param adapter_input_type Input type for the adapter
+# @param adapter_output_type Output type for the adapter
 #
 define opendnssec::zone (
   Boolean                        $signed              = true,

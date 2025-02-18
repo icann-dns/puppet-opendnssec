@@ -1,4 +1,5 @@
-# == Class: opendnssec::policies
+# @summary Add a new policy configuration
+# @param policies Hash of policies to add
 #
 class opendnssec::policies (
   Hash $policies = {},

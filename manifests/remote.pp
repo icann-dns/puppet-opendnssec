@@ -1,4 +1,11 @@
-# == Define: opendnssec::tsig
+# @summary Add a new remote configuration
+# @param address4 IPv4 address of the remote
+# @param address6 IPv6 address of the remote
+# @param tsig TSIG key name
+# @param tsig_name TSIG key name
+# @param sign_notifies Sign notifies
+# @param send_notifies Send notifies
+# @param port Port to connect to
 #
 define opendnssec::remote (
   Optional[Variant[Tea::Ipv4, Tea::Ipv4_cidr]] $address4      = undef,

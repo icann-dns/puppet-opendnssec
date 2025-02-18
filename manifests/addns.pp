@@ -1,4 +1,6 @@
-# == Class: opendnssec
+# @summary Add a new addns configuration
+# @param masters Array of masters to add
+# @param provide_xfrs Array of masters to provide xfrs to
 #
 define opendnssec::addns (
   Array[String] $masters      = [],
