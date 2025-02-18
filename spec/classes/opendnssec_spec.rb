@@ -70,7 +70,6 @@ describe 'opendnssec' do
         let(:base_dir) { '/var/lib/opendnssec' }
         let(:sqlite_packages) { ['opendnssec-enforcer-sqlite'] }
         let(:mysql_packages) { ['opendnssec-enforcer-mysql'] }
-        let(:ksmutil_path) { '/usr/bin/ods-ksmutil' }
       when 'RedHat'
         let(:packages) { %w[opendnssec libxslt] }
         let(:services) { %w[ods-enforcerd ods-signerd] }
@@ -78,7 +77,6 @@ describe 'opendnssec' do
         let(:repository_module) { '/usr/lib64/pkcs11/libsofthsm2.so' }
         let(:sqlite_packages) { [] }
         let(:mysql_packages) { [] }
-        let(:ksmutil_path) { '/bin/ods-ksmutil' }
       else
         let(:packages) { %w[opendnssec xsltproc] }
         let(:services) { %w[opendnssec-enforcer opendnssec-signer] }
@@ -86,7 +84,6 @@ describe 'opendnssec' do
         let(:repository_module) { '/usr/lib/x86_64-linux-gnu/softhsm/libsofthsm2.so' }
         let(:sqlite_packages) { ['opendnssec-enforcer-sqlite'] }
         let(:mysql_packages) { ['opendnssec-enforcer-mysql'] }
-        let(:ksmutil_path) { '/usr/bin/ods-ksmutil' }
       end
 
       describe 'check default config' do
@@ -101,7 +98,7 @@ describe 'opendnssec' do
 
           it do
             is_expected.to contain_exec('ods-ksmutil setup').with(
-              command: "/usr/bin/yes | #{ksmutil_path} setup",
+              command: '/usr/sbin/ods-enforcer setup',
               unless: "test -s #{base_dir}/kasp.db"
             )
           end
@@ -190,7 +187,7 @@ describe 'opendnssec' do
               %r{
               <Datastore>
               \s+<MySQL>
-              \s+<Host\s+port="3306">localhost</Host>
+              \s+<Host\s+Port="3306">localhost</Host>
               \s+<Database>kasp</Database>
               \s+<Username>opendnssec</Username>
               \s+<Password>change_me</Password>
@@ -202,7 +199,7 @@ describe 'opendnssec' do
         end
         it do
           is_expected.to contain_exec('updated conf.xml').with(
-            command: "/usr/bin/yes | #{ksmutil_path} update conf",
+            command: '/usr/sbin/ods-enforcer update conf',
             user: 'root',
             refreshonly: true,
             subscribe: 'File[/etc/opendnssec/conf.xml]'
@@ -529,7 +526,7 @@ describe 'opendnssec' do
               ).with_content(
                 %r{<Datastore>
                 \s+<MySQL>
-                \s+<Host\s+port="3306">foobar</Host>
+                \s+<Host\s+Port="3306">foobar</Host>
                 \s+<Database>kasp</Database>
                 \s+<Username>opendnssec</Username>
                 \s+<Password>change_me</Password>
@@ -552,7 +549,7 @@ describe 'opendnssec' do
               ).with_content(
                 %r{<Datastore>
                 \s+<MySQL>
-                \s+<Host\s+port="1337">localhost</Host>
+                \s+<Host\s+Port="1337">localhost</Host>
                 \s+<Database>kasp</Database>
                 \s+<Username>opendnssec</Username>
                 \s+<Password>change_me</Password>
@@ -582,7 +579,7 @@ describe 'opendnssec' do
               ).with_content(
                 %r{<Datastore>
                 \s+<MySQL>
-                \s+<Host\s+port="3306">localhost</Host>
+                \s+<Host\s+Port="3306">localhost</Host>
                 \s+<Database>foobar</Database>
                 \s+<Username>opendnssec</Username>
                 \s+<Password>change_me</Password>
@@ -612,7 +609,7 @@ describe 'opendnssec' do
               ).with_content(
                 %r{<Datastore>
                 \s+<MySQL>
-                \s+<Host\s+port="3306">localhost</Host>
+                \s+<Host\s+Port="3306">localhost</Host>
                 \s+<Database>kasp</Database>
                 \s+<Username>foobar</Username>
                 \s+<Password>change_me</Password>
@@ -640,7 +637,7 @@ describe 'opendnssec' do
               is_expected.to contain_file('/etc/opendnssec/conf.xml').with_content(
                 %r{<Datastore>
                 \s+<MySQL>
-                \s+<Host\s+port="3306">localhost</Host>
+                \s+<Host\s+Port="3306">localhost</Host>
                 \s+<Database>kasp</Database>
                 \s+<Username>opendnssec</Username>
                 \s+<Password>foobar</Password>

@@ -65,7 +65,7 @@ class opendnssec (
   Boolean                       $manage_service         = true,
   Boolean                       $manage_ods_ksmutil     = true,
   Boolean                       $manage_conf            = true,
-  String[1,10]                  $opendnssec_version     = '1',
+  String[1,10]                  $opendnssec_version     = '2',
   Integer[1,7]                  $logging_level          = 3,
   Stdlib::Syslogfacility        $logging_facility       = 'local0',
   Array[String]                 $packages               = ['opendnssec', 'xsltproc'],
