@@ -5,7 +5,7 @@
 
 #### Table of Contents
 
-1. [Overview](#overview) 
+1. [Overview](#overview)
 2. [Module Description - What the module does and why it is useful](#module-description)
 3. [Setup - The basics of getting started with opendnssec](#setup)
     * [What opendnssec affects](#what-opendnssec-affects)
@@ -309,14 +309,14 @@ opendnssec::zones:
 
 Main class, includes all other classes
 
-##### Parameters 
+##### Parameters
 
 * `$enabled` (Boolean, Default: true): Whether to enable opendnssec
 * `$user` (String[1,32], Default: 'root'): owner of config files
 * `$group` (String[1,32], Default: 'root'): group owner of config files
 * `$manage_packages` (Boolean, Default: true): weather to manage the installation of packages
 * `$manage_datastore` (Boolean, Default: true): Weather to manage the datastore
-* `$manage_service` (Boolean, Default: true): whether to manage services  
+* `$manage_service` (Boolean, Default: true): whether to manage services
 * `$manage_ods_ksmutil` (Boolean, Default: true): whether to manage ods-ksmutils updates
 * `$manage_conf` (Boolean, Default: true): whether to manage config files
 * `$logging_level` (Integer[1,7], Default: 3): syslog level to use
@@ -350,7 +350,7 @@ Main class, includes all other classes
 
 Add a cron job to backup the keystore and copy it to a standby server
 
-##### Parameters 
+##### Parameters
 
 * `$backup_user` (String[1,32], Default: 'backup'): User used to sen backup to remote server
 * `$backup_glob` (String, Default: '\*.tar.bz2'): used for cleaning up old backups in the `backup_dir`
@@ -366,7 +366,7 @@ Add a cron job to backup the keystore and copy it to a standby server
 
 Wrapper class to initiate kasp.xml
 
-##### Parameters 
+##### Parameters
 
 * `$policies` (Hash, Default: {}): Hash of polices to pass to create\_resource(`opendnssec::policy, $policies)`
 
@@ -374,7 +374,7 @@ Wrapper class to initiate kasp.xml
 
 Wrapper class to initiate zonelist.xml
 
-##### Parameters 
+##### Parameters
 
 * `$zones` (Hash, Default: {}): Hash of zones to pass to create\_resource(`opendnssec::zone, $zones)`
 
@@ -386,7 +386,7 @@ Wrapper class to initiate zonelist.xml
 
 Create OpenDNSSEC signing policy
 
-##### Parameters 
+##### Parameters
 
 * `$order` (String, Default: '10'): concat order, you probably dont need t override this
 * `$description` (Optional[String], Default: [based on config]): the description of the signing policy
@@ -410,12 +410,12 @@ Create OpenDNSSEC signing policy
 * `$ksk_algorithm` (Opendnssec::Dnskeyalgo, Default: 'RSASHA1-NSEC3-SHA1'): the algorithm used for the key (the numbers reserved for each algorithm can be found in the appropriate IANA registry
 * `$ksk_algorithm_length` (Integer, Default: 2048): The size of the KSK key
 * `$ksk_lifetime` (Opendnssec::Timestring, Default: 'P365D'): how long the key is used for before it is rolled.
-* `$ksk_standby` (Integer, Default: 0): Determines the number of standby keys held in the zone. These keys allow the currently active key to be immediately retired should it be compromised, so enhancing the security of the system. 
+* `$ksk_standby` (Integer, Default: 0): Determines the number of standby keys held in the zone. These keys allow the currently active key to be immediately retired should it be compromised, so enhancing the security of the system.
 * `$ksk_manual_rollover` (Boolean, Default: true): ndicate that the key rollover will only be initiated on the command by the operator.
 * `$zsk_algorithm` (Opendnssec::Dnskeyalgo, Default: 'RSASHA1-NSEC3-SHA1'): the algorithm used for the key (the numbers reserved for each algorithm can be found in the appropriate IANA registry).
 * `$zsk_algorithm_length` (Integer, Default: 1024): The size of the ZSK key
 * `$zsk_lifetime` (Opendnssec::Timestring, Default: 'P90D'): how long the key is used for before it is rolled.
-* `$zsk_standby` (Integer, Default: 0): Determines the number of standby keys held in the zone. These keys allow the currently active key to be immediately retired should it be compromised, so enhancing the security of the system. 
+* `$zsk_standby` (Integer, Default: 0): Determines the number of standby keys held in the zone. These keys allow the currently active key to be immediately retired should it be compromised, so enhancing the security of the system.
 * `$zsk_manual_rollover` (Boolean, Default: false): ndicate that the key rollover will only be initiated on the command by the operator.
 * `$zone_propagation_delay` (Opendnssec::Timestring, Default: 'PT43200S'): the amount of time needed for information changes at the master server for the zone to work its way through to all the secondary nameservers.
 * `$zone_soa_ttl` (Opendnssec::Timestring, Default: 'PT3600S'): TTL of the SOA record.
@@ -430,7 +430,7 @@ Create OpenDNSSEC signing policy
 
 Create OpenDNSSEC zone
 
-##### Parameters 
+##### Parameters
 
 * `$policy` (Optional[String], Default: `opendnssec::default_policy_name`): DNSSEC sigining policy to use
 * `$masters` (Optional[Array[String]], Default: []): list of `opendnssec::remotes` keys configured to pull unsigned zones from
@@ -450,7 +450,7 @@ Create OpenDNSSEC zone
 
 Create addns files based on masters and provide\_xfrs configuered on zones
 
-##### Parameters 
+##### Parameters
 
 * `$masters` (Array[String], Default: []):Array of `opendnssec::remotes` keys to configure as master servers
 * `$provide_xfrs` (Array[String], Default: []): Array of `opendnssec::remotes` keys to use as configure as slave servers

@@ -1,17 +1,17 @@
   <Zone name="<%= @name %>">
-    <Policy><%= @_signer_policy %></Policy>
+    <Policy><%= @signer_policy %></Policy>
     <SignerConfiguration><%= @adapter_signer_conf_file %></SignerConfiguration>
     <Adapters>
       <Input>
 <%- if @adapter_input_type == 'DNS' -%>
           <Adapter type="DNS">/etc/opendnssec/addns-<%= @adapter_masters_conf %>.xml</Adapter>
 <%- elsif @adapter_input_type == 'File' -%>
-        <Adapter type="File"><%= @adapter_input_f %></Adapter>
+        <Adapter type="File"><%= @adapter_input_file %></Adapter>
 <%- end -%>
       </Input>
       <Output>
 <%- if @adapter_output_type == 'File' || !@enabled -%>
-        <Adapter type="File"><%= @adapter_output_f %></Adapter>
+        <Adapter type="File"><%= @adapter_output_file %></Adapter>
 <%- elsif @adapter_output_type == 'DNS' -%>
           <Adapter type="DNS">/etc/opendnssec/addns-<%= @adapter_provide_xfrs_conf %>.xml</Adapter>
 <%- end -%>

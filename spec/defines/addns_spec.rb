@@ -53,32 +53,36 @@ describe 'opendnssec::addns' do
       describe 'check default config' do
         it { is_expected.to compile.with_all_deps }
         it { is_expected.to contain_opendnssec__addns('test_addns') }
+
         it do
           is_expected.to contain_file('/etc/opendnssec/addns-test_addns.xml.tmp').with(
-            owner: 'root',
+            owner: 'root'
           ).with_content(
             %r{
-			<\?xml\sversion="1.0"\sencoding="UTF-8"\?>
-			\s+<!--\sFile\smanaged\sby\spuppet\sDO\sNOT\sEDIT\s-->
+      <\?xml\sversion="1.0"\sencoding="UTF-8"\?>
+      \s+<!--\sFile\smanaged\sby\spuppet\sDO\sNOT\sEDIT\s-->
             \s+<Adapter\sxmlns:xi="http://www.w3.org/2001/XInclude">
-			\s+<DNS>
-			\s+<Inbound>
-			\s+</Inbound>
-			\s+<Outbound>
-			\s+</Outbound>
-			\s+</DNS>
-			\s+</Adapter>
+      \s+<DNS>
+      \s+<Inbound>
+      \s+</Inbound>
+      \s+<Outbound>
+      \s+</Outbound>
+      \s+</DNS>
+      \s+</Adapter>
             }x
           )
         end
       end
+
       describe 'Change Defaults' do
         context 'masters' do
-          before(:each) { params.merge!(masters: ['master']) }
+          before { params.merge!(masters: ['master']) }
+
           it { is_expected.to compile }
+
           it do
             is_expected.to contain_file('/etc/opendnssec/addns-test_addns.xml.tmp').with(
-              owner: 'root',
+              owner: 'root'
             ).with_content(
               %r{
               <\?xml\sversion="1.0"\sencoding="UTF-8"\?>
@@ -99,16 +103,19 @@ describe 'opendnssec::addns' do
               \s+</Outbound>
               \s+</DNS>
               \s+</Adapter>
-              }x,
+              }x
             )
           end
         end
+
         context 'provide_xfrs' do
-          before(:each) { params.merge!(provide_xfrs: ['provide_xfr']) }
+          before { params.merge!(provide_xfrs: ['provide_xfr']) }
+
           it { is_expected.to compile }
+
           it do
             is_expected.to contain_file(
-              '/etc/opendnssec/addns-test_addns.xml.tmp',
+              '/etc/opendnssec/addns-test_addns.xml.tmp'
             ).with_content(
               %r{
               <\?xml\sversion="1.0"\sencoding="UTF-8"\?>
@@ -129,16 +136,19 @@ describe 'opendnssec::addns' do
               \s+</Outbound>
               \s+</DNS>
               \s+</Adapter>
-              }x,
+              }x
             )
           end
         end
+
         context 'provide_xfrs and master' do
-          before(:each) { params.merge!(provide_xfrs: ['provide_xfr'], masters: ['master']) }
+          before { params.merge!(provide_xfrs: ['provide_xfr'], masters: ['master']) }
+
           it { is_expected.to compile }
+
           it do
             is_expected.to contain_file(
-              '/etc/opendnssec/addns-test_addns.xml.tmp',
+              '/etc/opendnssec/addns-test_addns.xml.tmp'
             ).with_content(
               %r{
               <\?xml\sversion="1.0"\sencoding="UTF-8"\?>
@@ -167,10 +177,11 @@ describe 'opendnssec::addns' do
               \s+</Outbound>
               \s+</DNS>
               \s+</Adapter>
-              }x,
+              }x
             )
           end
         end
+
         context 'opendnssec::user' do
           let(:pre_condition) do
             <<-EOF
@@ -186,12 +197,14 @@ describe 'opendnssec::addns' do
           end
 
           it { is_expected.to compile }
+
           it do
             is_expected.to contain_file(
-              '/etc/opendnssec/addns-test_addns.xml.tmp',
+              '/etc/opendnssec/addns-test_addns.xml.tmp'
             ).with_owner('foobar')
           end
         end
+
         context 'opendnssec::group' do
           let(:pre_condition) do
             <<-EOF
@@ -207,12 +220,14 @@ describe 'opendnssec::addns' do
           end
 
           it { is_expected.to compile }
+
           it do
             is_expected.to contain_file(
-              '/etc/opendnssec/addns-test_addns.xml.tmp',
+              '/etc/opendnssec/addns-test_addns.xml.tmp'
             ).with_group('foobar')
           end
         end
+
         context 'opendnssec::manage_ods_ksmutil' do
           let(:pre_condition) do
             <<-EOF
@@ -228,12 +243,14 @@ describe 'opendnssec::addns' do
           end
 
           it { is_expected.to compile }
+
           it do
             is_expected.not_to contain_exec(
-              'Forcing ods-ksmutil to update after modifying addns-test_addns.xml.tmp',
+              'Forcing ods-ksmutil to update after modifying addns-test_addns.xml.tmp'
             )
           end
         end
+
         context 'opendnssec::enabled' do
           let(:pre_condition) do
             <<-EOF
@@ -249,14 +266,17 @@ describe 'opendnssec::addns' do
           end
 
           it { is_expected.to compile }
+
           it do
             is_expected.not_to contain_exec(
-              'Forcing ods-ksmutil to update after modifying addns-test_addns.xml.tmp',
+              'Forcing ods-ksmutil to update after modifying addns-test_addns.xml.tmp'
             )
           end
         end
+
         context 'opendnssec::remotes disable notifies' do
-          before(:each) { params.merge!(provide_xfrs: ['slave', 'dummy']) }
+          before { params.merge!(provide_xfrs: %w[slave dummy]) }
+
           let(:pre_condition) do
             <<-EOF
             class { '::opendnssec':
@@ -277,12 +297,13 @@ describe 'opendnssec::addns' do
               }
             }
             EOF
-  
           end
+
           it { is_expected.to compile }
+
           it do
             is_expected.to contain_file(
-              '/etc/opendnssec/addns-test_addns.xml.tmp',
+              '/etc/opendnssec/addns-test_addns.xml.tmp'
             ).with_content(
               %r{
                 \s+<Notify>
@@ -293,8 +314,10 @@ describe 'opendnssec::addns' do
             )
           end
         end
+
         context 'opendnssec::remotes Tsig name' do
-          before(:each) { params.merge!(provide_xfrs: ['provide_xfr'], masters: ['master']) }
+          before { params.merge!(provide_xfrs: ['provide_xfr'], masters: ['master']) }
+
           let(:pre_condition) do
             <<-EOF
             class { '::opendnssec':
@@ -318,9 +341,10 @@ describe 'opendnssec::addns' do
           end
 
           it { is_expected.to compile }
+
           it do
             is_expected.to contain_file(
-              '/etc/opendnssec/addns-test_addns.xml.tmp',
+              '/etc/opendnssec/addns-test_addns.xml.tmp'
             ).with_content(
               %r{
               <\?xml\sversion="1.0"\sencoding="UTF-8"\?>
@@ -353,12 +377,14 @@ describe 'opendnssec::addns' do
               \s+</Outbound>
               \s+</DNS>
               \s+</Adapter>
-              }x,
+              }x
             )
           end
         end
+
         context 'opendnssec::remotes default_tsig_name' do
-          before(:each) { params.merge!(provide_xfrs: ['provide_xfr'], masters: ['master']) }
+          before { params.merge!(provide_xfrs: ['provide_xfr'], masters: ['master']) }
+
           let(:pre_condition) do
             <<-EOF
             class { '::opendnssec':
@@ -382,9 +408,10 @@ describe 'opendnssec::addns' do
           end
 
           it { is_expected.to compile }
+
           it do
             is_expected.to contain_file(
-              '/etc/opendnssec/addns-test_addns.xml.tmp',
+              '/etc/opendnssec/addns-test_addns.xml.tmp'
             ).with_content(
               %r{
               <\?xml\sversion="1.0"\sencoding="UTF-8"\?>
@@ -417,18 +444,22 @@ describe 'opendnssec::addns' do
               \s+</Outbound>
               \s+</DNS>
               \s+</Adapter>
-              }x,
+              }x
             )
           end
         end
       end
+
       describe 'check bad type' do
         context 'masters' do
-          before(:each) { params.merge!(masters: true) }
+          before { params.merge!(masters: true) }
+
           it { is_expected.to raise_error(Puppet::Error) }
         end
+
         context 'provide_xfrs' do
-          before(:each) { params.merge!(provide_xfrs: true) }
+          before { params.merge!(provide_xfrs: true) }
+
           it { is_expected.to raise_error(Puppet::Error) }
         end
       end

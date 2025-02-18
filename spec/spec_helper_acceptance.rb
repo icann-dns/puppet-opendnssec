@@ -12,15 +12,14 @@ require 'beaker-rspec/version'
 require 'beaker/testmode_switcher/dsl'
 require 'progressbar'
 
-
-modules = [
-  'puppetlabs-stdlib',
-  'puppetlabs-concat',
-  'puppetlabs-mysql',
-  'stahnma-epel',
-  'icann-tea',
-  'icann-softhsm',
-  'icann-nsd',
+modules = %w[
+  puppetlabs-stdlib
+  puppetlabs-concat
+  puppetlabs-mysql
+  stahnma-epel
+  icann-tea
+  icann-softhsm
+  icann-nsd
 ]
 git_repos = []
 # git_repos = [
@@ -37,7 +36,7 @@ def install_modules(host, modules, git_repos)
     on(host, puppet('module', 'install', m))
   end
   git_repos.each do |g|
-    step "Installing puppet module \'#{g[:repo]}\' from git on #{host} to #{default['distmoduledir']}"
+    step "Installing puppet module '#{g[:repo]}' from git on #{host} to #{default['distmoduledir']}"
     on(host, "git clone -b #{g[:branch]} --single-branch #{g[:repo]} #{default['distmoduledir']}/#{g[:mod]}")
   end
 end
@@ -86,12 +85,10 @@ else
       host,
       version: '5',
       puppet_agent_version: '5.5.8',
-      default_action: 'gem_install',
+      default_action: 'gem_install'
     )
     install_modules(host, modules, git_repos)
-    if host['platform'] =~ %r{^el-}
-      apply_manifest_on(host, 'include epel', catch_failures: true)
-    end
+    apply_manifest_on(host, 'include epel', catch_failures: true) if host['platform'] =~ %r{^el-}
   end
 end
 RSpec.configure do |c|
