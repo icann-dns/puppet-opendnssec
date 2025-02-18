@@ -84,17 +84,17 @@ define opendnssec::policy (
   Opendnssec::Timestring   $parent_soa_ttl           = 'PT172800S',
   Opendnssec::Timestring   $parent_soa_minimum       = 'PT10800S',
 ) {
-  include ::opendnssec
+  include opendnssec
 
-  $policy_file     = $::opendnssec::policy_file
-  $repository_name = $::opendnssec::repository_name
+  $policy_file     = $opendnssec::policy_file
+  $repository_name = $opendnssec::repository_name
 
   if $description {
     $description_text = $description
   } else {
     $description_text = "${name} - Deny:${denial_policy}; KSK:${ksk_algorithm}; ZSK:${zsk_algorithm}"
   }
-  concat::fragment{"policy_${name}":
+  concat::fragment { "policy_${name}":
     target  => $policy_file,
     content => template('opendnssec/etc/opendnssec/kasp-fragment.xml.erb'),
     order   => $order,

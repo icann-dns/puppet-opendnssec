@@ -20,10 +20,10 @@ class opendnssec::backup_cron (
   Stdlib::Absolutepath $script_path,
   Boolean              $require_backup,
 ) {
-  include ::opendnssec
-  $user               = $::opendnssec::user
-  $group              = $::opendnssec::group
-  $datastore_engine   = $::opendnssec::datastore_engine
+  include opendnssec
+  $user               = $opendnssec::user
+  $group              = $opendnssec::group
+  $datastore_engine   = $opendnssec::datastore_engine
 
   file {[$backup_dir, $tmp_dirbase]:
     ensure => directory,
@@ -32,24 +32,24 @@ class opendnssec::backup_cron (
   }
   if $require_backup == false {
     if $datastore_engine == 'mysql' {
-      file {$script_path:
+      file { $script_path:
         ensure  => absent,
       }
-      cron {'backup-hsm-mysql':
+      cron { 'backup-hsm-mysql':
         ensure  => absent,
       }
     }
   }
   else {
     if $datastore_engine == 'mysql' {
-      file {$script_path:
+      file { $script_path:
         ensure  => file,
         mode    => '0755',
         owner   => $user,
         group   => $group,
         content => template('opendnssec/usr/local/bin/backup-hsm-mysql.sh.erb'),
       }
-      cron {'backup-hsm-mysql':
+      cron { 'backup-hsm-mysql':
         ensure  => present,
         command => $script_path,
         user    => $user,

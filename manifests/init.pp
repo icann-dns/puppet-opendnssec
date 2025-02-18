@@ -114,7 +114,6 @@ class opendnssec (
   String                        $notify_command,
   Boolean                       $require_backup,
 ) {
-
   if $facts['os']['family'] == 'RedHat' and $datastore_engine == 'mysql' {
     fail('RedHat does not support mysql')
   }
@@ -128,7 +127,7 @@ class opendnssec (
       group  => $group;
     }
   }
-  file {$xsl_file:
+  file { $xsl_file:
     ensure => file,
     source => 'puppet:///modules/opendnssec/usr/share/opendnssec/addns.xsl',
   }
@@ -152,8 +151,8 @@ class opendnssec (
       $datastore_setup_before = undef
     }
     if $datastore_engine == 'mysql' {
-      require  ::mysql::server
-      mysql::db {$datastore_name:
+      require  mysql::server
+      mysql::db { $datastore_name:
         user     => $datastore_user,
         password => $datastore_password,
         sql      => $mysql_sql_file,
@@ -168,7 +167,7 @@ class opendnssec (
         ensure_packages($sqlite_packages)
       }
       if ( $manage_ods_ksmutil and ( versioncmp($opendnssec_version, '1') >= 0 ) ) {
-        exec {'ods-ksmutil setup':
+        exec { 'ods-ksmutil setup':
           path     => ['/bin', '/usr/bin', '/sbin', '/usr/sbin', '/usr/local/bin'],
           provider => 'shell',
           command  => "/usr/bin/yes | ${ksmutil_path} setup",
@@ -176,7 +175,7 @@ class opendnssec (
           before   => $datastore_setup_before,
         }
       } elsif ( versioncmp($opendnssec_version, '2') >= 0) {
-        exec {'ods-enforcer-db-setup':
+        exec { 'ods-enforcer-db-setup':
           path     => ['/sbin', '/usr/sbin', '/usr/local/sbin'],
           provider => 'shell',
           command  => "/usr/bin/yes | ${enforcer_path} setup",
@@ -187,7 +186,6 @@ class opendnssec (
     }
   }
   if $manage_conf {
-
     create_resources(opendnssec::tsig, $tsigs)
     if $default_tsig_name != 'NOKEY' and ! defined(Opendnssec::Tsig[$default_tsig_name]) {
       fail("Opendnssec::Tsig['${default_tsig_name}'] defined by default_tsig_name does not exist")
@@ -211,7 +209,7 @@ class opendnssec (
       group   => $group,
       content => template('opendnssec/etc/opendnssec/conf.xml.erb');
     }
-    opendnssec::addns {'default':
+    opendnssec::addns { 'default':
       masters      => $default_masters,
       provide_xfrs => $default_provide_xfrs,
     }
@@ -222,40 +220,40 @@ class opendnssec (
         $exec_subscribe = undef
       }
       if $manage_ods_ksmutil and ( versioncmp($opendnssec_version, '1') >= 0 ) {
-        exec {'ods-ksmutil updated conf.xml':
+        exec { 'ods-ksmutil updated conf.xml':
           command     => "/usr/bin/yes | ${ksmutil_path} update conf",
           user        => $user,
           refreshonly => true,
           subscribe   => $exec_subscribe,
         }
       } elsif ( versioncmp($opendnssec_version, '2') >= 0) {
-        exec {'ods-enforcer updated conf.xml':
+        exec { 'ods-enforcer updated conf.xml':
           command     => "/usr/bin/yes | ${enforcer_path} update conf",
           user        => $user,
           refreshonly => true,
           subscribe   => $exec_subscribe,
         }
       }
-      file {'/etc/opendnssec/MASTER':
+      file { '/etc/opendnssec/MASTER':
         ensure => 'file',
         mode   => '0644',
         owner  => $user,
         group  => $group;
       }
     } else {
-      file {'/etc/opendnssec/MASTER':
+      file { '/etc/opendnssec/MASTER':
         ensure => 'absent',
       }
     }
   }
   if ! defined(Class['opendnssec::policies']) {
-    class { '::opendnssec::policies': policies => $policies }
+    class { 'opendnssec::policies': policies => $policies }
   }
   if ! defined(Opendnssec::Policy[$default_policy_name]) {
     opendnssec::policy { $default_policy_name: }
   }
   if ! defined(Class['opendnssec::zones']) {
-    class { '::opendnssec::zones': zones => $zones }
+    class { 'opendnssec::zones': zones => $zones }
   }
   file { '/var/lib/opendnssec/enforcer/zones.xml':
     ensure  => 'link',
@@ -266,11 +264,11 @@ class opendnssec (
 
   if $enabled and $manage_service {
     service { $service_enforcer:
-        ensure => running,
-        enable => true,
+      ensure => running,
+      enable => true,
     } ~> service { $service_signer:
-        ensure => running,
-        enable => true,
+      ensure => running,
+      enable => true,
     }
     Opendnssec::Tsig   <| |> ~> Service[$service_enforcer, $service_signer]
     Opendnssec::Zone   <| |> -> Service[$service_enforcer, $service_signer]

@@ -19,7 +19,7 @@ define opendnssec::zone (
   Optional[Array[String]]        $masters             = [],
   Optional[Array[String]]        $provide_xfrs        = [],
   String                         $order               = '10',
-  Stdlib::Absolutepath           $adapter_base_dir    = $::opendnssec::base_dir,
+  Stdlib::Absolutepath           $adapter_base_dir    = $opendnssec::base_dir,
   Optional[Stdlib::Absolutepath] $adapter_signer_conf = undef,
   Optional[Stdlib::Absolutepath] $adapter_input_file  = undef,
   Optional[Stdlib::Absolutepath] $adapter_output_file = undef,
@@ -28,12 +28,11 @@ define opendnssec::zone (
   Opendnssec::Adapter            $adapter_input_type  = 'DNS',
   Opendnssec::Adapter            $adapter_output_type = 'DNS',
 ) {
-
   if $signed {
-    include ::opendnssec
-    $enabled   = $::opendnssec::enabled
-    $remotes   = $::opendnssec::remotes
-    $zone_file = $::opendnssec::zone_file
+    include opendnssec
+    $enabled   = $opendnssec::enabled
+    $remotes   = $opendnssec::remotes
+    $zone_file = $opendnssec::zone_file
 
     $adapter_signer_conf_file = $adapter_signer_conf ? {
       undef   => "${adapter_base_dir}/signconf/${name}.xml",
@@ -44,11 +43,11 @@ define opendnssec::zone (
       default => $adapter_input_file,
     }
     $adapter_output_f = $adapter_output_file ? {
-      undef   =>  "${adapter_base_dir}/signed/${name}",
-      default =>  $adapter_output_file,
+      undef   => "${adapter_base_dir}/signed/${name}",
+      default => $adapter_output_file,
     }
     $_signer_policy = $signer_policy ? {
-      undef   => $::opendnssec::default_policy_name,
+      undef   => $opendnssec::default_policy_name,
       default => $signer_policy,
     }
     if $adapter_input_type == 'File' {
@@ -58,7 +57,7 @@ define opendnssec::zone (
       if !$zone_source and !$zone_content {
         fail('you must specify either \$zone_source or \$zone_content when adapter_input_type=="File"')
       }
-      file{$adapter_input_f:
+      file { $adapter_input_f:
         ensure  => file,
         source  => $zone_source,
         content => $zone_content,
@@ -82,7 +81,7 @@ define opendnssec::zone (
         $adapter_masters_conf = 'default'
       } else {
         $adapter_masters_conf = "${name}-masters"
-        opendnssec::addns{ $adapter_masters_conf:
+        opendnssec::addns { $adapter_masters_conf:
           masters      => $masters,
           provide_xfrs => $provide_xfrs,
         }
@@ -93,13 +92,13 @@ define opendnssec::zone (
         $adapter_provide_xfrs_conf = 'default'
       } else {
         $adapter_provide_xfrs_conf = "${name}-provide_xfrs"
-        opendnssec::addns{ $adapter_provide_xfrs_conf:
+        opendnssec::addns { $adapter_provide_xfrs_conf:
           masters      => $masters,
           provide_xfrs => $provide_xfrs,
         }
       }
     }
-    concat::fragment{"zone_${name}":
+    concat::fragment { "zone_${name}":
       target  => $zone_file,
       content => template('opendnssec/etc/opendnssec/zonelist-fragment.xml.erb'),
       order   => $order,
