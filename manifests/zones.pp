@@ -14,7 +14,11 @@ class opendnssec::zones (
   $enabled            = $opendnssec::enabled
   $opendnssec_version = $opendnssec::opendnssec_version
   $enforcer_path      = $opendnssec::enforcer_path
-
+  $update_zone_cmd    = $opendnssec_version ? {
+    /^1/    => "/usr/bin/yes | ${ksmutil_path} update zonelist",
+    /^2/    => "/usr/bin/yes | ${enforcer_path} update zonelist",
+    default => fail("Unsupported OpenDNSSEC version: ${opendnssec_version}"),
+  }
   concat { $zone_file:
     owner => $user,
     group => $group,
@@ -30,21 +34,12 @@ class opendnssec::zones (
     order   => '99',
   }
   create_resources(opendnssec::zone, $zones)
-  if $enabled {
-    if ( $manage_ods_ksmutil and ( versioncmp($opendnssec_version, '1') >= 0 ) ) {
-      exec { 'ods-ksmutil updated zonelist.xml':
-        command     => "/usr/bin/yes | ${ksmutil_path} update zonelist",
-        user        => $user,
-        refreshonly => true,
-        subscribe   => Concat[$zone_file];
-      }
-    } elsif ( versioncmp($opendnssec_version, '2') >= 0) {
-      exec { 'ods-enforcer updated zonelist.xml':
-        command     => "/usr/bin/yes | ${enforcer_path} update zonelist",
-        user        => $user,
-        refreshonly => true,
-        subscribe   => Concat[$zone_file];
-      }
+  if $enabled and $manage_ods_ksmutil {
+    exec { 'ods-ksmutil updated zonelist.xml':
+      command     => "/usr/bin/yes | ${ksmutil_path} update zonelist",
+      user        => $user,
+      refreshonly => true,
+      subscribe   => Concat[$zone_file];
     }
   }
 }

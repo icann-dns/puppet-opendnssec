@@ -11,7 +11,7 @@
 #
 class opendnssec::backup_cron (
   Stdlib::Host     $backup_host    = 'localhost',
-  String[1,32]     $backup_user    = 'bacuckup',
+  String[1,32]     $backup_user    = 'backup',
   String           $backup_glob    = '*.tar.bz2',
   String           $date_format    = '%Y%m%d-%H%M',
   Integer          $retention      = 500,
@@ -30,33 +30,21 @@ class opendnssec::backup_cron (
     owner  => $user,
     group  => $group,
   }
-  if $require_backup == false {
-    if $datastore_engine == 'mysql' {
-      file { $script_path:
-        ensure  => absent,
-      }
-      cron { 'backup-hsm-mysql':
-        ensure  => absent,
-      }
+  if $datastore_engine == 'mysql' {
+    file { $script_path:
+      ensure  => stdlib::ensure($require_backup, 'file'),
+      mode    => '0755',
+      owner   => $user,
+      group   => $group,
+      content => template('opendnssec/usr/local/bin/backup-hsm-mysql.sh.erb'),
     }
-  }
-  else {
-    if $datastore_engine == 'mysql' {
-      file { $script_path:
-        ensure  => file,
-        mode    => '0755',
-        owner   => $user,
-        group   => $group,
-        content => template('opendnssec/usr/local/bin/backup-hsm-mysql.sh.erb'),
-      }
-      cron { 'backup-hsm-mysql':
-        ensure  => present,
-        command => $script_path,
-        user    => $user,
-        hour    => '*/6',
-        minute  => 0,
-        require => File[$script_path],
-      }
+    cron { 'backup-hsm-mysql':
+      ensure  => $require_backup.bool2str('present', 'absent'),
+      command => $script_path,
+      user    => $user,
+      hour    => '*/6',
+      minute  => 0,
+      require => File[$script_path],
     }
   }
 }

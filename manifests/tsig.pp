@@ -15,10 +15,8 @@ define opendnssec::tsig (
   $enabled            = $opendnssec::enabled
   $base_dir           = $opendnssec::tsigs_dir
 
-  $_name = $key_name ? {
-    undef   => $name,
-    default => $key_name,
-  }
+  $_name = $key_name.lest || { $name }
+
   file { "${base_dir}/${_name}.xml":
     ensure  => file,
     owner   => $user,

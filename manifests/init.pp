@@ -68,7 +68,7 @@ class opendnssec (
   String[1,10]                  $opendnssec_version     = '1',
   Integer[1,7]                  $logging_level          = 3,
   Stdlib::Syslogfacility        $logging_facility       = 'local0',
-  Array[String]                 $packages               = ['opendnssec', 'xsltptoc'],
+  Array[String]                 $packages               = ['opendnssec', 'xsltproc'],
   String[1,100]                 $service_enforcer       = 'opendnssec-enforcer',
   String[1,100]                 $service_signer         = 'opendnssec-signer',
   Array[String]                 $sqlite_packages        = [],
@@ -111,77 +111,65 @@ class opendnssec (
   Array[String]                 $default_masters        = [],
   Array[String]                 $default_provide_xfrs   = [],
   Boolean                       $notify_boolean         = false,
-  String                        $notify_command         = '',
+  Optional[String[1]]           $notify_command         = undef,
   Boolean                       $require_backup         = false,
 ) {
   if $facts['os']['family'] == 'RedHat' and $datastore_engine == 'mysql' {
     fail('RedHat does not support mysql')
   }
-
+  $ods_setup_command = $opendnssec_version ? {
+    /^1/    => "/usr/bin/yes | ${ksmutil_path} setup",
+    /^2/    => "/usr/bin/yes | ${enforcer_path} setup",
+    default => fail('opendnssec_version must be 1 or 2'),
+  }
+  $ods_update_conf_command = $opendnssec_version ? {
+    /^1/    => "/usr/bin/yes | ${ksmutil_path} update conf",
+    /^2/    => "/usr/bin/yes | ${enforcer_path} update conf",
+    default => fail('opendnssec_version must be 1 or 2'),
+  }
+  $datastore_setup_before = [$enabled, $manage_datastore, $manage_conf, $manage_ods_ksmutil].all |$i| { $i } ? {
+    false => undef,
+    true  => Exec['updated conf.xml'],
+  }
+  $exec_subscribe = $manage_conf ? {
+    true  => File['/etc/opendnssec/conf.xml'],
+    false => undef,
+  }
   if $manage_packages {
     ensure_packages($packages)
-    file {[$base_dir, $signed_dir, $unsigned_dir]:
-      ensure => 'directory',
-      mode   => '0640',
-      owner  => $user,
-      group  => $group;
-    }
+  }
+  file {[$base_dir, $signed_dir, $unsigned_dir, $tsigs_dir, $remotes_dir, $signconf_dir, $working_dir]:
+    ensure => 'directory',
+    mode   => '0640',
+    owner  => $user,
+    group  => $group;
   }
   file { $xsl_file:
     ensure => file,
     source => 'puppet:///modules/opendnssec/usr/share/opendnssec/addns.xsl',
   }
-  file {[$tsigs_dir, $remotes_dir, $signconf_dir, $working_dir]:
-    ensure => 'directory',
-    owner  => $user,
-    group  => $group,
-  }
   if $enabled and $manage_datastore {
-    if $manage_conf {
-      if $manage_ods_ksmutil and ( versioncmp($opendnssec_version, '1') >= 0 ) {
-        $datastore_setup_before = Exec['ods-ksmutil updated conf.xml']
-      } elsif ( versioncmp($opendnssec_version, '2') >= 0 ) {
-        $datastore_setup_before = Exec['ods-enforcer updated conf.xml']
-      }
-      else {
-        $datastore_setup_before = undef
-      }
-    }
-    else {
-      $datastore_setup_before = undef
-    }
     if $datastore_engine == 'mysql' {
+      if $manage_packages {
+        ensure_packages($mysql_packages)
+      }
       require  mysql::server
       mysql::db { $datastore_name:
         user     => $datastore_user,
         password => $datastore_password,
-        sql      => $mysql_sql_file,
+        sql      => [$mysql_sql_file],
         before   => $datastore_setup_before,
-      }
-
-      if $manage_packages {
-        ensure_packages($mysql_packages)
       }
     } elsif $datastore_engine == 'sqlite' {
       if $manage_packages {
         ensure_packages($sqlite_packages)
       }
-      if ( $manage_ods_ksmutil and ( versioncmp($opendnssec_version, '1') >= 0 ) ) {
-        exec { 'ods-ksmutil setup':
-          path     => ['/bin', '/usr/bin', '/sbin', '/usr/sbin', '/usr/local/bin'],
-          provider => 'shell',
-          command  => "/usr/bin/yes | ${ksmutil_path} setup",
-          unless   => "test -s ${sqlite_file}",
-          before   => $datastore_setup_before,
-        }
-      } elsif ( versioncmp($opendnssec_version, '2') >= 0) {
-        exec { 'ods-enforcer-db-setup':
-          path     => ['/sbin', '/usr/sbin', '/usr/local/sbin'],
-          provider => 'shell',
-          command  => "/usr/bin/yes | ${enforcer_path} setup",
-          unless   => "test -s ${sqlite_file}",
-          before   => $datastore_setup_before,
-        }
+      exec { 'ods-ksmutil setup':
+        path     => ['/bin', '/usr/bin', '/sbin', '/usr/sbin', '/usr/local/bin', '/usr/local/sbin'],
+        provider => 'shell',
+        command  => $ods_setup_command,
+        unless   => "test -s ${sqlite_file}",
+        before   => $datastore_setup_before,
       }
     }
   }
@@ -214,36 +202,20 @@ class opendnssec (
       provide_xfrs => $default_provide_xfrs,
     }
     if $enabled {
-      if $manage_conf {
-        $exec_subscribe = File['/etc/opendnssec/conf.xml']
-      } else {
-        $exec_subscribe = undef
-      }
-      if $manage_ods_ksmutil and ( versioncmp($opendnssec_version, '1') >= 0 ) {
-        exec { 'ods-ksmutil updated conf.xml':
-          command     => "/usr/bin/yes | ${ksmutil_path} update conf",
-          user        => $user,
-          refreshonly => true,
-          subscribe   => $exec_subscribe,
-        }
-      } elsif ( versioncmp($opendnssec_version, '2') >= 0) {
-        exec { 'ods-enforcer updated conf.xml':
-          command     => "/usr/bin/yes | ${enforcer_path} update conf",
+      if $manage_ods_ksmutil {
+        exec { 'updated conf.xml':
+          command     => $ods_update_conf_command,
           user        => $user,
           refreshonly => true,
           subscribe   => $exec_subscribe,
         }
       }
-      file { '/etc/opendnssec/MASTER':
-        ensure => 'file',
-        mode   => '0644',
-        owner  => $user,
-        group  => $group;
-      }
-    } else {
-      file { '/etc/opendnssec/MASTER':
-        ensure => 'absent',
-      }
+    }
+    file { '/etc/opendnssec/MASTER':
+      ensure => stdlib::ensure($enabled, 'file'),
+      mode   => '0644',
+      owner  => $user,
+      group  => $group;
     }
   }
   if ! defined(Class['opendnssec::policies']) {

@@ -81,11 +81,8 @@ define opendnssec::policy (
 
   $policy_file     = $opendnssec::policy_file
   $repository_name = $opendnssec::repository_name
-
-  if $description {
-    $description_text = $description
-  } else {
-    $description_text = "${name} - Deny:${denial_policy}; KSK:${ksk_algorithm}; ZSK:${zsk_algorithm}"
+  $description_text = $description.lest || {
+    "${name} - Deny:${denial_policy}; KSK:${ksk_algorithm}; ZSK:${zsk_algorithm}"
   }
   concat::fragment { "policy_${name}":
     target  => $policy_file,
