@@ -10,15 +10,15 @@
 # @param require_backup Whether to require a backup
 #
 class opendnssec::backup_cron (
-  Stdlib::Host     $backup_host,
-  String[1,32]     $backup_user,
-  String           $backup_glob,
-  String           $date_format,
-  Integer          $retention,
-  Stdlib::Unixpath $backup_dir,
-  Stdlib::Unixpath $tmp_dirbase,
-  Stdlib::Unixpath $script_path,
-  Boolean          $require_backup,
+  Stdlib::Host     $backup_host    = 'localhost',
+  String[1,32]     $backup_user    = 'bacuckup',
+  String           $backup_glob    = '*.tar.bz2',
+  String           $date_format    = '%Y%m%d-%H%M',
+  Integer          $retention      = 500,
+  Stdlib::Unixpath $backup_dir     = '/opt/backup',
+  Stdlib::Unixpath $tmp_dirbase    = '/opt/tmp',
+  Stdlib::Unixpath $script_path    = '/usr/local/bin/backup-hsm-mysql.sh',
+  Boolean          $require_backup = false,
 ) {
   include opendnssec
   $user               = $opendnssec::user
