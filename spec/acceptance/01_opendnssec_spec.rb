@@ -27,12 +27,15 @@ describe 'opendnssec class', tier_low: true do
       apply_manifest(pp, catch_failures: true)
       expect(apply_manifest(pp, catch_failures: true).exit_code).to eq 0
     end
+
     describe service(enforcer) do
       it { is_expected.to be_running }
     end
+
     describe service(signer) do
       it { is_expected.to be_running }
     end
+
     describe port(53) do
       it { is_expected.to be_listening }
     end

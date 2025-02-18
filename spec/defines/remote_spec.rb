@@ -39,10 +39,10 @@ describe 'opendnssec::remote' do
 
         it do
           is_expected.to contain_file(
-            '/etc/opendnssec/remotes/test_remote_requesttransfer.xml',
+            '/etc/opendnssec/remotes/test_remote_requesttransfer.xml'
           ).with(
             ensure: 'file',
-            owner: 'root',
+            owner: 'root'
           ).with_content(
             %r{
             <\?xml\sversion="1.0"\?>
@@ -52,15 +52,16 @@ describe 'opendnssec::remote' do
             \s+<Port>53</Port>
             \s+</Remote>
             \s+</RequestTransfer>
-            }x,
+            }x
           )
         end
+
         it do
           is_expected.to contain_file(
-            '/etc/opendnssec/remotes/test_remote_notify_in.xml',
+            '/etc/opendnssec/remotes/test_remote_notify_in.xml'
           ).with(
             ensure: 'file',
-            owner: 'root',
+            owner: 'root'
           ).with_content(
             %r{
             <\?xml\sversion="1.0"\?>
@@ -69,15 +70,16 @@ describe 'opendnssec::remote' do
             \s+<Prefix>192.0.2.1</Prefix>
             \s+</Peer>
             \s+</AllowNotify>
-            }x,
+            }x
           )
         end
+
         it do
           is_expected.to contain_file(
-            '/etc/opendnssec/remotes/test_remote_providetransfer.xml',
+            '/etc/opendnssec/remotes/test_remote_providetransfer.xml'
           ).with(
             ensure: 'file',
-            owner: 'root',
+            owner: 'root'
           ).with_content(
             %r{
             <\?xml\sversion="1.0"\?>
@@ -86,15 +88,16 @@ describe 'opendnssec::remote' do
             \s+<Prefix>192.0.2.1</Prefix>
             \s+</Peer>
             \s+</ProvideTransfer>
-            }x,
+            }x
           )
         end
+
         it do
           is_expected.to contain_file(
-            '/etc/opendnssec/remotes/test_remote_notify_out.xml',
+            '/etc/opendnssec/remotes/test_remote_notify_out.xml'
           ).with(
             ensure: 'file',
-            owner: 'root',
+            owner: 'root'
           ).with_content(
             %r{
             <\?xml\sversion="1.0"\?>
@@ -108,13 +111,16 @@ describe 'opendnssec::remote' do
           )
         end
       end
+
       describe 'Change Defaults' do
         context 'address4' do
-          before(:each) { params.merge!(address4: '192.0.2.255') }
+          before { params.merge!(address4: '192.0.2.255') }
+
           it { is_expected.to compile }
+
           it do
             is_expected.to contain_file(
-              '/etc/opendnssec/remotes/test_remote_requesttransfer.xml',
+              '/etc/opendnssec/remotes/test_remote_requesttransfer.xml'
             ).with_content(
               %r{
               <\?xml\sversion="1.0"\?>
@@ -124,12 +130,13 @@ describe 'opendnssec::remote' do
               \s+<Port>53</Port>
               \s+</Remote>
               \s+</RequestTransfer>
-              }x,
+              }x
             )
           end
+
           it do
             is_expected.to contain_file(
-              '/etc/opendnssec/remotes/test_remote_notify_in.xml',
+              '/etc/opendnssec/remotes/test_remote_notify_in.xml'
             ).with_content(
               %r{
               <\?xml\sversion="1.0"\?>
@@ -138,12 +145,13 @@ describe 'opendnssec::remote' do
               \s+<Prefix>192.0.2.255</Prefix>
               \s+</Peer>
               \s+</AllowNotify>
-              }x,
+              }x
             )
           end
+
           it do
             is_expected.to contain_file(
-              '/etc/opendnssec/remotes/test_remote_providetransfer.xml',
+              '/etc/opendnssec/remotes/test_remote_providetransfer.xml'
             ).with_content(
               %r{
               <\?xml\sversion="1.0"\?>
@@ -152,12 +160,13 @@ describe 'opendnssec::remote' do
               \s+<Prefix>192.0.2.255</Prefix>
               \s+</Peer>
               \s+</ProvideTransfer>
-              }x,
+              }x
             )
           end
+
           it do
             is_expected.to contain_file(
-              '/etc/opendnssec/remotes/test_remote_notify_out.xml',
+              '/etc/opendnssec/remotes/test_remote_notify_out.xml'
             ).with_content(
               %r{
               <\?xml\sversion="1.0"\?>
@@ -167,16 +176,19 @@ describe 'opendnssec::remote' do
               \s+<Port>53</Port>
               \s+</Remote>
               \s+</Notify>
-              }x,
+              }x
             )
           end
         end
+
         context 'address6' do
-          before(:each) { params.merge!(address6: '2001:DB8::1') }
+          before { params.merge!(address6: '2001:DB8::1') }
+
           it { is_expected.to compile }
+
           it do
             is_expected.to contain_file(
-              '/etc/opendnssec/remotes/test_remote_requesttransfer.xml',
+              '/etc/opendnssec/remotes/test_remote_requesttransfer.xml'
             ).with_content(
               %r{
               <\?xml\sversion="1.0"\?>
@@ -190,12 +202,13 @@ describe 'opendnssec::remote' do
               \s+<Port>53</Port>
               \s+</Remote>
               \s+</RequestTransfer>
-              }x,
+              }x
             )
           end
+
           it do
             is_expected.to contain_file(
-              '/etc/opendnssec/remotes/test_remote_notify_in.xml',
+              '/etc/opendnssec/remotes/test_remote_notify_in.xml'
             ).with_content(
               %r{
               <\?xml\sversion="1.0"\?>
@@ -207,12 +220,13 @@ describe 'opendnssec::remote' do
               \s+<Prefix>2001:DB8::1</Prefix>
               \s+</Peer>
               \s+</AllowNotify>
-              }x,
+              }x
             )
           end
+
           it do
             is_expected.to contain_file(
-              '/etc/opendnssec/remotes/test_remote_providetransfer.xml',
+              '/etc/opendnssec/remotes/test_remote_providetransfer.xml'
             ).with_content(
               %r{
               <\?xml\sversion="1.0"\?>
@@ -224,12 +238,13 @@ describe 'opendnssec::remote' do
               \s+<Prefix>2001:DB8::1</Prefix>
               \s+</Peer>
               \s+</ProvideTransfer>
-              }x,
+              }x
             )
           end
+
           it do
             is_expected.to contain_file(
-              '/etc/opendnssec/remotes/test_remote_notify_out.xml',
+              '/etc/opendnssec/remotes/test_remote_notify_out.xml'
             ).with_content(
               %r{
               <\?xml\sversion="1.0"\?>
@@ -243,16 +258,19 @@ describe 'opendnssec::remote' do
               \s+<Port>53</Port>
               \s+</Remote>
               \s+</Notify>
-              }x,
+              }x
             )
           end
         end
+
         context 'ipv6 only' do
-          before(:each) { params.merge!(address4: :undef, address6: '2001:DB8::1') }
+          before { params.merge!(address4: :undef, address6: '2001:DB8::1') }
+
           it { is_expected.to compile }
+
           it do
             is_expected.to contain_file(
-              '/etc/opendnssec/remotes/test_remote_requesttransfer.xml',
+              '/etc/opendnssec/remotes/test_remote_requesttransfer.xml'
             ).with_content(
               %r{
               <\?xml\sversion="1.0"\?>
@@ -262,12 +280,13 @@ describe 'opendnssec::remote' do
               \s+<Port>53</Port>
               \s+</Remote>
               \s+</RequestTransfer>
-              }x,
+              }x
             )
           end
+
           it do
             is_expected.to contain_file(
-              '/etc/opendnssec/remotes/test_remote_notify_in.xml',
+              '/etc/opendnssec/remotes/test_remote_notify_in.xml'
             ).with_content(
               %r{
               <\?xml\sversion="1.0"\?>
@@ -276,12 +295,13 @@ describe 'opendnssec::remote' do
               \s+<Prefix>2001:DB8::1</Prefix>
               \s+</Peer>
               \s+</AllowNotify>
-              }x,
+              }x
             )
           end
+
           it do
             is_expected.to contain_file(
-              '/etc/opendnssec/remotes/test_remote_providetransfer.xml',
+              '/etc/opendnssec/remotes/test_remote_providetransfer.xml'
             ).with_content(
               %r{
               <\?xml\sversion="1.0"\?>
@@ -290,12 +310,13 @@ describe 'opendnssec::remote' do
               \s+<Prefix>2001:DB8::1</Prefix>
               \s+</Peer>
               \s+</ProvideTransfer>
-              }x,
+              }x
             )
           end
+
           it do
             is_expected.to contain_file(
-              '/etc/opendnssec/remotes/test_remote_notify_out.xml',
+              '/etc/opendnssec/remotes/test_remote_notify_out.xml'
             ).with_content(
               %r{
               <\?xml\sversion="1.0"\?>
@@ -305,16 +326,19 @@ describe 'opendnssec::remote' do
               \s+<Port>53</Port>
               \s+</Remote>
               \s+</Notify>
-              }x,
+              }x
             )
           end
         end
+
         context 'tsig' do
-          before(:each) { params.merge!(tsig: 'test_tsig', tsig_name: 'foobar') }
+          before { params.merge!(tsig: 'test_tsig', tsig_name: 'foobar') }
+
           it { is_expected.to compile }
+
           it do
             is_expected.to contain_file(
-              '/etc/opendnssec/remotes/test_remote_requesttransfer.xml',
+              '/etc/opendnssec/remotes/test_remote_requesttransfer.xml'
             ).with_content(
               %r{
               <\?xml\sversion="1.0"\?>
@@ -325,12 +349,13 @@ describe 'opendnssec::remote' do
               \s+<Key>foobar</Key>
               \s+</Remote>
               \s+</RequestTransfer>
-              }x,
+              }x
             )
           end
+
           it do
             is_expected.to contain_file(
-              '/etc/opendnssec/remotes/test_remote_notify_in.xml',
+              '/etc/opendnssec/remotes/test_remote_notify_in.xml'
             ).with_content(
               %r{
               <\?xml\sversion="1.0"\?>
@@ -339,12 +364,13 @@ describe 'opendnssec::remote' do
               \s+<Prefix>192.0.2.1</Prefix>
               \s+</Peer>
               \s+</AllowNotify>
-              }x,
+              }x
             )
           end
+
           it do
             is_expected.to contain_file(
-              '/etc/opendnssec/remotes/test_remote_providetransfer.xml',
+              '/etc/opendnssec/remotes/test_remote_providetransfer.xml'
             ).with_content(
               %r{
               <\?xml\sversion="1.0"\?>
@@ -354,12 +380,13 @@ describe 'opendnssec::remote' do
               \s+<Key>foobar</Key>
               \s+</Peer>
               \s+</ProvideTransfer>
-              }x,
+              }x
             )
           end
+
           it do
             is_expected.to contain_file(
-              '/etc/opendnssec/remotes/test_remote_notify_out.xml',
+              '/etc/opendnssec/remotes/test_remote_notify_out.xml'
             ).with_content(
               %r{
               <\?xml\sversion="1.0"\?>
@@ -369,21 +396,24 @@ describe 'opendnssec::remote' do
               \s+<Port>53</Port>
               \s+</Remote>
               \s+</Notify>
-              }x,
+              }x
             )
           end
         end
+
         context 'tsig_name' do
-          before(:each) do
+          before do
             params.merge!(
               tsig_name: 'test_tsig',
-              sign_notifies: true,
+              sign_notifies: true
             )
           end
+
           it { is_expected.to compile }
+
           it do
             is_expected.to contain_file(
-              '/etc/opendnssec/remotes/test_remote_requesttransfer.xml',
+              '/etc/opendnssec/remotes/test_remote_requesttransfer.xml'
             ).with_content(
               %r{
               <\?xml\sversion="1.0"\?>
@@ -394,12 +424,13 @@ describe 'opendnssec::remote' do
               \s+<Key>test_tsig</Key>
               \s+</Remote>
               \s+</RequestTransfer>
-              }x,
+              }x
             )
           end
+
           it do
             is_expected.to contain_file(
-              '/etc/opendnssec/remotes/test_remote_notify_in.xml',
+              '/etc/opendnssec/remotes/test_remote_notify_in.xml'
             ).with_content(
               %r{
               <\?xml\sversion="1.0"\?>
@@ -409,12 +440,13 @@ describe 'opendnssec::remote' do
               \s+<Key>test_tsig</Key>
               \s+</Peer>
               \s+</AllowNotify>
-              }x,
+              }x
             )
           end
+
           it do
             is_expected.to contain_file(
-              '/etc/opendnssec/remotes/test_remote_providetransfer.xml',
+              '/etc/opendnssec/remotes/test_remote_providetransfer.xml'
             ).with_content(
               %r{
               <\?xml\sversion="1.0"\?>
@@ -424,12 +456,13 @@ describe 'opendnssec::remote' do
               \s+<Key>test_tsig</Key>
               \s+</Peer>
               \s+</ProvideTransfer>
-              }x,
+              }x
             )
           end
+
           it do
             is_expected.to contain_file(
-              '/etc/opendnssec/remotes/test_remote_notify_out.xml',
+              '/etc/opendnssec/remotes/test_remote_notify_out.xml'
             ).with_content(
               %r{
               <\?xml\sversion="1.0"\?>
@@ -440,16 +473,19 @@ describe 'opendnssec::remote' do
               \s+<Key>test_tsig</Key>
               \s+</Remote>
               \s+</Notify>
-              }x,
+              }x
             )
           end
         end
+
         context 'port' do
-          before(:each) { params.merge!(port: 5353) }
+          before { params.merge!(port: 5353) }
+
           it { is_expected.to compile }
+
           it do
             is_expected.to contain_file(
-              '/etc/opendnssec/remotes/test_remote_requesttransfer.xml',
+              '/etc/opendnssec/remotes/test_remote_requesttransfer.xml'
             ).with_content(
               %r{
               <\?xml\sversion="1.0"\?>
@@ -459,12 +495,13 @@ describe 'opendnssec::remote' do
               \s+<Port>5353</Port>
               \s+</Remote>
               \s+</RequestTransfer>
-              }x,
+              }x
             )
           end
+
           it do
             is_expected.to contain_file(
-              '/etc/opendnssec/remotes/test_remote_notify_in.xml',
+              '/etc/opendnssec/remotes/test_remote_notify_in.xml'
             ).with_content(
               %r{
               <\?xml\sversion="1.0"\?>
@@ -473,12 +510,13 @@ describe 'opendnssec::remote' do
               \s+<Prefix>192.0.2.1</Prefix>
               \s+</Peer>
               \s+</AllowNotify>
-              }x,
+              }x
             )
           end
+
           it do
             is_expected.to contain_file(
-              '/etc/opendnssec/remotes/test_remote_providetransfer.xml',
+              '/etc/opendnssec/remotes/test_remote_providetransfer.xml'
             ).with_content(
               %r{
               <\?xml\sversion="1.0"\?>
@@ -487,12 +525,13 @@ describe 'opendnssec::remote' do
               \s+<Prefix>192.0.2.1</Prefix>
               \s+</Peer>
               \s+</ProvideTransfer>
-              }x,
+              }x
             )
           end
+
           it do
             is_expected.to contain_file(
-              '/etc/opendnssec/remotes/test_remote_notify_out.xml',
+              '/etc/opendnssec/remotes/test_remote_notify_out.xml'
             ).with_content(
               %r{
               <\?xml\sversion="1.0"\?>
@@ -502,23 +541,26 @@ describe 'opendnssec::remote' do
               \s+<Port>5353</Port>
               \s+</Remote>
               \s+</Notify>
-              }x,
+              }x
             )
           end
         end
+
         context 'All params' do
-          before(:each) do
+          before do
             params.merge!(
               address6: '2001:DB8::1',
               port: 5353,
               tsig_name: 'test_tsig',
-              sign_notifies: true,
+              sign_notifies: true
             )
           end
+
           it { is_expected.to compile }
+
           it do
             is_expected.to contain_file(
-              '/etc/opendnssec/remotes/test_remote_requesttransfer.xml',
+              '/etc/opendnssec/remotes/test_remote_requesttransfer.xml'
             ).with_content(
               %r{
               <\?xml\sversion="1.0"\?>
@@ -534,12 +576,13 @@ describe 'opendnssec::remote' do
               \s+<Key>test_tsig</Key>
               \s+</Remote>
               \s+</RequestTransfer>
-              }x,
+              }x
             )
           end
+
           it do
             is_expected.to contain_file(
-              '/etc/opendnssec/remotes/test_remote_notify_in.xml',
+              '/etc/opendnssec/remotes/test_remote_notify_in.xml'
             ).with_content(
               %r{
               <\?xml\sversion="1.0"\?>
@@ -553,12 +596,13 @@ describe 'opendnssec::remote' do
               \s+<Key>test_tsig</Key>
               \s+</Peer>
               \s+</AllowNotify>
-              }x,
+              }x
             )
           end
+
           it do
             is_expected.to contain_file(
-              '/etc/opendnssec/remotes/test_remote_providetransfer.xml',
+              '/etc/opendnssec/remotes/test_remote_providetransfer.xml'
             ).with_content(
               %r{
               <\?xml\sversion="1.0"\?>
@@ -572,12 +616,13 @@ describe 'opendnssec::remote' do
               \s+<Key>test_tsig</Key>
               \s+</Peer>
               \s+</ProvideTransfer>
-              }x,
+              }x
             )
           end
+
           it do
             is_expected.to contain_file(
-              '/etc/opendnssec/remotes/test_remote_notify_out.xml',
+              '/etc/opendnssec/remotes/test_remote_notify_out.xml'
             ).with_content(
               %r{
               <\?xml\sversion="1.0"\?>
@@ -593,42 +638,58 @@ describe 'opendnssec::remote' do
               \s+<Key>test_tsig</Key>
               \s+</Remote>
               \s+</Notify>
-              }x,
+              }x
             )
           end
         end
       end
+
       describe 'check bad type' do
         context 'no address' do
-          before(:each) { params.merge!(address4: nil) }
+          before { params.merge!(address4: nil) }
+
           it { is_expected.to raise_error(Puppet::Error) }
         end
+
         context 'address4' do
-          before(:each) { params.merge!(address4: true) }
+          before { params.merge!(address4: true) }
+
           it { is_expected.to raise_error(Puppet::Error) }
         end
+
         context 'address6' do
-          before(:each) { params.merge!(address6: true) }
+          before { params.merge!(address6: true) }
+
           it { is_expected.to raise_error(Puppet::Error) }
         end
+
         context 'tsig' do
-          before(:each) { params.merge!(tsig: true) }
+          before { params.merge!(tsig: true) }
+
           it { is_expected.to raise_error(Puppet::Error) }
         end
+
         context 'tsig not defined' do
-          before(:each) { params.merge!(tsig: 'foobar') }
+          before { params.merge!(tsig: 'foobar') }
+
           it { is_expected.to raise_error(Puppet::Error) }
         end
+
         context 'tsig with no tsig_name' do
-          before(:each) { params.merge!(tsig: 'test_tsig') }
+          before { params.merge!(tsig: 'test_tsig') }
+
           it { is_expected.to raise_error(Puppet::Error) }
         end
+
         context 'tsig_name' do
-          before(:each) { params.merge!(tsig_name: true) }
+          before { params.merge!(tsig_name: true) }
+
           it { is_expected.to raise_error(Puppet::Error) }
         end
+
         context 'port' do
-          before(:each) { params.merge!(port: true) }
+          before { params.merge!(port: true) }
+
           it { is_expected.to raise_error(Puppet::Error) }
         end
       end

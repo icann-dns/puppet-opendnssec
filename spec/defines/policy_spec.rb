@@ -80,14 +80,15 @@ describe 'opendnssec::policy' do
       describe 'check default config' do
         it { is_expected.to compile.with_all_deps }
         it { is_expected.to contain_opendnssec__policy('test_policy') }
+
         it do
           is_expected.to contain_concat__fragment('policy_test_policy').with(
             target: '/etc/opendnssec/kasp.xml',
-            order: '10',
+            order: '10'
           ).with_content(
-            %r{<Policy name="test_policy">},
+            %r{<Policy name="test_policy">}
           ).with_content(
-            %r{<Description>test_policy\s-\sDeny:NSEC3;\sKSK:RSASHA1-NSEC3-SHA1;\sZSK:RSASHA1-NSEC3-SHA1</Description>},
+            %r{<Description>test_policy\s-\sDeny:NSEC3;\sKSK:RSASHA1-NSEC3-SHA1;\sZSK:RSASHA1-NSEC3-SHA1</Description>}
           ).with_content(
             %r{<Signatures>
             \s+<Resign>PT2H</Resign>
@@ -99,7 +100,7 @@ describe 'opendnssec::policy' do
             \s+<Jitter>PT12H</Jitter>
             \s+<InceptionOffset>PT3600S</InceptionOffset>
             \s+</Signatures>
-            }x,
+            }x
           ).with_content(
             %r{<Denial>
             \s+<NSEC3>
@@ -111,7 +112,7 @@ describe 'opendnssec::policy' do
             \s+<Salt\slength="8"/>
             \s+</Hash>
             \s+</NSEC3>
-            }x,
+            }x
           ).with_content(
             %r{<!--\sParameters\sfor\sboth\sKSK\sand\sZSK\s-->
             \s+<TTL>PT3600S</TTL>
@@ -119,7 +120,7 @@ describe 'opendnssec::policy' do
             \s+<PublishSafety>PT3600S</PublishSafety>
             \s+<!--\s<ShareKeys/>\s-->
             \s+<Purge>P14D</Purge>
-            }x,
+            }x
           ).with_content(
             %r{<KSK>
             \s+<!--\sKSK\sAlgo\sRSASHA1-NSEC3-SHA1\s\(7\)\s-->
@@ -129,7 +130,7 @@ describe 'opendnssec::policy' do
             \s+<Standby>0</Standby>
             \s+<ManualRollover/>
             \s+</KSK>
-            }x,
+            }x
           ).with_content(
             %r{<ZSK>
             \s+<Algorithm\slength="1024">7</Algorithm>
@@ -137,7 +138,7 @@ describe 'opendnssec::policy' do
             \s+<Repository>SoftHSM</Repository>
             \s+<Standby>0</Standby>
             \s+</ZSK>
-            }x,
+            }x
           ).with_content(
             %r{<Zone>
             \s+<PropagationDelay>PT43200S</PropagationDelay>
@@ -147,7 +148,7 @@ describe 'opendnssec::policy' do
             \s+<Serial>keep</Serial>
             \s+</SOA>
             \s+</Zone>
-            }x,
+            }x
           ).with_content(
             %r{<Parent>
             \s+<PropagationDelay>PT9999S</PropagationDelay>
@@ -159,37 +160,46 @@ describe 'opendnssec::policy' do
             \s+<Minimum>PT10800S</Minimum>
             \s+</SOA>
             \s+</Parent>
-            }x,
+            }x
           )
         end
       end
+
       describe 'Change Defaults' do
         context 'order' do
-          before(:each) { params.merge!(order: '15') }
+          before { params.merge!(order: '15') }
+
           it { is_expected.to compile }
+
           it do
             is_expected.to contain_concat__fragment(
-              'policy_test_policy',
+              'policy_test_policy'
             ).with_order('15')
           end
         end
+
         context 'description' do
-          before(:each) { params.merge!(description: 'bla') }
+          before { params.merge!(description: 'bla') }
+
           it { is_expected.to compile }
+
           it do
             is_expected.to contain_concat__fragment(
-              'policy_test_policy',
+              'policy_test_policy'
             ).with_content(
-              %r{<Description>bla</Description>},
+              %r{<Description>bla</Description>}
             )
           end
         end
+
         context 'resign' do
-          before(:each) { params.merge!(resign: 'P1D') }
+          before { params.merge!(resign: 'P1D') }
+
           it { is_expected.to compile }
+
           it do
             is_expected.to contain_concat__fragment(
-              'policy_test_policy',
+              'policy_test_policy'
             ).with_content(
               %r{<Signatures>
               \s+<Resign>P1D</Resign>
@@ -201,16 +211,19 @@ describe 'opendnssec::policy' do
               \s+<Jitter>PT12H</Jitter>
               \s+<InceptionOffset>PT3600S</InceptionOffset>
               \s+</Signatures>
-              }x,
+              }x
             )
           end
         end
+
         context 'refresh' do
-          before(:each) { params.merge!(refresh: 'P1D') }
+          before { params.merge!(refresh: 'P1D') }
+
           it { is_expected.to compile }
+
           it do
             is_expected.to contain_concat__fragment(
-              'policy_test_policy',
+              'policy_test_policy'
             ).with_content(
               %r{<Signatures>
               \s+<Resign>PT2H</Resign>
@@ -222,16 +235,19 @@ describe 'opendnssec::policy' do
               \s+<Jitter>PT12H</Jitter>
               \s+<InceptionOffset>PT3600S</InceptionOffset>
               \s+</Signatures>
-              }x,
+              }x
             )
           end
         end
+
         context 'validity_default' do
-          before(:each) { params.merge!(validity_default: 'P1D') }
+          before { params.merge!(validity_default: 'P1D') }
+
           it { is_expected.to compile }
+
           it do
             is_expected.to contain_concat__fragment(
-              'policy_test_policy',
+              'policy_test_policy'
             ).with_content(
               %r{<Signatures>
               \s+<Resign>PT2H</Resign>
@@ -243,16 +259,19 @@ describe 'opendnssec::policy' do
               \s+<Jitter>PT12H</Jitter>
               \s+<InceptionOffset>PT3600S</InceptionOffset>
               \s+</Signatures>
-              }x,
+              }x
             )
           end
         end
+
         context 'validity_denial' do
-          before(:each) { params.merge!(validity_denial: 'P1D') }
+          before { params.merge!(validity_denial: 'P1D') }
+
           it { is_expected.to compile }
+
           it do
             is_expected.to contain_concat__fragment(
-              'policy_test_policy',
+              'policy_test_policy'
             ).with_content(
               %r{<Signatures>
               \s+<Resign>PT2H</Resign>
@@ -264,16 +283,19 @@ describe 'opendnssec::policy' do
               \s+<Jitter>PT12H</Jitter>
               \s+<InceptionOffset>PT3600S</InceptionOffset>
               \s+</Signatures>
-              }x,
+              }x
             )
           end
         end
+
         context 'jitter' do
-          before(:each) { params.merge!(jitter: 'P1D') }
+          before { params.merge!(jitter: 'P1D') }
+
           it { is_expected.to compile }
+
           it do
             is_expected.to contain_concat__fragment(
-              'policy_test_policy',
+              'policy_test_policy'
             ).with_content(
               %r{<Signatures>
               \s+<Resign>PT2H</Resign>
@@ -285,16 +307,19 @@ describe 'opendnssec::policy' do
               \s+<Jitter>P1D</Jitter>
               \s+<InceptionOffset>PT3600S</InceptionOffset>
               \s+</Signatures>
-              }x,
+              }x
             )
           end
         end
+
         context 'inception_offset' do
-          before(:each) { params.merge!(inception_offset: 'P1D') }
+          before { params.merge!(inception_offset: 'P1D') }
+
           it { is_expected.to compile }
+
           it do
             is_expected.to contain_concat__fragment(
-              'policy_test_policy',
+              'policy_test_policy'
             ).with_content(
               %r{<Signatures>
               \s+<Resign>PT2H</Resign>
@@ -306,29 +331,35 @@ describe 'opendnssec::policy' do
               \s+<Jitter>PT12H</Jitter>
               \s+<InceptionOffset>P1D</InceptionOffset>
               \s+</Signatures>
-              }x,
+              }x
             )
           end
         end
+
         context 'denial_policy' do
-          before(:each) { params.merge!(denial_policy: 'NSEC') }
+          before { params.merge!(denial_policy: 'NSEC') }
+
           it { is_expected.to compile }
+
           it do
             is_expected.to contain_concat__fragment(
-              'policy_test_policy',
+              'policy_test_policy'
             ).with_content(
-              %r{<NSEC/>},
+              %r{<NSEC/>}
             ).without_content(
-              %r{<NSEC3>.+</NSEC3>},
+              %r{<NSEC3>.+</NSEC3>}
             )
           end
         end
+
         context 'denial_optout' do
-          before(:each) { params.merge!(denial_optout: true) }
+          before { params.merge!(denial_optout: true) }
+
           it { is_expected.to compile }
+
           it do
             is_expected.to contain_concat__fragment(
-              'policy_test_policy',
+              'policy_test_policy'
             ).with_content(
               %r{<Denial>
               \s+<NSEC3>
@@ -341,16 +372,19 @@ describe 'opendnssec::policy' do
               \s+<Salt\slength="8"/>
               \s+</Hash>
               \s+</NSEC3>
-              }x,
+              }x
             )
           end
         end
+
         context 'denial_resalt' do
-          before(:each) { params.merge!(denial_resalt: 'P1D') }
+          before { params.merge!(denial_resalt: 'P1D') }
+
           it { is_expected.to compile }
+
           it do
             is_expected.to contain_concat__fragment(
-              'policy_test_policy',
+              'policy_test_policy'
             ).with_content(
               %r{<Denial>
               \s+<NSEC3>
@@ -362,16 +396,19 @@ describe 'opendnssec::policy' do
               \s+<Salt\slength="8"/>
               \s+</Hash>
               \s+</NSEC3>
-              }x,
+              }x
             )
           end
         end
+
         context 'denial_iterations' do
-          before(:each) { params.merge!(denial_iterations: 1) }
+          before { params.merge!(denial_iterations: 1) }
+
           it { is_expected.to compile }
+
           it do
             is_expected.to contain_concat__fragment(
-              'policy_test_policy',
+              'policy_test_policy'
             ).with_content(
               %r{<Denial>
               \s+<NSEC3>
@@ -383,16 +420,19 @@ describe 'opendnssec::policy' do
               \s+<Salt\slength="8"/>
               \s+</Hash>
               \s+</NSEC3>
-              }x,
+              }x
             )
           end
         end
+
         context 'denial_salt_length' do
-          before(:each) { params.merge!(denial_salt_length: 1) }
+          before { params.merge!(denial_salt_length: 1) }
+
           it { is_expected.to compile }
+
           it do
             is_expected.to contain_concat__fragment(
-              'policy_test_policy',
+              'policy_test_policy'
             ).with_content(
               %r{<Denial>
               \s+<NSEC3>
@@ -404,16 +444,19 @@ describe 'opendnssec::policy' do
               \s+<Salt\slength="1"/>
               \s+</Hash>
               \s+</NSEC3>
-              }x,
+              }x
             )
           end
         end
+
         context 'key_ttl' do
-          before(:each) { params.merge!(key_ttl: 'P1D') }
+          before { params.merge!(key_ttl: 'P1D') }
+
           it { is_expected.to compile }
+
           it do
             is_expected.to contain_concat__fragment(
-              'policy_test_policy',
+              'policy_test_policy'
             ).with_content(
               %r{<!--\sParameters\sfor\sboth\sKSK\sand\sZSK\s-->
               \s+<TTL>P1D</TTL>
@@ -421,16 +464,19 @@ describe 'opendnssec::policy' do
               \s+<PublishSafety>PT3600S</PublishSafety>
               \s+<!--\s<ShareKeys/>\s-->
               \s+<Purge>P14D</Purge>
-              }x,
+              }x
             )
           end
         end
+
         context 'key_retire_safty' do
-          before(:each) { params.merge!(key_retire_safty: 'P1D') }
+          before { params.merge!(key_retire_safty: 'P1D') }
+
           it { is_expected.to compile }
+
           it do
             is_expected.to contain_concat__fragment(
-              'policy_test_policy',
+              'policy_test_policy'
             ).with_content(
               %r{<!--\sParameters\sfor\sboth\sKSK\sand\sZSK\s-->
               \s+<TTL>PT3600S</TTL>
@@ -438,16 +484,19 @@ describe 'opendnssec::policy' do
               \s+<PublishSafety>PT3600S</PublishSafety>
               \s+<!--\s<ShareKeys/>\s-->
               \s+<Purge>P14D</Purge>
-              }x,
+              }x
             )
           end
         end
+
         context 'key_publish_safty' do
-          before(:each) { params.merge!(key_publish_safty: 'P1D') }
+          before { params.merge!(key_publish_safty: 'P1D') }
+
           it { is_expected.to compile }
+
           it do
             is_expected.to contain_concat__fragment(
-              'policy_test_policy',
+              'policy_test_policy'
             ).with_content(
               %r{<!--\sParameters\sfor\sboth\sKSK\sand\sZSK\s-->
               \s+<TTL>PT3600S</TTL>
@@ -455,16 +504,19 @@ describe 'opendnssec::policy' do
               \s+<PublishSafety>P1D</PublishSafety>
               \s+<!--\s<ShareKeys/>\s-->
               \s+<Purge>P14D</Purge>
-              }x,
+              }x
             )
           end
         end
+
         context 'key_purge' do
-          before(:each) { params.merge!(key_purge: 'P1D') }
+          before { params.merge!(key_purge: 'P1D') }
+
           it { is_expected.to compile }
+
           it do
             is_expected.to contain_concat__fragment(
-              'policy_test_policy',
+              'policy_test_policy'
             ).with_content(
               %r{<!--\sParameters\sfor\sboth\sKSK\sand\sZSK\s-->
               \s+<TTL>PT3600S</TTL>
@@ -472,16 +524,19 @@ describe 'opendnssec::policy' do
               \s+<PublishSafety>PT3600S</PublishSafety>
               \s+<!--\s<ShareKeys/>\s-->
               \s+<Purge>P1D</Purge>
-              }x,
+              }x
             )
           end
         end
+
         context 'ksk_algorithm' do
-          before(:each) { params.merge!(ksk_algorithm: 'RSASHA1') }
+          before { params.merge!(ksk_algorithm: 'RSASHA1') }
+
           it { is_expected.to compile }
+
           it do
             is_expected.to contain_concat__fragment(
-              'policy_test_policy',
+              'policy_test_policy'
             ).with_content(
               %r{<KSK>
               \s+<!--\sKSK\sAlgo\sRSASHA1\s\(5\)\s-->
@@ -491,16 +546,19 @@ describe 'opendnssec::policy' do
               \s+<Standby>0</Standby>
               \s+<ManualRollover/>
               \s+</KSK>
-              }x,
+              }x
             )
           end
         end
+
         context 'ksk_algorithm_ecdsa' do
-          before(:each) { params.merge!(ksk_algorithm: 'ECDSAP256SHA256') }
+          before { params.merge!(ksk_algorithm: 'ECDSAP256SHA256') }
+
           it { is_expected.to compile }
+
           it do
             is_expected.to contain_concat__fragment(
-              'policy_test_policy',
+              'policy_test_policy'
             ).with_content(
               %r{<KSK>
               \s+<!--\sKSK\sAlgo\sECDSAP256SHA256\s\(13\)\s-->
@@ -510,16 +568,19 @@ describe 'opendnssec::policy' do
               \s+<Standby>0</Standby>
               \s+<ManualRollover/>
               \s+</KSK>
-              }x,
+              }x
             )
           end
         end
+
         context 'ksk_algorithm_length' do
-          before(:each) { params.merge!(ksk_algorithm_length: 1024) }
+          before { params.merge!(ksk_algorithm_length: 1024) }
+
           it { is_expected.to compile }
+
           it do
             is_expected.to contain_concat__fragment(
-              'policy_test_policy',
+              'policy_test_policy'
             ).with_content(
               %r{<KSK>
               \s+<!--\sKSK\sAlgo\sRSASHA1-NSEC3-SHA1\s\(7\)\s-->
@@ -529,16 +590,19 @@ describe 'opendnssec::policy' do
               \s+<Standby>0</Standby>
               \s+<ManualRollover/>
               \s+</KSK>
-              }x,
+              }x
             )
           end
         end
+
         context 'ksk_lifetime' do
-          before(:each) { params.merge!(ksk_lifetime: 'P1D') }
+          before { params.merge!(ksk_lifetime: 'P1D') }
+
           it { is_expected.to compile }
+
           it do
             is_expected.to contain_concat__fragment(
-              'policy_test_policy',
+              'policy_test_policy'
             ).with_content(
               %r{<KSK>
               \s+<!--\sKSK\sAlgo\sRSASHA1-NSEC3-SHA1\s\(7\)\s-->
@@ -548,16 +612,19 @@ describe 'opendnssec::policy' do
               \s+<Standby>0</Standby>
               \s+<ManualRollover/>
               \s+</KSK>
-              }x,
+              }x
             )
           end
         end
+
         context 'ksk_standby' do
-          before(:each) { params.merge!(ksk_standby: 1) }
+          before { params.merge!(ksk_standby: 1) }
+
           it { is_expected.to compile }
+
           it do
             is_expected.to contain_concat__fragment(
-              'policy_test_policy',
+              'policy_test_policy'
             ).with_content(
               %r{<KSK>
               \s+<!--\sKSK\sAlgo\sRSASHA1-NSEC3-SHA1\s\(7\)\s-->
@@ -567,16 +634,19 @@ describe 'opendnssec::policy' do
               \s+<Standby>1</Standby>
               \s+<ManualRollover/>
               \s+</KSK>
-              }x,
+              }x
             )
           end
         end
+
         context 'ksk_manual_rollover' do
-          before(:each) { params.merge!(ksk_manual_rollover: false) }
+          before { params.merge!(ksk_manual_rollover: false) }
+
           it { is_expected.to compile }
+
           it do
             is_expected.to contain_concat__fragment(
-              'policy_test_policy',
+              'policy_test_policy'
             ).with_content(
               %r{<KSK>
               \s+<!--\sKSK\sAlgo\sRSASHA1-NSEC3-SHA1\s\(7\)\s-->
@@ -585,16 +655,19 @@ describe 'opendnssec::policy' do
               \s+<Repository>SoftHSM</Repository>
               \s+<Standby>0</Standby>
               \s+</KSK>
-              }x,
+              }x
             )
           end
         end
+
         context 'zsk_algorithm' do
-          before(:each) { params.merge!(zsk_algorithm: 'RSASHA1') }
+          before { params.merge!(zsk_algorithm: 'RSASHA1') }
+
           it { is_expected.to compile }
+
           it do
             is_expected.to contain_concat__fragment(
-              'policy_test_policy',
+              'policy_test_policy'
             ).with_content(
               %r{<ZSK>
               \s+<Algorithm\slength="1024">5</Algorithm>
@@ -602,16 +675,19 @@ describe 'opendnssec::policy' do
               \s+<Repository>SoftHSM</Repository>
               \s+<Standby>0</Standby>
               \s+</ZSK>
-              }x,
+              }x
             )
           end
         end
+
         context 'zsk_algorithm_ecdsa' do
-          before(:each) { params.merge!(zsk_algorithm: 'ECDSAP256SHA256') }
+          before { params.merge!(zsk_algorithm: 'ECDSAP256SHA256') }
+
           it { is_expected.to compile }
+
           it do
             is_expected.to contain_concat__fragment(
-              'policy_test_policy',
+              'policy_test_policy'
             ).with_content(
               %r{<ZSK>
               \s+<Algorithm\slength="1024">13</Algorithm>
@@ -619,16 +695,19 @@ describe 'opendnssec::policy' do
               \s+<Repository>SoftHSM</Repository>
               \s+<Standby>0</Standby>
               \s+</ZSK>
-              }x,
+              }x
             )
           end
         end
+
         context 'zsk_algorithm_length' do
-          before(:each) { params.merge!(zsk_algorithm_length: 2048) }
+          before { params.merge!(zsk_algorithm_length: 2048) }
+
           it { is_expected.to compile }
+
           it do
             is_expected.to contain_concat__fragment(
-              'policy_test_policy',
+              'policy_test_policy'
             ).with_content(
               %r{<ZSK>
               \s+<Algorithm\slength="2048">7</Algorithm>
@@ -636,16 +715,19 @@ describe 'opendnssec::policy' do
               \s+<Repository>SoftHSM</Repository>
               \s+<Standby>0</Standby>
               \s+</ZSK>
-              }x,
+              }x
             )
           end
         end
+
         context 'zsk_lifetime' do
-          before(:each) { params.merge!(zsk_lifetime: 'P1D') }
+          before { params.merge!(zsk_lifetime: 'P1D') }
+
           it { is_expected.to compile }
+
           it do
             is_expected.to contain_concat__fragment(
-              'policy_test_policy',
+              'policy_test_policy'
             ).with_content(
               %r{<ZSK>
               \s+<Algorithm\slength="1024">7</Algorithm>
@@ -653,16 +735,19 @@ describe 'opendnssec::policy' do
               \s+<Repository>SoftHSM</Repository>
               \s+<Standby>0</Standby>
               \s+</ZSK>
-              }x,
+              }x
             )
           end
         end
+
         context 'zsk_standby' do
-          before(:each) { params.merge!(zsk_standby: 1) }
+          before { params.merge!(zsk_standby: 1) }
+
           it { is_expected.to compile }
+
           it do
             is_expected.to contain_concat__fragment(
-              'policy_test_policy',
+              'policy_test_policy'
             ).with_content(
               %r{<ZSK>
               \s+<Algorithm\slength="1024">7</Algorithm>
@@ -670,16 +755,19 @@ describe 'opendnssec::policy' do
               \s+<Repository>SoftHSM</Repository>
               \s+<Standby>1</Standby>
               \s+</ZSK>
-              }x,
+              }x
             )
           end
         end
+
         context 'zsk_manual_rollover' do
-          before(:each) { params.merge!(zsk_manual_rollover: true) }
+          before { params.merge!(zsk_manual_rollover: true) }
+
           it { is_expected.to compile }
+
           it do
             is_expected.to contain_concat__fragment(
-              'policy_test_policy',
+              'policy_test_policy'
             ).with_content(
               %r{<ZSK>
               \s+<Algorithm\slength="1024">7</Algorithm>
@@ -688,16 +776,19 @@ describe 'opendnssec::policy' do
               \s+<Standby>0</Standby>
               \s+<ManualRollover/>
               \s+</ZSK>
-              }x,
+              }x
             )
           end
         end
+
         context 'zone_propagation_delay' do
-          before(:each) { params.merge!(zone_propagation_delay: 'P1D') }
+          before { params.merge!(zone_propagation_delay: 'P1D') }
+
           it { is_expected.to compile }
+
           it do
             is_expected.to contain_concat__fragment(
-              'policy_test_policy',
+              'policy_test_policy'
             ).with_content(
               %r{<Zone>
               \s+<PropagationDelay>P1D</PropagationDelay>
@@ -707,16 +798,19 @@ describe 'opendnssec::policy' do
               \s+<Serial>keep</Serial>
               \s+</SOA>
               \s+</Zone>
-              }x,
+              }x
             )
           end
         end
+
         context 'zone_soa_ttl' do
-          before(:each) { params.merge!(zone_soa_ttl: 'P1D') }
+          before { params.merge!(zone_soa_ttl: 'P1D') }
+
           it { is_expected.to compile }
+
           it do
             is_expected.to contain_concat__fragment(
-              'policy_test_policy',
+              'policy_test_policy'
             ).with_content(
               %r{<Zone>
               \s+<PropagationDelay>PT43200S</PropagationDelay>
@@ -726,16 +820,19 @@ describe 'opendnssec::policy' do
               \s+<Serial>keep</Serial>
               \s+</SOA>
               \s+</Zone>
-              }x,
+              }x
             )
           end
         end
+
         context 'zone_soa_minimum' do
-          before(:each) { params.merge!(zone_soa_minimum: 'P1D') }
+          before { params.merge!(zone_soa_minimum: 'P1D') }
+
           it { is_expected.to compile }
+
           it do
             is_expected.to contain_concat__fragment(
-              'policy_test_policy',
+              'policy_test_policy'
             ).with_content(
               %r{<Zone>
               \s+<PropagationDelay>PT43200S</PropagationDelay>
@@ -745,16 +842,19 @@ describe 'opendnssec::policy' do
               \s+<Serial>keep</Serial>
               \s+</SOA>
               \s+</Zone>
-              }x,
+              }x
             )
           end
         end
+
         context 'zone_soa_serial' do
-          before(:each) { params.merge!(zone_soa_serial: 'counter') }
+          before { params.merge!(zone_soa_serial: 'counter') }
+
           it { is_expected.to compile }
+
           it do
             is_expected.to contain_concat__fragment(
-              'policy_test_policy',
+              'policy_test_policy'
             ).with_content(
               %r{<Zone>
               \s+<PropagationDelay>PT43200S</PropagationDelay>
@@ -764,16 +864,19 @@ describe 'opendnssec::policy' do
               \s+<Serial>counter</Serial>
               \s+</SOA>
               \s+</Zone>
-              }x,
+              }x
             )
           end
         end
+
         context 'parent_propagation_delay' do
-          before(:each) { params.merge!(parent_propagation_delay: 'P1D') }
+          before { params.merge!(parent_propagation_delay: 'P1D') }
+
           it { is_expected.to compile }
+
           it do
             is_expected.to contain_concat__fragment(
-              'policy_test_policy',
+              'policy_test_policy'
             ).with_content(
               %r{<Parent>
               \s+<PropagationDelay>P1D</PropagationDelay>
@@ -785,16 +888,19 @@ describe 'opendnssec::policy' do
               \s+<Minimum>PT10800S</Minimum>
               \s+</SOA>
               \s+</Parent>
-              }x,
+              }x
             )
           end
         end
+
         context 'parent_ds_ttl' do
-          before(:each) { params.merge!(parent_ds_ttl: 'P1D') }
+          before { params.merge!(parent_ds_ttl: 'P1D') }
+
           it { is_expected.to compile }
+
           it do
             is_expected.to contain_concat__fragment(
-              'policy_test_policy',
+              'policy_test_policy'
             ).with_content(
               %r{<Parent>
               \s+<PropagationDelay>PT9999S</PropagationDelay>
@@ -806,16 +912,19 @@ describe 'opendnssec::policy' do
               \s+<Minimum>PT10800S</Minimum>
               \s+</SOA>
               \s+</Parent>
-              }x,
+              }x
             )
           end
         end
+
         context 'parent_soa_ttl' do
-          before(:each) { params.merge!(parent_soa_ttl: 'P1D') }
+          before { params.merge!(parent_soa_ttl: 'P1D') }
+
           it { is_expected.to compile }
+
           it do
             is_expected.to contain_concat__fragment(
-              'policy_test_policy',
+              'policy_test_policy'
             ).with_content(
               %r{<Parent>
               \s+<PropagationDelay>PT9999S</PropagationDelay>
@@ -827,16 +936,19 @@ describe 'opendnssec::policy' do
               \s+<Minimum>PT10800S</Minimum>
               \s+</SOA>
               \s+</Parent>
-              }x,
+              }x
             )
           end
         end
+
         context 'parent_soa_minimum' do
-          before(:each) { params.merge!(parent_soa_minimum: 'P1D') }
+          before { params.merge!(parent_soa_minimum: 'P1D') }
+
           it { is_expected.to compile }
+
           it do
             is_expected.to contain_concat__fragment(
-              'policy_test_policy',
+              'policy_test_policy'
             ).with_content(
               %r{<Parent>
               \s+<PropagationDelay>PT9999S</PropagationDelay>
@@ -848,174 +960,256 @@ describe 'opendnssec::policy' do
               \s+<Minimum>P1D</Minimum>
               \s+</SOA>
               \s+</Parent>
-              }x,
+              }x
             )
           end
         end
       end
+
       describe 'check bad type' do
         context 'order' do
-          before(:each) { params.merge!(order: true) }
+          before { params.merge!(order: true) }
+
           it { is_expected.to raise_error(Puppet::Error) }
         end
+
         context 'description' do
-          before(:each) { params.merge!(description: true) }
+          before { params.merge!(description: true) }
+
           it { is_expected.to raise_error(Puppet::Error) }
         end
+
         context 'resign' do
-          before(:each) { params.merge!(resign: true) }
+          before { params.merge!(resign: true) }
+
           it { is_expected.to raise_error(Puppet::Error) }
         end
+
         context 'refresh' do
-          before(:each) { params.merge!(refresh: true) }
+          before { params.merge!(refresh: true) }
+
           it { is_expected.to raise_error(Puppet::Error) }
         end
+
         context 'validity_default' do
-          before(:each) { params.merge!(validity_default: true) }
+          before { params.merge!(validity_default: true) }
+
           it { is_expected.to raise_error(Puppet::Error) }
         end
+
         context 'validity_denial' do
-          before(:each) { params.merge!(validity_denial: true) }
+          before { params.merge!(validity_denial: true) }
+
           it { is_expected.to raise_error(Puppet::Error) }
         end
+
         context 'jitter' do
-          before(:each) { params.merge!(jitter: true) }
+          before { params.merge!(jitter: true) }
+
           it { is_expected.to raise_error(Puppet::Error) }
         end
+
         context 'inception_offset' do
-          before(:each) { params.merge!(inception_offset: true) }
+          before { params.merge!(inception_offset: true) }
+
           it { is_expected.to raise_error(Puppet::Error) }
         end
+
         context 'denial_policy' do
-          before(:each) { params.merge!(denial_policy: true) }
+          before { params.merge!(denial_policy: true) }
+
           it { is_expected.to raise_error(Puppet::Error) }
         end
+
         context 'denial_optout' do
-          before(:each) { params.merge!(denial_optout: 'foobar') }
+          before { params.merge!(denial_optout: 'foobar') }
+
           it { is_expected.to raise_error(Puppet::Error) }
         end
+
         context 'denial_resalt' do
-          before(:each) { params.merge!(denial_resalt: true) }
+          before { params.merge!(denial_resalt: true) }
+
           it { is_expected.to raise_error(Puppet::Error) }
         end
+
         context 'denial_algorithm' do
-          before(:each) { params.merge!(denial_algorithm: true) }
+          before { params.merge!(denial_algorithm: true) }
+
           it { is_expected.to raise_error(Puppet::Error) }
         end
+
         context 'denial_iterations' do
-          before(:each) { params.merge!(denial_iterations: true) }
+          before { params.merge!(denial_iterations: true) }
+
           it { is_expected.to raise_error(Puppet::Error) }
         end
+
         context 'denial_salt_length' do
-          before(:each) { params.merge!(denial_salt_length: true) }
+          before { params.merge!(denial_salt_length: true) }
+
           it { is_expected.to raise_error(Puppet::Error) }
         end
+
         context 'key_ttl' do
-          before(:each) { params.merge!(key_ttl: true) }
+          before { params.merge!(key_ttl: true) }
+
           it { is_expected.to raise_error(Puppet::Error) }
         end
+
         context 'key_retire_safty' do
-          before(:each) { params.merge!(key_retire_safty: true) }
+          before { params.merge!(key_retire_safty: true) }
+
           it { is_expected.to raise_error(Puppet::Error) }
         end
+
         context 'key_publish_safty' do
-          before(:each) { params.merge!(key_publish_safty: true) }
+          before { params.merge!(key_publish_safty: true) }
+
           it { is_expected.to raise_error(Puppet::Error) }
         end
+
         context 'key_share_keys' do
-          before(:each) { params.merge!(key_share_keys: 'foobar') }
+          before { params.merge!(key_share_keys: 'foobar') }
+
           it { is_expected.to raise_error(Puppet::Error) }
         end
+
         context 'key_purge' do
-          before(:each) { params.merge!(key_purge: true) }
+          before { params.merge!(key_purge: true) }
+
           it { is_expected.to raise_error(Puppet::Error) }
         end
+
         context 'ksk_algorithm' do
-          before(:each) { params.merge!(ksk_algorithm: true) }
+          before { params.merge!(ksk_algorithm: true) }
+
           it { is_expected.to raise_error(Puppet::Error) }
         end
+
         context 'ksk_algorithm_ecdsa' do
-          before(:each) { params.merge!(ksk_algorithm: true) }
+          before { params.merge!(ksk_algorithm: true) }
+
           it { is_expected.to raise_error(Puppet::Error) }
         end
+
         context 'ksk_algorithm_length' do
-          before(:each) { params.merge!(ksk_algorithm_length: true) }
+          before { params.merge!(ksk_algorithm_length: true) }
+
           it { is_expected.to raise_error(Puppet::Error) }
         end
+
         context 'ksk_lifetime' do
-          before(:each) { params.merge!(ksk_lifetime: true) }
+          before { params.merge!(ksk_lifetime: true) }
+
           it { is_expected.to raise_error(Puppet::Error) }
         end
+
         context 'ksk_repository' do
-          before(:each) { params.merge!(ksk_repository: true) }
+          before { params.merge!(ksk_repository: true) }
+
           it { is_expected.to raise_error(Puppet::Error) }
         end
+
         context 'ksk_standby' do
-          before(:each) { params.merge!(ksk_standby: true) }
+          before { params.merge!(ksk_standby: true) }
+
           it { is_expected.to raise_error(Puppet::Error) }
         end
+
         context 'ksk_manual_rollover' do
-          before(:each) { params.merge!(ksk_manual_rollover: 'foobar') }
+          before { params.merge!(ksk_manual_rollover: 'foobar') }
+
           it { is_expected.to raise_error(Puppet::Error) }
         end
+
         context 'zsk_algorithm' do
-          before(:each) { params.merge!(zsk_algorithm: true) }
+          before { params.merge!(zsk_algorithm: true) }
+
           it { is_expected.to raise_error(Puppet::Error) }
         end
+
         context 'zsk_algorithm_ecdsa' do
-          before(:each) { params.merge!(zsk_algorithm: true) }
+          before { params.merge!(zsk_algorithm: true) }
+
           it { is_expected.to raise_error(Puppet::Error) }
         end
+
         context 'zsk_algorithm_length' do
-          before(:each) { params.merge!(zsk_algorithm_length: true) }
+          before { params.merge!(zsk_algorithm_length: true) }
+
           it { is_expected.to raise_error(Puppet::Error) }
         end
+
         context 'zsk_lifetime' do
-          before(:each) { params.merge!(zsk_lifetime: true) }
+          before { params.merge!(zsk_lifetime: true) }
+
           it { is_expected.to raise_error(Puppet::Error) }
         end
+
         context 'zsk_repository' do
-          before(:each) { params.merge!(zsk_repository: true) }
+          before { params.merge!(zsk_repository: true) }
+
           it { is_expected.to raise_error(Puppet::Error) }
         end
+
         context 'zsk_standby' do
-          before(:each) { params.merge!(zsk_standby: true) }
+          before { params.merge!(zsk_standby: true) }
+
           it { is_expected.to raise_error(Puppet::Error) }
         end
+
         context 'zsk_manual_rollover' do
-          before(:each) { params.merge!(zsk_manual_rollover: 'foobar') }
+          before { params.merge!(zsk_manual_rollover: 'foobar') }
+
           it { is_expected.to raise_error(Puppet::Error) }
         end
+
         context 'zone_propagation_delay' do
-          before(:each) { params.merge!(zone_propagation_delay: true) }
+          before { params.merge!(zone_propagation_delay: true) }
+
           it { is_expected.to raise_error(Puppet::Error) }
         end
+
         context 'zone_soa_ttl' do
-          before(:each) { params.merge!(zone_soa_ttl: true) }
+          before { params.merge!(zone_soa_ttl: true) }
+
           it { is_expected.to raise_error(Puppet::Error) }
         end
+
         context 'zone_soa_minimum' do
-          before(:each) { params.merge!(zone_soa_minimum: true) }
+          before { params.merge!(zone_soa_minimum: true) }
+
           it { is_expected.to raise_error(Puppet::Error) }
         end
+
         context 'zone_soa_serial' do
-          before(:each) { params.merge!(zone_soa_serial: true) }
+          before { params.merge!(zone_soa_serial: true) }
+
           it { is_expected.to raise_error(Puppet::Error) }
         end
+
         context 'parent_propagation_delay' do
-          before(:each) { params.merge!(parent_propagation_delay: true) }
+          before { params.merge!(parent_propagation_delay: true) }
+
           it { is_expected.to raise_error(Puppet::Error) }
         end
+
         context 'parent_ds_ttl' do
-          before(:each) { params.merge!(parent_ds_ttl: true) }
+          before { params.merge!(parent_ds_ttl: true) }
+
           it { is_expected.to raise_error(Puppet::Error) }
         end
+
         context 'parent_soa_ttl' do
-          before(:each) { params.merge!(parent_soa_ttl: true) }
+          before { params.merge!(parent_soa_ttl: true) }
+
           it { is_expected.to raise_error(Puppet::Error) }
         end
+
         context 'parent_soa_minimum' do
-          before(:each) { params.merge!(parent_soa_minimum: true) }
+          before { params.merge!(parent_soa_minimum: true) }
+
           it { is_expected.to raise_error(Puppet::Error) }
         end
       end
