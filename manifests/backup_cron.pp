@@ -10,15 +10,15 @@
 # @param require_backup Whether to require a backup
 #
 class opendnssec::backup_cron (
-  Stdlib::Host         $backup_host,
-  String[1,32]         $backup_user,
-  String               $backup_glob,
-  String               $date_format,
-  Integer              $retention,
-  Stdlib::Absolutepath $backup_dir,
-  Stdlib::Absolutepath $tmp_dirbase,
-  Stdlib::Absolutepath $script_path,
-  Boolean              $require_backup,
+  Stdlib::Host     $backup_host,
+  String[1,32]     $backup_user,
+  String           $backup_glob,
+  String           $date_format,
+  Integer          $retention,
+  Stdlib::Unixpath $backup_dir,
+  Stdlib::Unixpath $tmp_dirbase,
+  Stdlib::Unixpath $script_path,
+  Boolean          $require_backup,
 ) {
   include opendnssec
   $user               = $opendnssec::user

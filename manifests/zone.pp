@@ -14,19 +14,19 @@
 # @param adapter_output_type Output type for the adapter
 #
 define opendnssec::zone (
-  Boolean                        $signed              = true,
-  Optional[String]               $signer_policy       = undef,
-  Optional[Array[String]]        $masters             = [],
-  Optional[Array[String]]        $provide_xfrs        = [],
-  String                         $order               = '10',
-  Stdlib::Absolutepath           $adapter_base_dir    = $opendnssec::base_dir,
-  Optional[Stdlib::Absolutepath] $adapter_signer_conf = undef,
-  Optional[Stdlib::Absolutepath] $adapter_input_file  = undef,
-  Optional[Stdlib::Absolutepath] $adapter_output_file = undef,
-  Optional[Tea::Puppetsource]    $zone_source         = undef,
-  Optional[String]               $zone_content        = undef,
-  Opendnssec::Adapter            $adapter_input_type  = 'DNS',
-  Opendnssec::Adapter            $adapter_output_type = 'DNS',
+  Boolean                      $signed              = true,
+  Optional[String]             $signer_policy       = undef,
+  Array[String]                $masters             = [],
+  Array[String]                $provide_xfrs        = [],
+  String                       $order               = '10',
+  Stdlib::Unixpath             $adapter_base_dir    = $opendnssec::base_dir,
+  Optional[Stdlib::Unixpath]   $adapter_signer_conf = undef,
+  Optional[Stdlib::Unixpath]   $adapter_input_file  = undef,
+  Optional[Stdlib::Unixpath]   $adapter_output_file = undef,
+  Optional[Stdlib::Filesource] $zone_source         = undef,
+  Optional[String]             $zone_content        = undef,
+  Opendnssec::Adapter          $adapter_input_type  = 'DNS',
+  Opendnssec::Adapter          $adapter_output_type = 'DNS',
 ) {
   if $signed {
     include opendnssec
