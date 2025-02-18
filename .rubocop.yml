@@ -4,3 +4,9 @@
 
 inherit_gem:
   voxpupuli-test: rubocop.yml
+RSpec/MultipleMemoizedHelpers:
+  Enabled: false
+RSpec/RepeatedExampleGroupDescription:
+  Enabled: false
+RSpec/RepeatedExampleGroupBody:
+  Enabled: false
