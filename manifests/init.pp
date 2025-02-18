@@ -119,12 +119,12 @@ class opendnssec (
   }
   $ods_setup_command = $opendnssec_version ? {
     /^1/    => "/usr/bin/yes | ${ksmutil_path} setup",
-    /^2/    => "/usr/bin/yes | ${enforcer_path} setup",
+    /^2/    => "${enforcer_path} setup",
     default => fail('opendnssec_version must be 1 or 2'),
   }
   $ods_update_conf_command = $opendnssec_version ? {
     /^1/    => "/usr/bin/yes | ${ksmutil_path} update conf",
-    /^2/    => "/usr/bin/yes | ${enforcer_path} update conf",
+    /^2/    => "${enforcer_path} update conf",
     default => fail('opendnssec_version must be 1 or 2'),
   }
   $datastore_setup_before = [$enabled, $manage_datastore, $manage_conf, $manage_ods_ksmutil].all |$i| { $i } ? {

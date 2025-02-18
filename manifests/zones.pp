@@ -16,7 +16,7 @@ class opendnssec::zones (
   $enforcer_path      = $opendnssec::enforcer_path
   $update_zone_cmd    = $opendnssec_version ? {
     /^1/    => "/usr/bin/yes | ${ksmutil_path} update zonelist",
-    /^2/    => "/usr/bin/yes | ${enforcer_path} update zonelist",
+    /^2/    => "${enforcer_path} zonelist import --remove-missing-zones",
     default => fail("Unsupported OpenDNSSEC version: ${opendnssec_version}"),
   }
   concat { $zone_file:
@@ -36,7 +36,7 @@ class opendnssec::zones (
   create_resources(opendnssec::zone, $zones)
   if $enabled and $manage_ods_ksmutil {
     exec { 'ods-ksmutil updated zonelist.xml':
-      command     => "/usr/bin/yes | ${ksmutil_path} update zonelist",
+      command     => $update_zone_cmd,
       user        => $user,
       refreshonly => true,
       subscribe   => Concat[$zone_file];
