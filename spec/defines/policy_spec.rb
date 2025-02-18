@@ -108,8 +108,8 @@ describe 'opendnssec::policy' do
             \s+<Resalt>P100D</Resalt>
             \s+<Hash>
             \s+<Algorithm>1</Algorithm>
-            \s+<Iterations>5</Iterations>
-            \s+<Salt\slength="8"/>
+            \s+<Iterations>0</Iterations>
+            \s+<Salt\slength="0"/>
             \s+</Hash>
             \s+</NSEC3>
             }x
@@ -368,8 +368,8 @@ describe 'opendnssec::policy' do
               \s+<Resalt>P100D</Resalt>
               \s+<Hash>
               \s+<Algorithm>1</Algorithm>
-              \s+<Iterations>5</Iterations>
-              \s+<Salt\slength="8"/>
+              \s+<Iterations>0</Iterations>
+              \s+<Salt\slength="0"/>
               \s+</Hash>
               \s+</NSEC3>
               }x
@@ -392,8 +392,8 @@ describe 'opendnssec::policy' do
               \s+<Resalt>P1D</Resalt>
               \s+<Hash>
               \s+<Algorithm>1</Algorithm>
-              \s+<Iterations>5</Iterations>
-              \s+<Salt\slength="8"/>
+              \s+<Iterations>0</Iterations>
+              \s+<Salt\slength="0"/>
               \s+</Hash>
               \s+</NSEC3>
               }x
@@ -417,7 +417,7 @@ describe 'opendnssec::policy' do
               \s+<Hash>
               \s+<Algorithm>1</Algorithm>
               \s+<Iterations>1</Iterations>
-              \s+<Salt\slength="8"/>
+              \s+<Salt\slength="0"/>
               \s+</Hash>
               \s+</NSEC3>
               }x
@@ -440,7 +440,7 @@ describe 'opendnssec::policy' do
               \s+<Resalt>P100D</Resalt>
               \s+<Hash>
               \s+<Algorithm>1</Algorithm>
-              \s+<Iterations>5</Iterations>
+              \s+<Iterations>0</Iterations>
               \s+<Salt\slength="1"/>
               \s+</Hash>
               \s+</NSEC3>

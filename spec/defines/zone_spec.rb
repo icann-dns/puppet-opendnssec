@@ -27,7 +27,7 @@ describe 'opendnssec::zone' do
       # signer_policy: 'test_signer_policy',
       # :order => '10',
       # :adapter_base_dir => '/var/lib/opendnssec',
-      # :adapter_signer_conf => :undef,
+      # :adapter_signer_conf_file => :undef,
       # :adapter_input_file => :undef,
       # :adapter_output_file => :undef,
       # :adapter_input_type => 'DNS',
@@ -326,8 +326,8 @@ describe 'opendnssec::zone' do
           end
         end
 
-        context 'adapter_signer_conf' do
-          before { params.merge!(adapter_signer_conf: '/foobar') }
+        context 'adapter_signer_conf_file' do
+          before { params.merge!(adapter_signer_conf_file: '/foobar') }
 
           it { is_expected.to compile }
 
@@ -491,8 +491,8 @@ describe 'opendnssec::zone' do
           it { is_expected.to raise_error(Puppet::Error) }
         end
 
-        context 'adapter_signer_conf' do
-          before { params.merge!(adapter_signer_conf: true) }
+        context 'adapter_signer_conf_file' do
+          before { params.merge!(adapter_signer_conf_file: true) }
 
           it { is_expected.to raise_error(Puppet::Error) }
         end

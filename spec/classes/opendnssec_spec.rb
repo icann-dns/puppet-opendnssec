@@ -201,7 +201,7 @@ describe 'opendnssec' do
           end
         end
         it do
-          is_expected.to contain_exec('ods-ksmutil updated conf.xml').with(
+          is_expected.to contain_exec('updated conf.xml').with(
             command: "/usr/bin/yes | #{ksmutil_path} update conf",
             user: 'root',
             refreshonly: true,
@@ -241,7 +241,7 @@ describe 'opendnssec' do
             ).with_ensure('absent')
           end
 
-          it { is_expected.not_to contain_exec('ods-ksmutil updated conf.xml') }
+          it { is_expected.not_to contain_exec('updated conf.xml') }
         end
 
         context 'user' do
@@ -261,7 +261,7 @@ describe 'opendnssec' do
 
           it do
             is_expected.to contain_exec(
-              'ods-ksmutil updated conf.xml'
+              'updated conf.xml'
             ).with_user('foobar')
           end
 
@@ -333,7 +333,7 @@ describe 'opendnssec' do
           before { params.merge!(manage_ods_ksmutil: false) }
 
           it { is_expected.to compile }
-          it { is_expected.not_to contain_exec('ods-ksmutil updated conf.xml') }
+          it { is_expected.not_to contain_exec('updated conf.xml') }
         end
 
         context 'manage_conf' do
