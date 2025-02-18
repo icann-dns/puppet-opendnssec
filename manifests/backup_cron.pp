@@ -1,4 +1,13 @@
-# Class Opendnssec::backup
+# @summary Manage OpenDNSSEC backup cron job
+# @param backup_host Host to backup to
+# @param backup_user User to backup as
+# @param backup_glob Glob to backup
+# @param date_format Date format to use
+# @param retention Number of days to retain backups
+# @param backup_dir Directory to store backups
+# @param tmp_dirbase Directory to store temporary files
+# @param script_path Path to the backup script
+# @param require_backup Whether to require a backup
 #
 class opendnssec::backup_cron (
   Stdlib::Host         $backup_host,
