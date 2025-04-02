@@ -1,4 +1,4 @@
-### 2024-12-10 2.0.0
+### 2025-04-02 2.0.0
 * update nsec3 policy defaults to match RFC 9276
 * update `ods-ksmutil update kasp` to `ods-ksmutil update all`
 
