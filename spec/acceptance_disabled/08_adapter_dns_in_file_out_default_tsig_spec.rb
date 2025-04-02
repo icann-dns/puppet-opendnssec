@@ -79,39 +79,48 @@ describe 'opendnssec dns adapter in file adapter out with default TSIG', tier_lo
       apply_manifest(pp, catch_failures: true)
       expect(apply_manifest(pp, catch_failures: true).exit_code).to eq 0
     end
+
     describe service(enforcer) do
       it { is_expected.to be_running }
     end
+
     describe service(signer) do
       it { is_expected.to be_running }
     end
+
     describe port(53) do
       it { is_expected.to be_listening }
     end
+
     describe command('/usr/bin/ods-ksmutil repository list') do
       its(:stdout) { is_expected.to match(%r{SoftHSM\s+0\s+No}) }
     end
+
     describe command('/usr/bin/ods-ksmutil policy list') do
       its(:stdout) do
         is_expected.to match(
-          %r{default\s+default - Deny:NSEC3; KSK:RSASHA1-NSEC3-SHA1; ZSK:RSASHA1-NSEC3-SHA1},
+          %r{default\s+default - Deny:NSEC3; KSK:RSASHA1-NSEC3-SHA1; ZSK:RSASHA1-NSEC3-SHA1}
         )
       end
     end
+
     describe command('/usr/bin/ods-ksmutil zone list') do
       its(:stdout) do
         is_expected.to match('Found Zone: example.net; on policy default')
       end
     end
+
     describe command('/usr/bin/ods-ksmutil key list') do
       its(:stdout) { is_expected.to match(%r{example.net\s+KSK\s+publish}) }
       its(:stdout) { is_expected.to match(%r{example.net\s+ZSK\s+active}) }
     end
+
     describe command('/usr/sbin/ods-signer zones') do
       its(:stdout) { is_expected.to match('example.net') }
     end
+
     describe command(
-      "/bin/grep RRSIG #{base_dir}/signed/example.net",
+      "/bin/grep RRSIG #{base_dir}/signed/example.net"
     ) do
       its(:exit_status) { is_expected.to eq 0 }
     end

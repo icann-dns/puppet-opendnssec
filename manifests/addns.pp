@@ -6,18 +6,17 @@ define opendnssec::addns (
   Array[String] $masters      = [],
   Array[String] $provide_xfrs = [],
 ) {
-
-  include ::opendnssec
-  $xsl_file           = $::opendnssec::xsl_file
-  $user               = $::opendnssec::user
-  $group              = $::opendnssec::group
-  $manage_ods_ksmutil = $::opendnssec::manage_ods_ksmutil
-  $enabled            = $::opendnssec::enabled
-  $remotes            = $::opendnssec::remotes
-  $remotes_dir        = $::opendnssec::remotes_dir
-  $tsigs_dir          = $::opendnssec::tsigs_dir
-  $xferout_enabled    = $::opendnssec::xferout_enabled
-  $default_tsig_name  = $::opendnssec::default_tsig_name
+  include opendnssec
+  $xsl_file           = $opendnssec::xsl_file
+  $user               = $opendnssec::user
+  $group              = $opendnssec::group
+  $manage_ods_ksmutil = $opendnssec::manage_ods_ksmutil
+  $enabled            = $opendnssec::enabled
+  $remotes            = $opendnssec::remotes
+  $remotes_dir        = $opendnssec::remotes_dir
+  $tsigs_dir          = $opendnssec::tsigs_dir
+  $xferout_enabled    = $opendnssec::xferout_enabled
+  $default_tsig_name  = $opendnssec::default_tsig_name
   $masters.each |String $master| {
     if ! defined(Opendnssec::Remote[$master]) {
       fail("addns-${name}: Opendnssec::Remote['${master}'] doesn't exist")

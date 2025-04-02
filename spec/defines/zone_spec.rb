@@ -27,7 +27,7 @@ describe 'opendnssec::zone' do
       # signer_policy: 'test_signer_policy',
       # :order => '10',
       # :adapter_base_dir => '/var/lib/opendnssec',
-      # :adapter_signer_conf => :undef,
+      # :adapter_signer_conf_file => :undef,
       # :adapter_input_file => :undef,
       # :adapter_output_file => :undef,
       # :adapter_input_type => 'DNS',
@@ -64,15 +64,17 @@ describe 'opendnssec::zone' do
 
       describe 'check default config' do
         it { is_expected.to compile.with_all_deps }
+
         it do
           is_expected.to contain_file(
             '/etc/opendnssec/addns-default.xml.tmp'
           )
         end
+
         it do
           is_expected.to contain_concat__fragment('zone_test_zone').with(
             target: '/etc/opendnssec/zonelist.xml',
-            order: '10',
+            order: '10'
           ).with_content(
             %r{<Zone\sname="test_zone">
             \s+<Policy>default</Policy>
@@ -86,10 +88,11 @@ describe 'opendnssec::zone' do
             \s+</Output>
             \s+</Adapters>
             \s+</Zone>
-            }x,
+            }x
           )
         end
       end
+
       describe 'Change Defaults' do
         context 'signer_policy' do
           let(:pre_condition) do
@@ -104,12 +107,14 @@ describe 'opendnssec::zone' do
             EOF
           end
 
-          before(:each) { params.merge!(signer_policy: 'foobar') }
+          before { params.merge!(signer_policy: 'foobar') }
+
           it { is_expected.to compile }
           it { is_expected.to contain_concat__fragment('policy_foobar') }
+
           it do
             is_expected.to contain_concat__fragment(
-              'zone_test_zone',
+              'zone_test_zone'
             ).with_content(
               %r{<Zone\sname="test_zone">
               \s+<Policy>foobar</Policy>
@@ -123,22 +128,26 @@ describe 'opendnssec::zone' do
               \s+</Output>
               \s+</Adapters>
               \s+</Zone>
-              }x,
+              }x
             )
           end
         end
+
         context 'masters' do
-          before(:each) { params.merge!(masters: ['master']) }
+          before { params.merge!(masters: ['master']) }
+
           it { is_expected.to compile }
           it { is_expected.to contain_opendnssec__addns('test_zone-masters') }
+
           it do
             is_expected.to contain_file(
               '/etc/opendnssec/addns-test_zone-masters.xml.tmp'
             )
           end
+
           it do
             is_expected.to contain_concat__fragment(
-              'zone_test_zone',
+              'zone_test_zone'
             ).with_content(
               %r{<Zone\sname="test_zone">
               \s+<Policy>default</Policy>
@@ -152,22 +161,26 @@ describe 'opendnssec::zone' do
               \s+</Output>
               \s+</Adapters>
               \s+</Zone>
-              }x,
+              }x
             )
           end
         end
+
         context 'provide_xfrs' do
-          before(:each) { params.merge!(provide_xfrs: ['provide_xfr']) }
+          before { params.merge!(provide_xfrs: ['provide_xfr']) }
+
           it { is_expected.to compile }
           it { is_expected.to contain_opendnssec__addns('test_zone-provide_xfrs') }
+
           it do
             is_expected.to contain_file(
               '/etc/opendnssec/addns-test_zone-provide_xfrs.xml.tmp'
             )
           end
+
           it do
             is_expected.to contain_concat__fragment(
-              'zone_test_zone',
+              'zone_test_zone'
             ).with_content(
               %r{<Zone\sname="test_zone">
               \s+<Policy>default</Policy>
@@ -181,16 +194,19 @@ describe 'opendnssec::zone' do
               \s+</Output>
               \s+</Adapters>
               \s+</Zone>
-              }x,
+              }x
             )
           end
         end
+
         context 'masters and provide_xfrs' do
-          before(:each) { params.merge!(masters: ['master'], provide_xfrs: ['provide_xfr']) }
+          before { params.merge!(masters: ['master'], provide_xfrs: ['provide_xfr']) }
+
           it { is_expected.to compile }
+
           it do
             is_expected.to contain_concat__fragment(
-              'zone_test_zone',
+              'zone_test_zone'
             ).with_content(
               %r{<Zone\sname="test_zone">
               \s+<Policy>default</Policy>
@@ -204,31 +220,37 @@ describe 'opendnssec::zone' do
               \s+</Output>
               \s+</Adapters>
               \s+</Zone>
-              }x,
+              }x
             )
           end
         end
+
         context 'order' do
-          before(:each) { params.merge!(order: '20') }
+          before { params.merge!(order: '20') }
+
           it { is_expected.to compile }
+
           it do
             is_expected.to contain_concat__fragment(
-              'zone_test_zone',
+              'zone_test_zone'
             ).with_order('20')
           end
         end
+
         context 'adapter_base_dir File input' do
-          before(:each) do
+          before do
             params.merge!(
               adapter_base_dir: '/foobar',
               adapter_input_type: 'File',
-              zone_content: 'bla',
+              zone_content: 'bla'
             )
           end
+
           it { is_expected.to compile }
+
           it do
             is_expected.to contain_concat__fragment(
-              'zone_test_zone',
+              'zone_test_zone'
             ).with_content(
               %r{<Zone\sname="test_zone">
               \s+<Policy>default</Policy>
@@ -242,21 +264,24 @@ describe 'opendnssec::zone' do
               \s+</Output>
               \s+</Adapters>
               \s+</Zone>
-              }x,
+              }x
             )
           end
         end
+
         context 'adapter_base_dir File output' do
-          before(:each) do
+          before do
             params.merge!(
               adapter_base_dir: '/foobar',
-              adapter_output_type: 'File',
+              adapter_output_type: 'File'
             )
           end
+
           it { is_expected.to compile }
+
           it do
             is_expected.to contain_concat__fragment(
-              'zone_test_zone',
+              'zone_test_zone'
             ).with_content(
               %r{<Zone\sname="test_zone">
               \s+<Policy>default</Policy>
@@ -270,16 +295,19 @@ describe 'opendnssec::zone' do
               \s+</Output>
               \s+</Adapters>
               \s+</Zone>
-              }x,
+              }x
             )
           end
         end
+
         context 'adapter_base_dir' do
-          before(:each) { params.merge!(adapter_base_dir: '/foobar') }
+          before { params.merge!(adapter_base_dir: '/foobar') }
+
           it { is_expected.to compile }
+
           it do
             is_expected.to contain_concat__fragment(
-              'zone_test_zone',
+              'zone_test_zone'
             ).with_content(
               %r{<Zone\sname="test_zone">
               \s+<Policy>default</Policy>
@@ -293,17 +321,20 @@ describe 'opendnssec::zone' do
               \s+</Output>
               \s+</Adapters>
               \s+</Zone>
-              }x,
+              }x
             )
           end
         end
-        context 'adapter_signer_conf' do
-          before(:each) { params.merge!(adapter_signer_conf: '/foobar') }
+
+        context 'adapter_signer_conf_file' do
+          before { params.merge!(adapter_signer_conf_file: '/foobar') }
+
           it { is_expected.to compile }
+
           # Add Check to validate change was successful
           it do
             is_expected.to contain_concat__fragment(
-              'zone_test_zone',
+              'zone_test_zone'
             ).with_content(
               %r{<Zone\sname="test_zone">
               \s+<Policy>default</Policy>
@@ -317,23 +348,26 @@ describe 'opendnssec::zone' do
               \s+</Output>
               \s+</Adapters>
               \s+</Zone>
-              }x,
+              }x
             )
           end
         end
+
         context 'adapter_input_file' do
-          before(:each) do
+          before do
             params.merge!(
               adapter_input_file: '/foobar',
               adapter_input_type: 'File',
-              zone_content: 'bla',
+              zone_content: 'bla'
             )
           end
+
           it { is_expected.to compile }
+
           # Add Check to validate change was successful
           it do
             is_expected.to contain_concat__fragment(
-              'zone_test_zone',
+              'zone_test_zone'
             ).with_content(
               %r{<Zone\sname="test_zone">
               \s+<Policy>default</Policy>
@@ -347,21 +381,24 @@ describe 'opendnssec::zone' do
               \s+</Output>
               \s+</Adapters>
               \s+</Zone>
-              }x,
+              }x
             )
           end
         end
+
         context 'adapter_output_file' do
-          before(:each) do
+          before do
             params.merge!(
               adapter_output_file: '/foobar',
-              adapter_output_type: 'File',
+              adapter_output_type: 'File'
             )
           end
+
           it { is_expected.to compile }
+
           it do
             is_expected.to contain_concat__fragment(
-              'zone_test_zone',
+              'zone_test_zone'
             ).with_content(
               %r{<Zone\sname="test_zone">
               \s+<Policy>default</Policy>
@@ -375,18 +412,21 @@ describe 'opendnssec::zone' do
               \s+</Output>
               \s+</Adapters>
               \s+</Zone>
-              }x,
+              }x
             )
           end
         end
+
         context 'adapter_input_type' do
-          before(:each) do
+          before do
             params.merge!(adapter_input_type: 'File', zone_content: 'bla')
           end
+
           it { is_expected.to compile }
+
           it do
             is_expected.to contain_concat__fragment(
-              'zone_test_zone',
+              'zone_test_zone'
             ).with_content(
               %r{<Zone\sname="test_zone">
               \s+<Policy>default</Policy>
@@ -400,16 +440,19 @@ describe 'opendnssec::zone' do
               \s+</Output>
               \s+</Adapters>
               \s+</Zone>
-              }x,
+              }x
             )
           end
         end
+
         context 'adapter_output_type' do
-          before(:each) { params.merge!(adapter_output_type: 'File') }
+          before { params.merge!(adapter_output_type: 'File') }
+
           it { is_expected.to compile }
+
           it do
             is_expected.to contain_concat__fragment(
-              'zone_test_zone',
+              'zone_test_zone'
             ).with_content(
               %r{<Zone\sname="test_zone">
               \s+<Policy>default</Policy>
@@ -423,42 +466,58 @@ describe 'opendnssec::zone' do
               \s+</Output>
               \s+</Adapters>
               \s+</Zone>
-              }x,
+              }x
             )
           end
         end
       end
+
       describe 'check bad type' do
         context 'signer_policy' do
-          before(:each) { params.merge!(signer_policy: true) }
+          before { params.merge!(signer_policy: true) }
+
           it { is_expected.to raise_error(Puppet::Error) }
         end
+
         context 'order' do
-          before(:each) { params.merge!(order: true) }
+          before { params.merge!(order: true) }
+
           it { is_expected.to raise_error(Puppet::Error) }
         end
+
         context 'adapter_base_dir' do
-          before(:each) { params.merge!(adapter_base_dir: true) }
+          before { params.merge!(adapter_base_dir: true) }
+
           it { is_expected.to raise_error(Puppet::Error) }
         end
-        context 'adapter_signer_conf' do
-          before(:each) { params.merge!(adapter_signer_conf: true) }
+
+        context 'adapter_signer_conf_file' do
+          before { params.merge!(adapter_signer_conf_file: true) }
+
           it { is_expected.to raise_error(Puppet::Error) }
         end
+
         context 'adapter_input_file' do
-          before(:each) { params.merge!(adapter_input_file: true) }
+          before { params.merge!(adapter_input_file: true) }
+
           it { is_expected.to raise_error(Puppet::Error) }
         end
+
         context 'adapter_output_file' do
-          before(:each) { params.merge!(adapter_output_file: true) }
+          before { params.merge!(adapter_output_file: true) }
+
           it { is_expected.to raise_error(Puppet::Error) }
         end
+
         context 'adapter_input_type' do
-          before(:each) { params.merge!(adapter_input_type: true) }
+          before { params.merge!(adapter_input_type: true) }
+
           it { is_expected.to raise_error(Puppet::Error) }
         end
+
         context 'adapter_output_type' do
-          before(:each) { params.merge!(adapter_output_type: true) }
+          before { params.merge!(adapter_output_type: true) }
+
           it { is_expected.to raise_error(Puppet::Error) }
         end
       end
