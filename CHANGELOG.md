@@ -1,3 +1,6 @@
+### 2025-06-18 2.0.1
+* Fix default for sign conf dir
+
 ### 2025-04-02 2.0.0
 * update nsec3 policy defaults to match RFC 9276
 * update `ods-ksmutil update kasp` to `ods-ksmutil update all`
