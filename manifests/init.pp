@@ -94,7 +94,7 @@ class opendnssec (
   Stdlib::Unixpath              $xsl_file               = '/usr/share/opendnssec/addns.xsl',
   Stdlib::Unixpath              $sqlite_file            = "${base_dir}/kasp.db",
   Stdlib::Unixpath              $working_dir            = "${base_dir}/tmp",
-  Stdlib::Unixpath              $signconf_dir           = "${base_dir}/signerconf",
+  Stdlib::Unixpath              $signconf_dir           = "${base_dir}/signconf",
   Stdlib::Unixpath              $signed_dir             = "${base_dir}/signed",
   Stdlib::Unixpath              $unsigned_dir           = "${base_dir}/unsigned",
   Stdlib::Unixpath              $ksmutil_path           = '/usr/bin/ods-ksmutil',
