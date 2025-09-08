@@ -157,6 +157,9 @@ class opendnssec (
       mysql::db { $datastore_name:
         user     => $datastore_user,
         password => $datastore_password,
+        # TODO: drop this after upgrade
+        charset  => 'utf8',
+        collate  => 'utf8_general_ci',
         sql      => [$mysql_sql_file],
         before   => $datastore_setup_before,
       }
