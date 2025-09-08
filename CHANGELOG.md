@@ -1,3 +1,6 @@
+### 2025-06-18 2.1.0
+* Mysql::db pin collate and charset
+
 ### 2025-06-18 2.0.1
 * Fix default for sign conf dir
 
