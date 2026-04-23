@@ -85,7 +85,7 @@ class opendnssec (
   String[1,100]                 $datastore_name         = 'kasp',
   String[1,100]                 $datastore_user         = 'opendnssec',
   String[1,100]                 $datastore_password     = 'change_me',
-  Stdlib::Unixpath              $mysql_sql_file         = '/usr/share/opendnssec/database_create.mysql',
+  Stdlib::Unixpath              $mysql_sql_file         = '/usr/share/opendnssec/schema.mysql',
   Stdlib::Unixpath              $base_dir               = '/var/lib/opendnssec',
   Stdlib::Unixpath              $policy_file            = '/etc/opendnssec/kasp.xml',
   Stdlib::Unixpath              $zone_file              = '/etc/opendnssec/zonelist.xml',
@@ -151,15 +151,19 @@ class opendnssec (
   if $enabled and $manage_datastore {
     if $datastore_engine == 'mysql' {
       if $manage_packages {
-        ensure_packages($mysql_packages)
+        stdlib::ensure_packages($mysql_packages)
       }
       require  mysql::server
+      $charset = $facts['os']['distro']['codename'] ? {
+        'bionic' => 'utf8',
+        default  => 'utf8mb3',
+      }
       mysql::db { $datastore_name:
         user     => $datastore_user,
         password => $datastore_password,
         # TODO: drop this after upgrade
-        charset  => 'utf8',
-        collate  => 'utf8_general_ci',
+        charset  => $charset,
+        collate  => "${charset}_general_ci",
         sql      => [$mysql_sql_file],
         before   => $datastore_setup_before,
       }
@@ -244,6 +248,11 @@ class opendnssec (
     } ~> service { $service_signer:
       ensure => running,
       enable => true,
+    }
+    file { '/etc/opendnssec/prevent-startup':
+      ensure  => 'absent',
+      before  => Service[$service_enforcer],
+      require => $datastore_setup_before,
     }
     Opendnssec::Tsig   <| |> ~> Service[$service_enforcer, $service_signer]
     Opendnssec::Zone   <| |> -> Service[$service_enforcer, $service_signer]
