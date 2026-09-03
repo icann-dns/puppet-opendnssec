@@ -114,9 +114,6 @@ class opendnssec (
   Optional[String[1]]           $notify_command         = undef,
   Boolean                       $require_backup         = false,
 ) {
-  if $facts['os']['family'] == 'RedHat' and $datastore_engine == 'mysql' {
-    fail('RedHat does not support mysql')
-  }
   $ods_setup_command = $opendnssec_version ? {
     /^1/    => "/usr/bin/yes | ${ksmutil_path} setup",
     /^2/    => "${enforcer_path} setup",
