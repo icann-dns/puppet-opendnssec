@@ -14,11 +14,8 @@ class opendnssec::zones (
   $enabled            = $opendnssec::enabled
   $opendnssec_version = $opendnssec::opendnssec_version
   $enforcer_path      = $opendnssec::enforcer_path
-  $update_zone_cmd    = $opendnssec_version ? {
-    /^1/    => "/usr/bin/yes | ${ksmutil_path} update zonelist",
-    /^2/    => "${enforcer_path} zonelist import --remove-missing-zones",
-    default => fail("Unsupported OpenDNSSEC version: ${opendnssec_version}"),
-  }
+  $update_zone_cmd    = "${enforcer_path} zonelist import --remove-missing-zones"
+
   concat { $zone_file:
     owner => $user,
     group => $group,

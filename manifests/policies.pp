@@ -14,12 +14,7 @@ class opendnssec::policies (
   $enabled            = $opendnssec::enabled
   $opendnssec_version = $opendnssec::opendnssec_version
   $enforcer_path      = $opendnssec::enforcer_path
-  $update_command = $opendnssec_version ? {
-    /^1/    => "/usr/bin/yes | ${ksmutil_path} update all",
-    # TODO: should we also `ods-enforcer enforce` https://opendnssec.readthedocs.io/en/latest/howto/
-    /^2/    => "${enforcer_path} policy import --remove-missing-policies",
-    default => fail("Unsupported OpenDNSSEC version: ${opendnssec_version}"),
-  }
+  $update_command = "${enforcer_path} policy import --remove-missing-policies"
 
   concat { $policy_file:
     owner => $user,
