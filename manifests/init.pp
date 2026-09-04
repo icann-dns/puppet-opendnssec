@@ -7,7 +7,6 @@
 # @param manage_service manage service
 # @param manage_ods_ksmutil manage ods-ksmutil
 # @param manage_conf manage conf
-# @param opendnssec_version opendnssec version
 # @param logging_level logging level
 # @param logging_facility logging facility
 # @param packages packages to install
@@ -58,33 +57,32 @@
 #
 class opendnssec (
   Boolean                       $enabled                = true,
-  String[1,32]                  $user                   = 'root',
-  String[1,32]                  $group                  = 'opendnssec',
+  String[1, 32]                 $user                   = 'root',
+  String[1, 32]                 $group                  = 'opendnssec',
   Boolean                       $manage_packages        = true,
   Boolean                       $manage_datastore       = true,
   Boolean                       $manage_service         = true,
   Boolean                       $manage_ods_ksmutil     = true,
   Boolean                       $manage_conf            = true,
-  String[1,10]                  $opendnssec_version     = '2',
-  Integer[1,7]                  $logging_level          = 3,
+  Integer[1, 7]                 $logging_level          = 3,
   Stdlib::Syslogfacility        $logging_facility       = 'local0',
   Array[String]                 $packages               = ['opendnssec', 'xsltproc'],
-  String[1,100]                 $service_enforcer       = 'opendnssec-enforcer',
-  String[1,100]                 $service_signer         = 'opendnssec-signer',
+  String[1, 100]                $service_enforcer       = 'opendnssec-enforcer',
+  String[1, 100]                $service_signer         = 'opendnssec-signer',
   Array[String]                 $sqlite_packages        = [],
   Array[String]                 $mysql_packages         = [],
-  String[1,100]                 $repository_name        = 'SoftHSM',
+  String[1, 100]                $repository_name        = 'SoftHSM',
   Stdlib::Unixpath              $repository_module      = '/usr/lib/x86_64-linux-gnu/softhsm/libsofthsm2.so',
-  String[1,100]                 $repository_pin         = '1234',
+  String[1, 100]                $repository_pin         = '1234',
   Optional[Integer]             $repository_capacity    = undef,
-  String[1,32]                  $repository_token_label = 'OpenDNSSEC',
+  String[1, 32]                 $repository_token_label = 'OpenDNSSEC',
   Boolean                       $skip_publickey         = true,
   Opendnssec::Datastore         $datastore_engine       = 'mysql',
   Stdlib::Host                  $datastore_host         = 'localhost',
   Stdlib::Port                  $datastore_port         = 3306,
-  String[1,100]                 $datastore_name         = 'kasp',
-  String[1,100]                 $datastore_user         = 'opendnssec',
-  String[1,100]                 $datastore_password     = 'change_me',
+  String[1, 100]                $datastore_name         = 'kasp',
+  String[1, 100]                $datastore_user         = 'opendnssec',
+  String[1, 100]                $datastore_password     = 'change_me',
   Stdlib::Unixpath              $mysql_sql_file         = '/usr/share/opendnssec/database_create.mysql',
   Stdlib::Unixpath              $base_dir               = '/var/lib/opendnssec',
   Stdlib::Unixpath              $policy_file            = '/etc/opendnssec/kasp.xml',
@@ -114,16 +112,9 @@ class opendnssec (
   Optional[String[1]]           $notify_command         = undef,
   Boolean                       $require_backup         = false,
 ) {
-  $ods_setup_command = $opendnssec_version ? {
-    /^1/    => "/usr/bin/yes | ${ksmutil_path} setup",
-    /^2/    => "${enforcer_path} setup",
-    default => fail('opendnssec_version must be 1 or 2'),
-  }
-  $ods_update_conf_command = $opendnssec_version ? {
-    /^1/    => "/usr/bin/yes | ${ksmutil_path} update conf",
-    /^2/    => "${enforcer_path} update conf",
-    default => fail('opendnssec_version must be 1 or 2'),
-  }
+  $ods_setup_command = "${enforcer_path} setup"
+  $ods_update_conf_command = "${enforcer_path} update conf"
+
   $datastore_setup_before = [$enabled, $manage_datastore, $manage_conf, $manage_ods_ksmutil].all |$i| { $i } ? {
     false => undef,
     true  => Exec['updated conf.xml'],
@@ -133,7 +124,7 @@ class opendnssec (
     false => undef,
   }
   if $manage_packages {
-    ensure_packages($packages)
+    stdlib::ensure_packages($packages)
   }
   file {[$base_dir, $signed_dir, $unsigned_dir, $tsigs_dir, $remotes_dir, $signconf_dir, $working_dir]:
     ensure => 'directory',
@@ -148,7 +139,7 @@ class opendnssec (
   if $enabled and $manage_datastore {
     if $datastore_engine == 'mysql' {
       if $manage_packages {
-        ensure_packages($mysql_packages)
+        stdlib::ensure_packages($mysql_packages)
       }
       require  mysql::server
       mysql::db { $datastore_name:
@@ -162,7 +153,7 @@ class opendnssec (
       }
     } elsif $datastore_engine == 'sqlite' {
       if $manage_packages {
-        ensure_packages($sqlite_packages)
+        stdlib::ensure_packages($sqlite_packages)
       }
       exec { 'ods-ksmutil setup':
         path     => ['/bin', '/usr/bin', '/sbin', '/usr/sbin', '/usr/local/bin', '/usr/local/sbin'],
