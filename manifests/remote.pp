@@ -10,8 +10,8 @@
 define opendnssec::remote (
   Optional[Stdlib::IP::Address::V4] $address4      = undef,
   Optional[Stdlib::IP::Address::V6] $address6      = undef,
-  Optional[String]                  $tsig          = undef,
-  Optional[String]                  $tsig_name     = undef,
+  Optional[String[1]]               $tsig          = undef,
+  Optional[String[1]]               $tsig_name     = undef,
   Boolean                           $sign_notifies = false,
   Boolean                           $send_notifies = true,
   Stdlib::Port                      $port          = 53,
@@ -19,58 +19,49 @@ define opendnssec::remote (
   include opendnssec
   $user               = $opendnssec::user
   $group              = $opendnssec::group
+  $tsigs              = $opendnssec::tsigs
   $manage_ods_ksmutil = $opendnssec::manage_ods_ksmutil
   $enabled            = $opendnssec::enabled
   $base_dir           = $opendnssec::remotes_dir
+  $services           = $opendnssec::services
 
-  if ! $address4 and ! $address6 {
+  unless $address4 or $address6 {
     fail("${name} must specify either address4 or address6")
   }
+  # TODO: whats the difference between tsig and tsig_name probably related to the dns module
   if $tsig {
-    if ! defined(Opendnssec::Tsig[$tsig]) {
-      fail("${name}: Opendnssec::Tsig['${tsig}'] does not exist")
+    unless $tsig in $tsigs {
+      fail("${name}: Tsig (${tsig}) is not defined")
     }
-    if ! $tsig_name {
+    unless $tsig_name {
       fail("${name}: you must define tsig_name when you deinfe tsig")
     } else {
       $_tsig_name = $tsig_name
     }
-  } elsif $tsig_name and $tsig_name != '' {
-    if defined(Opendnssec::Tsig[$tsig_name]) or $tsig_name == 'NOKEY' {
-      $_tsig_name = $tsig_name
-    } else {
-      fail("${name}: Opendnssec::Tsig['${tsig_name}'] does not exist")
+  } elsif $tsig_name {
+    unless $tsig_name == 'NOKEY' or $tsig_name in $tsigs {
+      fail("${name}: Tsig (${tsig_name}) is not defined")
     }
+    $_tsig_name = $tsig_name
   } else {
     $_tsig_name = $opendnssec::default_tsig_name
   }
-  file { "${base_dir}/${name}_requesttransfer.xml":
-    ensure  => file,
-    owner   => $user,
-    group   => $group,
-    content => template('opendnssec/etc/opendnssec/requesttransfer.xml.erb'),
-  }
-
-  if $send_notifies {
-    file { "${base_dir}/${name}_notify_in.xml":
+  file {
+    default:
+      ensure => stdlib::ensure($send_notifies, file),
+      owner  => $user,
+      group  => $group,
+      notify => Service[$services];
+    "${base_dir}/${name}_notify_in.xml":
+      content => template('opendnssec/etc/opendnssec/notify_in.xml.erb');
+    "${base_dir}/${name}_notify_out.xml":
+      content => template('opendnssec/etc/opendnssec/notify_out.xml.erb');
+    "${base_dir}/${name}_providetransfer.xml":
+      # TODO: should this use the provide_xfr bool?
       ensure  => file,
-      owner   => $user,
-      group   => $group,
-      content => template('opendnssec/etc/opendnssec/notify_in.xml.erb'),
-    }
-
-    file { "${base_dir}/${name}_notify_out.xml":
+      content => template('opendnssec/etc/opendnssec/providetransfer.xml.erb');
+    "${base_dir}/${name}_requesttransfer.xml":
       ensure  => file,
-      owner   => $user,
-      group   => $group,
-      content => template('opendnssec/etc/opendnssec/notify_out.xml.erb'),
-    }
-  }
-
-  file { "${base_dir}/${name}_providetransfer.xml":
-    ensure  => file,
-    owner   => $user,
-    group   => $group,
-    content => template('opendnssec/etc/opendnssec/providetransfer.xml.erb'),
+      content => template('opendnssec/etc/opendnssec/requesttransfer.xml.erb');
   }
 }

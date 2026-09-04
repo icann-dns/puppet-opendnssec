@@ -39,7 +39,7 @@ class opendnssec::backup_cron (
       content => template('opendnssec/usr/local/bin/backup-hsm-mysql.sh.erb'),
     }
     cron { 'backup-hsm-mysql':
-      ensure  => $require_backup.bool2str('present', 'absent'),
+      ensure  => stdlib::ensure($require_backup),
       command => $script_path,
       user    => $user,
       hour    => '*/6',
