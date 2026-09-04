@@ -13,10 +13,6 @@
       "version_requirement": ">= 4.25.1 <5.0.0"
     },
     {
-      "name": "icann-tea",
-      "version_requirement": ">= 0.2.11 <1.0.0"
-    },
-    {
       "name": "icann-softhsm",
       "version_requirement": ">= 1.0.0 <2.0.0"
     },
