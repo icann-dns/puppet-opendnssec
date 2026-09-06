@@ -20,7 +20,6 @@ define opendnssec::remote (
   $user               = $opendnssec::user
   $group              = $opendnssec::group
   $tsigs              = $opendnssec::tsigs
-  $manage_ods_ksmutil = $opendnssec::manage_ods_ksmutil
   $enabled            = $opendnssec::enabled
   $base_dir           = $opendnssec::remotes_dir
   $services           = $opendnssec::services

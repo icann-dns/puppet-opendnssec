@@ -21,6 +21,6 @@ define opendnssec::tsig (
     owner   => $user,
     group   => $group,
     content => template('opendnssec/etc/opendnssec/tsig.xml.erb'),
-    notify  => Srrvice[$services],
+    notify  => Service[$services],
   }
 }

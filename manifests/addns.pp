@@ -7,12 +7,16 @@ define opendnssec::addns (
   Array[String] $provide_xfrs = [],
 ) {
   include opendnssec
-  $xsl_file           = $opendnssec::xsl_file
-  $user               = $opendnssec::user
-  $group              = $opendnssec::group
-  $enabled            = $opendnssec::enabled
-  $remotes            = $opendnssec::remotes
-  $services           = $opendnssec::services
+  $xsl_file          = $opendnssec::xsl_file
+  $user              = $opendnssec::user
+  $group             = $opendnssec::group
+  $enabled           = $opendnssec::enabled
+  $remotes           = $opendnssec::remotes
+  $services          = $opendnssec::services
+  $tsigs_dir         = $opendnssec::tsigs_dir
+  $remotes_dir       = $opendnssec::remotes_dir
+  $default_tsig_name = $opendnssec::default_tsig_name
+  $xferout_enabled   = $opendnssec::xferout_enabled
 
   $masters.each |String $master| {
     unless $master in $remotes {

@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 describe 'opendnssec::backup_cron' do
-  let(:node) { 'opendnssec::backup.example.com' }
+  let(:node) { 'backup.example.com' }
   let(:facts) { {} }
   let(:params) do
     {
@@ -21,8 +21,8 @@ describe 'opendnssec::backup_cron' do
   end
 
   # add these two lines in a single test block to enable puppet and hiera debug mode
-  Puppet::Util::Log.level = :debug
-  Puppet::Util::Log.newdestination(:console)
+  # Puppet::Util::Log.level = :debug
+  # Puppet::Util::Log.newdestination(:console)
   # This will need to get moved
   # it { pp catalogue.resources }
   on_supported_os.each do |os, facts|
@@ -38,14 +38,14 @@ describe 'opendnssec::backup_cron' do
         it do
           is_expected.to contain_file('/opt/backup').with(
             ensure: 'directory',
-            owner:  'root'
+            owner:  'root',
           )
         end
 
         it do
           is_expected.to contain_file('/opt/tmp').with(
             ensure: 'directory',
-            owner:  'root'
+            owner:  'root',
           )
         end
 
@@ -53,21 +53,21 @@ describe 'opendnssec::backup_cron' do
           is_expected.to contain_file('/usr/local/bin/backup-hsm-mysql.sh').with(
             ensure: 'file',
             mode: '0755',
-            owner: 'root'
+            owner: 'root',
           ).with_content(
-            %r{NUMBER=500}
+            %r{NUMBER=500},
           ).with_content(
-            %r{DIR="/opt/backup"}
+            %r{DIR="/opt/backup"},
           ).with_content(
-            %r{TMP_DIR="\$\(mktemp -d --tmpdir=/opt/tmp\)"}
+            %r{TMP_DIR="\$\(mktemp -d --tmpdir=/opt/tmp\)"},
           ).with_content(
-            %r{FILESGLOB="\*\.tar\.bz2"}
+            %r{FILESGLOB="\*\.tar\.bz2"},
           ).with_content(
-            %r{TODAY="\$\(date \+%Y%m%d-%H%M\)"}
+            %r{TODAY="\$\(date \+%Y%m%d-%H%M\)"},
           ).with_content(
-            %r{BACKUP_HOST=foobar.example.com}
+            %r{BACKUP_HOST=foobar.example.com},
           ).with_content(
-            %r{USER=="backup"}
+            %r{USER=="backup"},
           )
         end
 
@@ -78,7 +78,7 @@ describe 'opendnssec::backup_cron' do
             user: 'root',
             hour: '*/6',
             minute: '0',
-            require: 'File[/usr/local/bin/backup-hsm-mysql.sh]'
+            require: 'File[/usr/local/bin/backup-hsm-mysql.sh]',
           )
         end
       end
@@ -91,9 +91,9 @@ describe 'opendnssec::backup_cron' do
 
           it do
             is_expected.to contain_file(
-              '/usr/local/bin/backup-hsm-mysql.sh'
+              '/usr/local/bin/backup-hsm-mysql.sh',
             ).with_content(
-              %r{BACKUP_HOST=backup.example.com}
+              %r{BACKUP_HOST=backup.example.com},
             )
           end
         end
@@ -105,9 +105,9 @@ describe 'opendnssec::backup_cron' do
 
           it do
             is_expected.to contain_file(
-              '/usr/local/bin/backup-hsm-mysql.sh'
+              '/usr/local/bin/backup-hsm-mysql.sh',
             ).with_content(
-              %r{USER=="foobar"}
+              %r{USER=="foobar"},
             )
           end
         end
@@ -119,9 +119,9 @@ describe 'opendnssec::backup_cron' do
 
           it do
             is_expected.to contain_file(
-              '/usr/local/bin/backup-hsm-mysql.sh'
+              '/usr/local/bin/backup-hsm-mysql.sh',
             ).with_content(
-              %r{FILESGLOB="foobar"}
+              %r{FILESGLOB="foobar"},
             )
           end
         end
@@ -133,9 +133,9 @@ describe 'opendnssec::backup_cron' do
 
           it do
             is_expected.to contain_file(
-              '/usr/local/bin/backup-hsm-mysql.sh'
+              '/usr/local/bin/backup-hsm-mysql.sh',
             ).with_content(
-              %r{TODAY="\$\(date \+foobar\)"}
+              %r{TODAY="\$\(date \+foobar\)"},
             )
           end
         end
@@ -147,9 +147,9 @@ describe 'opendnssec::backup_cron' do
 
           it do
             is_expected.to contain_file(
-              '/usr/local/bin/backup-hsm-mysql.sh'
+              '/usr/local/bin/backup-hsm-mysql.sh',
             ).with_content(
-              %r{NUMBER=200}
+              %r{NUMBER=200},
             )
           end
         end
@@ -162,15 +162,15 @@ describe 'opendnssec::backup_cron' do
           it do
             is_expected.to contain_file('/foobar').with(
               ensure: 'directory',
-              owner:  'root'
+              owner:  'root',
             )
           end
 
           it do
             is_expected.to contain_file(
-              '/usr/local/bin/backup-hsm-mysql.sh'
+              '/usr/local/bin/backup-hsm-mysql.sh',
             ).with_content(
-              %r{DIR="/foobar"}
+              %r{DIR="/foobar"},
             )
           end
         end
@@ -183,15 +183,15 @@ describe 'opendnssec::backup_cron' do
           it do
             is_expected.to contain_file('/foobar').with(
               ensure: 'directory',
-              owner:  'root'
+              owner:  'root',
             )
           end
 
           it do
             is_expected.to contain_file(
-              '/usr/local/bin/backup-hsm-mysql.sh'
+              '/usr/local/bin/backup-hsm-mysql.sh',
             ).with_content(
-              %r{TMP_DIR="\$\(mktemp -d --tmpdir=/foobar\)"}
+              %r{TMP_DIR="\$\(mktemp -d --tmpdir=/foobar\)"},
             )
           end
         end
@@ -205,7 +205,7 @@ describe 'opendnssec::backup_cron' do
           it do
             is_expected.to contain_cron('backup-hsm-mysql').with(
               command: '/foobar',
-              require: 'File[/foobar]'
+              require: 'File[/foobar]',
             )
           end
         end
