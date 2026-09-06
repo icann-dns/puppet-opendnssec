@@ -33,7 +33,7 @@ define opendnssec::remote (
       fail("${name}: Tsig (${tsig}) is not defined")
     }
     unless $tsig_name {
-      fail("${name}: you must define tsig_name when you deinfe tsig")
+      fail("${name}: you must define tsig_name when you define tsig")
     } else {
       $_tsig_name = $tsig_name
     }

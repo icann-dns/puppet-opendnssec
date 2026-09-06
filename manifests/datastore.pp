@@ -1,4 +1,4 @@
-# @summry private class to configure datastore
+# @summary Private class to configure datastore
 class opendnssec::datastore {
   include opendnssec
   if $opendnssec::datastore_engine == 'mysql' {
@@ -20,7 +20,6 @@ class opendnssec::datastore {
       path    => ['/bin', '/usr/bin', '/sbin', '/usr/sbin', '/usr/local/bin', '/usr/local/sbin'],
       command => "${opendnssec::enforcer_path} setup",
       unless  => "test -s ${opendnssec::sqlite_file}",
-      before  => Exec['updated conf.xml'],
     }
   }
 }

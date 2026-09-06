@@ -112,7 +112,7 @@ class opendnssec (
   }
   $default_provide_xfrs.each |String $provide_xfr| {
     unless $provide_xfr in $remotes {
-      fail("'${provide_xfr}: default_provide_xfr must be a definet remote")
+      fail("${provide_xfr}: default_provide_xfr must be a defined remote")
     }
   }
 
@@ -187,23 +187,19 @@ class opendnssec (
   }
 
   if $enabled {
-    exec { 'updated conf.xml':
-      command     => "${enforcer_path} update conf",
-      user        => $user,
-      refreshonly => true,
-      subscribe   => [File['/etc/opendnssec/conf.xml'], $opendnssec::datastore::subscribe],
-    }
-    exec { 'ods-ksmutil updated zonelist.xml':
-      command     => "${enforcer_path} zonelist import --remove-missing-zones",
-      user        => $user,
-      refreshonly => true,
-      subscribe   => Concat[$zone_file];
-    }
-    exec { 'ods-ksmutil updated kasp.xml':
-      command     => "${enforcer_path} policy import --remove-missing-policies",
-      user        => $user,
-      refreshonly => true,
-      subscribe   => Concat[$policy_file];
+    exec {
+      default:
+        user        => $user,
+        refreshonly => true;
+      'updated conf.xml':
+        command   => "${enforcer_path} update conf",
+        subscribe => [File['/etc/opendnssec/conf.xml'], $opendnssec::datastore::subscribe];
+      'ods-ksmutil updated zonelist.xml':
+        command   => "${enforcer_path} zonelist import --remove-missing-zones",
+        subscribe => Concat[$zone_file];
+      'ods-ksmutil updated kasp.xml':
+        command   => "${enforcer_path} policy import --remove-missing-policies",
+        subscribe => Concat[$policy_file];
     }
   }
   service { $service_enforcer:
