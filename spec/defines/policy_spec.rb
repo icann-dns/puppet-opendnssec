@@ -84,11 +84,11 @@ describe 'opendnssec::policy' do
         it do
           is_expected.to contain_concat__fragment('policy_test_policy').with(
             target: '/etc/opendnssec/kasp.xml',
-            order: '10'
+            order: '10',
           ).with_content(
-            %r{<Policy name="test_policy">}
+            %r{<Policy name="test_policy">},
           ).with_content(
-            %r{<Description>test_policy\s-\sDeny:NSEC3;\sKSK:RSASHA1-NSEC3-SHA1;\sZSK:RSASHA1-NSEC3-SHA1</Description>}
+            %r{<Description>test_policy\s-\sDeny:NSEC3;\sKSK:RSASHA1-NSEC3-SHA1;\sZSK:RSASHA1-NSEC3-SHA1</Description>},
           ).with_content(
             %r{<Signatures>
             \s+<Resign>PT2H</Resign>
@@ -100,7 +100,7 @@ describe 'opendnssec::policy' do
             \s+<Jitter>PT12H</Jitter>
             \s+<InceptionOffset>PT3600S</InceptionOffset>
             \s+</Signatures>
-            }x
+            }x,
           ).with_content(
             %r{<Denial>
             \s+<NSEC3>
@@ -112,7 +112,7 @@ describe 'opendnssec::policy' do
             \s+<Salt\slength="0"/>
             \s+</Hash>
             \s+</NSEC3>
-            }x
+            }x,
           ).with_content(
             %r{<!--\sParameters\sfor\sboth\sKSK\sand\sZSK\s-->
             \s+<TTL>PT3600S</TTL>
@@ -120,7 +120,7 @@ describe 'opendnssec::policy' do
             \s+<PublishSafety>PT3600S</PublishSafety>
             \s+<!--\s<ShareKeys/>\s-->
             \s+<Purge>P14D</Purge>
-            }x
+            }x,
           ).with_content(
             %r{<KSK>
             \s+<!--\sKSK\sAlgo\sRSASHA1-NSEC3-SHA1\s\(7\)\s-->
@@ -130,7 +130,7 @@ describe 'opendnssec::policy' do
             \s+<Standby>0</Standby>
             \s+<ManualRollover/>
             \s+</KSK>
-            }x
+            }x,
           ).with_content(
             %r{<ZSK>
             \s+<Algorithm\slength="1024">7</Algorithm>
@@ -138,7 +138,7 @@ describe 'opendnssec::policy' do
             \s+<Repository>SoftHSM</Repository>
             \s+<Standby>0</Standby>
             \s+</ZSK>
-            }x
+            }x,
           ).with_content(
             %r{<Zone>
             \s+<PropagationDelay>PT43200S</PropagationDelay>
@@ -148,7 +148,7 @@ describe 'opendnssec::policy' do
             \s+<Serial>keep</Serial>
             \s+</SOA>
             \s+</Zone>
-            }x
+            }x,
           ).with_content(
             %r{<Parent>
             \s+<PropagationDelay>PT9999S</PropagationDelay>
@@ -160,7 +160,7 @@ describe 'opendnssec::policy' do
             \s+<Minimum>PT10800S</Minimum>
             \s+</SOA>
             \s+</Parent>
-            }x
+            }x,
           )
         end
       end
@@ -173,7 +173,7 @@ describe 'opendnssec::policy' do
 
           it do
             is_expected.to contain_concat__fragment(
-              'policy_test_policy'
+              'policy_test_policy',
             ).with_order('15')
           end
         end
@@ -185,9 +185,9 @@ describe 'opendnssec::policy' do
 
           it do
             is_expected.to contain_concat__fragment(
-              'policy_test_policy'
+              'policy_test_policy',
             ).with_content(
-              %r{<Description>bla</Description>}
+              %r{<Description>bla</Description>},
             )
           end
         end
@@ -199,7 +199,7 @@ describe 'opendnssec::policy' do
 
           it do
             is_expected.to contain_concat__fragment(
-              'policy_test_policy'
+              'policy_test_policy',
             ).with_content(
               %r{<Signatures>
               \s+<Resign>P1D</Resign>
@@ -211,7 +211,7 @@ describe 'opendnssec::policy' do
               \s+<Jitter>PT12H</Jitter>
               \s+<InceptionOffset>PT3600S</InceptionOffset>
               \s+</Signatures>
-              }x
+              }x,
             )
           end
         end
@@ -223,7 +223,7 @@ describe 'opendnssec::policy' do
 
           it do
             is_expected.to contain_concat__fragment(
-              'policy_test_policy'
+              'policy_test_policy',
             ).with_content(
               %r{<Signatures>
               \s+<Resign>PT2H</Resign>
@@ -235,7 +235,7 @@ describe 'opendnssec::policy' do
               \s+<Jitter>PT12H</Jitter>
               \s+<InceptionOffset>PT3600S</InceptionOffset>
               \s+</Signatures>
-              }x
+              }x,
             )
           end
         end
@@ -247,7 +247,7 @@ describe 'opendnssec::policy' do
 
           it do
             is_expected.to contain_concat__fragment(
-              'policy_test_policy'
+              'policy_test_policy',
             ).with_content(
               %r{<Signatures>
               \s+<Resign>PT2H</Resign>
@@ -259,7 +259,7 @@ describe 'opendnssec::policy' do
               \s+<Jitter>PT12H</Jitter>
               \s+<InceptionOffset>PT3600S</InceptionOffset>
               \s+</Signatures>
-              }x
+              }x,
             )
           end
         end
@@ -271,7 +271,7 @@ describe 'opendnssec::policy' do
 
           it do
             is_expected.to contain_concat__fragment(
-              'policy_test_policy'
+              'policy_test_policy',
             ).with_content(
               %r{<Signatures>
               \s+<Resign>PT2H</Resign>
@@ -283,7 +283,7 @@ describe 'opendnssec::policy' do
               \s+<Jitter>PT12H</Jitter>
               \s+<InceptionOffset>PT3600S</InceptionOffset>
               \s+</Signatures>
-              }x
+              }x,
             )
           end
         end
@@ -295,7 +295,7 @@ describe 'opendnssec::policy' do
 
           it do
             is_expected.to contain_concat__fragment(
-              'policy_test_policy'
+              'policy_test_policy',
             ).with_content(
               %r{<Signatures>
               \s+<Resign>PT2H</Resign>
@@ -307,7 +307,7 @@ describe 'opendnssec::policy' do
               \s+<Jitter>P1D</Jitter>
               \s+<InceptionOffset>PT3600S</InceptionOffset>
               \s+</Signatures>
-              }x
+              }x,
             )
           end
         end
@@ -319,7 +319,7 @@ describe 'opendnssec::policy' do
 
           it do
             is_expected.to contain_concat__fragment(
-              'policy_test_policy'
+              'policy_test_policy',
             ).with_content(
               %r{<Signatures>
               \s+<Resign>PT2H</Resign>
@@ -331,7 +331,7 @@ describe 'opendnssec::policy' do
               \s+<Jitter>PT12H</Jitter>
               \s+<InceptionOffset>P1D</InceptionOffset>
               \s+</Signatures>
-              }x
+              }x,
             )
           end
         end
@@ -343,11 +343,11 @@ describe 'opendnssec::policy' do
 
           it do
             is_expected.to contain_concat__fragment(
-              'policy_test_policy'
+              'policy_test_policy',
             ).with_content(
-              %r{<NSEC/>}
+              %r{<NSEC/>},
             ).without_content(
-              %r{<NSEC3>.+</NSEC3>}
+              %r{<NSEC3>.+</NSEC3>},
             )
           end
         end
@@ -359,7 +359,7 @@ describe 'opendnssec::policy' do
 
           it do
             is_expected.to contain_concat__fragment(
-              'policy_test_policy'
+              'policy_test_policy',
             ).with_content(
               %r{<Denial>
               \s+<NSEC3>
@@ -372,7 +372,7 @@ describe 'opendnssec::policy' do
               \s+<Salt\slength="0"/>
               \s+</Hash>
               \s+</NSEC3>
-              }x
+              }x,
             )
           end
         end
@@ -384,7 +384,7 @@ describe 'opendnssec::policy' do
 
           it do
             is_expected.to contain_concat__fragment(
-              'policy_test_policy'
+              'policy_test_policy',
             ).with_content(
               %r{<Denial>
               \s+<NSEC3>
@@ -396,7 +396,7 @@ describe 'opendnssec::policy' do
               \s+<Salt\slength="0"/>
               \s+</Hash>
               \s+</NSEC3>
-              }x
+              }x,
             )
           end
         end
@@ -408,7 +408,7 @@ describe 'opendnssec::policy' do
 
           it do
             is_expected.to contain_concat__fragment(
-              'policy_test_policy'
+              'policy_test_policy',
             ).with_content(
               %r{<Denial>
               \s+<NSEC3>
@@ -420,7 +420,7 @@ describe 'opendnssec::policy' do
               \s+<Salt\slength="0"/>
               \s+</Hash>
               \s+</NSEC3>
-              }x
+              }x,
             )
           end
         end
@@ -432,7 +432,7 @@ describe 'opendnssec::policy' do
 
           it do
             is_expected.to contain_concat__fragment(
-              'policy_test_policy'
+              'policy_test_policy',
             ).with_content(
               %r{<Denial>
               \s+<NSEC3>
@@ -444,7 +444,7 @@ describe 'opendnssec::policy' do
               \s+<Salt\slength="1"/>
               \s+</Hash>
               \s+</NSEC3>
-              }x
+              }x,
             )
           end
         end
@@ -456,7 +456,7 @@ describe 'opendnssec::policy' do
 
           it do
             is_expected.to contain_concat__fragment(
-              'policy_test_policy'
+              'policy_test_policy',
             ).with_content(
               %r{<!--\sParameters\sfor\sboth\sKSK\sand\sZSK\s-->
               \s+<TTL>P1D</TTL>
@@ -464,7 +464,7 @@ describe 'opendnssec::policy' do
               \s+<PublishSafety>PT3600S</PublishSafety>
               \s+<!--\s<ShareKeys/>\s-->
               \s+<Purge>P14D</Purge>
-              }x
+              }x,
             )
           end
         end
@@ -476,7 +476,7 @@ describe 'opendnssec::policy' do
 
           it do
             is_expected.to contain_concat__fragment(
-              'policy_test_policy'
+              'policy_test_policy',
             ).with_content(
               %r{<!--\sParameters\sfor\sboth\sKSK\sand\sZSK\s-->
               \s+<TTL>PT3600S</TTL>
@@ -484,7 +484,7 @@ describe 'opendnssec::policy' do
               \s+<PublishSafety>PT3600S</PublishSafety>
               \s+<!--\s<ShareKeys/>\s-->
               \s+<Purge>P14D</Purge>
-              }x
+              }x,
             )
           end
         end
@@ -496,7 +496,7 @@ describe 'opendnssec::policy' do
 
           it do
             is_expected.to contain_concat__fragment(
-              'policy_test_policy'
+              'policy_test_policy',
             ).with_content(
               %r{<!--\sParameters\sfor\sboth\sKSK\sand\sZSK\s-->
               \s+<TTL>PT3600S</TTL>
@@ -504,7 +504,7 @@ describe 'opendnssec::policy' do
               \s+<PublishSafety>P1D</PublishSafety>
               \s+<!--\s<ShareKeys/>\s-->
               \s+<Purge>P14D</Purge>
-              }x
+              }x,
             )
           end
         end
@@ -516,7 +516,7 @@ describe 'opendnssec::policy' do
 
           it do
             is_expected.to contain_concat__fragment(
-              'policy_test_policy'
+              'policy_test_policy',
             ).with_content(
               %r{<!--\sParameters\sfor\sboth\sKSK\sand\sZSK\s-->
               \s+<TTL>PT3600S</TTL>
@@ -524,7 +524,7 @@ describe 'opendnssec::policy' do
               \s+<PublishSafety>PT3600S</PublishSafety>
               \s+<!--\s<ShareKeys/>\s-->
               \s+<Purge>P1D</Purge>
-              }x
+              }x,
             )
           end
         end
@@ -536,7 +536,7 @@ describe 'opendnssec::policy' do
 
           it do
             is_expected.to contain_concat__fragment(
-              'policy_test_policy'
+              'policy_test_policy',
             ).with_content(
               %r{<KSK>
               \s+<!--\sKSK\sAlgo\sRSASHA1\s\(5\)\s-->
@@ -546,7 +546,7 @@ describe 'opendnssec::policy' do
               \s+<Standby>0</Standby>
               \s+<ManualRollover/>
               \s+</KSK>
-              }x
+              }x,
             )
           end
         end
@@ -558,7 +558,7 @@ describe 'opendnssec::policy' do
 
           it do
             is_expected.to contain_concat__fragment(
-              'policy_test_policy'
+              'policy_test_policy',
             ).with_content(
               %r{<KSK>
               \s+<!--\sKSK\sAlgo\sECDSAP256SHA256\s\(13\)\s-->
@@ -568,7 +568,7 @@ describe 'opendnssec::policy' do
               \s+<Standby>0</Standby>
               \s+<ManualRollover/>
               \s+</KSK>
-              }x
+              }x,
             )
           end
         end
@@ -580,7 +580,7 @@ describe 'opendnssec::policy' do
 
           it do
             is_expected.to contain_concat__fragment(
-              'policy_test_policy'
+              'policy_test_policy',
             ).with_content(
               %r{<KSK>
               \s+<!--\sKSK\sAlgo\sRSASHA1-NSEC3-SHA1\s\(7\)\s-->
@@ -590,7 +590,7 @@ describe 'opendnssec::policy' do
               \s+<Standby>0</Standby>
               \s+<ManualRollover/>
               \s+</KSK>
-              }x
+              }x,
             )
           end
         end
@@ -602,7 +602,7 @@ describe 'opendnssec::policy' do
 
           it do
             is_expected.to contain_concat__fragment(
-              'policy_test_policy'
+              'policy_test_policy',
             ).with_content(
               %r{<KSK>
               \s+<!--\sKSK\sAlgo\sRSASHA1-NSEC3-SHA1\s\(7\)\s-->
@@ -612,7 +612,7 @@ describe 'opendnssec::policy' do
               \s+<Standby>0</Standby>
               \s+<ManualRollover/>
               \s+</KSK>
-              }x
+              }x,
             )
           end
         end
@@ -624,7 +624,7 @@ describe 'opendnssec::policy' do
 
           it do
             is_expected.to contain_concat__fragment(
-              'policy_test_policy'
+              'policy_test_policy',
             ).with_content(
               %r{<KSK>
               \s+<!--\sKSK\sAlgo\sRSASHA1-NSEC3-SHA1\s\(7\)\s-->
@@ -634,7 +634,7 @@ describe 'opendnssec::policy' do
               \s+<Standby>1</Standby>
               \s+<ManualRollover/>
               \s+</KSK>
-              }x
+              }x,
             )
           end
         end
@@ -646,7 +646,7 @@ describe 'opendnssec::policy' do
 
           it do
             is_expected.to contain_concat__fragment(
-              'policy_test_policy'
+              'policy_test_policy',
             ).with_content(
               %r{<KSK>
               \s+<!--\sKSK\sAlgo\sRSASHA1-NSEC3-SHA1\s\(7\)\s-->
@@ -655,7 +655,7 @@ describe 'opendnssec::policy' do
               \s+<Repository>SoftHSM</Repository>
               \s+<Standby>0</Standby>
               \s+</KSK>
-              }x
+              }x,
             )
           end
         end
@@ -667,7 +667,7 @@ describe 'opendnssec::policy' do
 
           it do
             is_expected.to contain_concat__fragment(
-              'policy_test_policy'
+              'policy_test_policy',
             ).with_content(
               %r{<ZSK>
               \s+<Algorithm\slength="1024">5</Algorithm>
@@ -675,7 +675,7 @@ describe 'opendnssec::policy' do
               \s+<Repository>SoftHSM</Repository>
               \s+<Standby>0</Standby>
               \s+</ZSK>
-              }x
+              }x,
             )
           end
         end
@@ -687,7 +687,7 @@ describe 'opendnssec::policy' do
 
           it do
             is_expected.to contain_concat__fragment(
-              'policy_test_policy'
+              'policy_test_policy',
             ).with_content(
               %r{<ZSK>
               \s+<Algorithm\slength="1024">13</Algorithm>
@@ -695,7 +695,7 @@ describe 'opendnssec::policy' do
               \s+<Repository>SoftHSM</Repository>
               \s+<Standby>0</Standby>
               \s+</ZSK>
-              }x
+              }x,
             )
           end
         end
@@ -707,7 +707,7 @@ describe 'opendnssec::policy' do
 
           it do
             is_expected.to contain_concat__fragment(
-              'policy_test_policy'
+              'policy_test_policy',
             ).with_content(
               %r{<ZSK>
               \s+<Algorithm\slength="2048">7</Algorithm>
@@ -715,7 +715,7 @@ describe 'opendnssec::policy' do
               \s+<Repository>SoftHSM</Repository>
               \s+<Standby>0</Standby>
               \s+</ZSK>
-              }x
+              }x,
             )
           end
         end
@@ -727,7 +727,7 @@ describe 'opendnssec::policy' do
 
           it do
             is_expected.to contain_concat__fragment(
-              'policy_test_policy'
+              'policy_test_policy',
             ).with_content(
               %r{<ZSK>
               \s+<Algorithm\slength="1024">7</Algorithm>
@@ -735,7 +735,7 @@ describe 'opendnssec::policy' do
               \s+<Repository>SoftHSM</Repository>
               \s+<Standby>0</Standby>
               \s+</ZSK>
-              }x
+              }x,
             )
           end
         end
@@ -747,7 +747,7 @@ describe 'opendnssec::policy' do
 
           it do
             is_expected.to contain_concat__fragment(
-              'policy_test_policy'
+              'policy_test_policy',
             ).with_content(
               %r{<ZSK>
               \s+<Algorithm\slength="1024">7</Algorithm>
@@ -755,7 +755,7 @@ describe 'opendnssec::policy' do
               \s+<Repository>SoftHSM</Repository>
               \s+<Standby>1</Standby>
               \s+</ZSK>
-              }x
+              }x,
             )
           end
         end
@@ -767,7 +767,7 @@ describe 'opendnssec::policy' do
 
           it do
             is_expected.to contain_concat__fragment(
-              'policy_test_policy'
+              'policy_test_policy',
             ).with_content(
               %r{<ZSK>
               \s+<Algorithm\slength="1024">7</Algorithm>
@@ -776,7 +776,7 @@ describe 'opendnssec::policy' do
               \s+<Standby>0</Standby>
               \s+<ManualRollover/>
               \s+</ZSK>
-              }x
+              }x,
             )
           end
         end
@@ -788,7 +788,7 @@ describe 'opendnssec::policy' do
 
           it do
             is_expected.to contain_concat__fragment(
-              'policy_test_policy'
+              'policy_test_policy',
             ).with_content(
               %r{<Zone>
               \s+<PropagationDelay>P1D</PropagationDelay>
@@ -798,7 +798,7 @@ describe 'opendnssec::policy' do
               \s+<Serial>keep</Serial>
               \s+</SOA>
               \s+</Zone>
-              }x
+              }x,
             )
           end
         end
@@ -810,7 +810,7 @@ describe 'opendnssec::policy' do
 
           it do
             is_expected.to contain_concat__fragment(
-              'policy_test_policy'
+              'policy_test_policy',
             ).with_content(
               %r{<Zone>
               \s+<PropagationDelay>PT43200S</PropagationDelay>
@@ -820,7 +820,7 @@ describe 'opendnssec::policy' do
               \s+<Serial>keep</Serial>
               \s+</SOA>
               \s+</Zone>
-              }x
+              }x,
             )
           end
         end
@@ -832,7 +832,7 @@ describe 'opendnssec::policy' do
 
           it do
             is_expected.to contain_concat__fragment(
-              'policy_test_policy'
+              'policy_test_policy',
             ).with_content(
               %r{<Zone>
               \s+<PropagationDelay>PT43200S</PropagationDelay>
@@ -842,7 +842,7 @@ describe 'opendnssec::policy' do
               \s+<Serial>keep</Serial>
               \s+</SOA>
               \s+</Zone>
-              }x
+              }x,
             )
           end
         end
@@ -854,7 +854,7 @@ describe 'opendnssec::policy' do
 
           it do
             is_expected.to contain_concat__fragment(
-              'policy_test_policy'
+              'policy_test_policy',
             ).with_content(
               %r{<Zone>
               \s+<PropagationDelay>PT43200S</PropagationDelay>
@@ -864,7 +864,7 @@ describe 'opendnssec::policy' do
               \s+<Serial>counter</Serial>
               \s+</SOA>
               \s+</Zone>
-              }x
+              }x,
             )
           end
         end
@@ -876,7 +876,7 @@ describe 'opendnssec::policy' do
 
           it do
             is_expected.to contain_concat__fragment(
-              'policy_test_policy'
+              'policy_test_policy',
             ).with_content(
               %r{<Parent>
               \s+<PropagationDelay>P1D</PropagationDelay>
@@ -888,7 +888,7 @@ describe 'opendnssec::policy' do
               \s+<Minimum>PT10800S</Minimum>
               \s+</SOA>
               \s+</Parent>
-              }x
+              }x,
             )
           end
         end
@@ -900,7 +900,7 @@ describe 'opendnssec::policy' do
 
           it do
             is_expected.to contain_concat__fragment(
-              'policy_test_policy'
+              'policy_test_policy',
             ).with_content(
               %r{<Parent>
               \s+<PropagationDelay>PT9999S</PropagationDelay>
@@ -912,7 +912,7 @@ describe 'opendnssec::policy' do
               \s+<Minimum>PT10800S</Minimum>
               \s+</SOA>
               \s+</Parent>
-              }x
+              }x,
             )
           end
         end
@@ -924,7 +924,7 @@ describe 'opendnssec::policy' do
 
           it do
             is_expected.to contain_concat__fragment(
-              'policy_test_policy'
+              'policy_test_policy',
             ).with_content(
               %r{<Parent>
               \s+<PropagationDelay>PT9999S</PropagationDelay>
@@ -936,7 +936,7 @@ describe 'opendnssec::policy' do
               \s+<Minimum>PT10800S</Minimum>
               \s+</SOA>
               \s+</Parent>
-              }x
+              }x,
             )
           end
         end
@@ -948,7 +948,7 @@ describe 'opendnssec::policy' do
 
           it do
             is_expected.to contain_concat__fragment(
-              'policy_test_policy'
+              'policy_test_policy',
             ).with_content(
               %r{<Parent>
               \s+<PropagationDelay>PT9999S</PropagationDelay>
@@ -960,7 +960,7 @@ describe 'opendnssec::policy' do
               \s+<Minimum>P1D</Minimum>
               \s+</SOA>
               \s+</Parent>
-              }x
+              }x,
             )
           end
         end
