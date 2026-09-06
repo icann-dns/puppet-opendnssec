@@ -187,6 +187,8 @@ class opendnssec (
   }
 
   if $enabled {
+    # Bug: https://github.com/trlinkin/puppet-lint-exec_idempotent-check/issues/2
+    # lint:ignore:exec_idempotency
     exec {
       default:
         user        => $user,
@@ -201,6 +203,7 @@ class opendnssec (
         command   => "${enforcer_path} policy import --remove-missing-policies",
         subscribe => Concat[$policy_file];
     }
+    # lint:endignore
   }
   service { $service_enforcer:
     ensure => stdlib::ensure($enabled, 'service'),
