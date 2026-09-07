@@ -9,11 +9,10 @@ define opendnssec::tsig (
   Optional[String] $key_name = undef,
 ) {
   include opendnssec
-  $user               = $opendnssec::user
-  $group              = $opendnssec::user
-  $manage_ods_ksmutil = $opendnssec::manage_ods_ksmutil
-  $enabled            = $opendnssec::enabled
-  $base_dir           = $opendnssec::tsigs_dir
+  $user     = $opendnssec::user
+  $group    = $opendnssec::group
+  $base_dir = $opendnssec::tsigs_dir
+  $services = $opendnssec::services
 
   $_name = $key_name.lest || { $name }
 
@@ -22,5 +21,6 @@ define opendnssec::tsig (
     owner   => $user,
     group   => $group,
     content => template('opendnssec/etc/opendnssec/tsig.xml.erb'),
+    notify  => Service[$services],
   }
 }

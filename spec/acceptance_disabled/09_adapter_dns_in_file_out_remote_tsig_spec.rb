@@ -2,7 +2,7 @@
 
 require 'spec_helper_acceptance'
 
-describe 'opendnssec dns adapter in file adapter out with remote TSIG', tier_low: true do
+describe 'opendnssec dns adapter in file adapter out with remote TSIG', :tier_low do
   context 'defaults' do
     if fact('osfamily') == 'RedHat'
       enforcer = 'ods-enforcerd'
@@ -99,7 +99,7 @@ describe 'opendnssec dns adapter in file adapter out with remote TSIG', tier_low
     describe command('/usr/bin/ods-ksmutil policy list') do
       its(:stdout) do
         is_expected.to match(
-          %r{default\s+default - Deny:NSEC3; KSK:RSASHA1-NSEC3-SHA1; ZSK:RSASHA1-NSEC3-SHA1}
+          %r{default\s+default - Deny:NSEC3; KSK:RSASHA1-NSEC3-SHA1; ZSK:RSASHA1-NSEC3-SHA1},
         )
       end
     end
@@ -120,7 +120,7 @@ describe 'opendnssec dns adapter in file adapter out with remote TSIG', tier_low
     end
 
     describe command(
-      "/bin/grep RRSIG #{base_dir}/signed/example.org"
+      "/bin/grep RRSIG #{base_dir}/signed/example.org",
     ) do
       its(:exit_status) { is_expected.to eq 0 }
     end

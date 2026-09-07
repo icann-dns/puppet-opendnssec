@@ -11,6 +11,7 @@ require 'voxpupuli/test/spec_helper'
 
 RSpec.configure do |c|
   c.facterdb_string_keys = false
+  c.hiera_config = File.expand_path('../hiera.yaml', __dir__)
 end
 
 add_mocked_facts!

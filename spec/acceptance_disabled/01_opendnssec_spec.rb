@@ -2,7 +2,7 @@
 
 require 'spec_helper_acceptance'
 
-describe 'opendnssec class', tier_low: true do
+describe 'opendnssec class', :tier_low do
   context 'defaults' do
     if fact('osfamily') == 'RedHat'
       enforcer = 'ods-enforcerd'

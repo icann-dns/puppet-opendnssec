@@ -1,6 +1,4 @@
 fixtures:
-    symlinks:
-      opendnssec: "#{source_dir}"
     forge_modules:
       stdlib: "puppetlabs/stdlib"
       concat: "puppetlabs/concat"
