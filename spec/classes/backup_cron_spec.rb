@@ -38,14 +38,14 @@ describe 'opendnssec::backup_cron' do
         it do
           is_expected.to contain_file('/opt/backup').with(
             ensure: 'directory',
-            owner:  'root',
+            owner:  'backup',
           )
         end
 
         it do
           is_expected.to contain_file('/opt/tmp').with(
             ensure: 'directory',
-            owner:  'root',
+            owner:  'backup',
           )
         end
 
@@ -53,7 +53,7 @@ describe 'opendnssec::backup_cron' do
           is_expected.to contain_file('/usr/local/bin/backup-hsm-mysql.sh').with(
             ensure: 'file',
             mode: '0755',
-            owner: 'root',
+            owner: 'backup',
           ).with_content(
             %r{NUMBER=500},
           ).with_content(
@@ -162,7 +162,7 @@ describe 'opendnssec::backup_cron' do
           it do
             is_expected.to contain_file('/foobar').with(
               ensure: 'directory',
-              owner:  'root',
+              owner:  'backup',
             )
           end
 
@@ -183,7 +183,7 @@ describe 'opendnssec::backup_cron' do
           it do
             is_expected.to contain_file('/foobar').with(
               ensure: 'directory',
-              owner:  'root',
+              owner:  'backup',
             )
           end
 
