@@ -37,7 +37,7 @@ class opendnssec::backup_cron (
       default:
         ensure => stdlib::ensure($require_backup, 'file'),
         mode   => '0755',
-        owner  => $user,
+        user   => $backup_user,
         group  => $group;
       $script_path:
         content => template('opendnssec/usr/local/bin/backup-hsm-mysql.sh.erb');
@@ -47,7 +47,7 @@ class opendnssec::backup_cron (
     cron { 'backup-hsm-mysql':
       ensure  => stdlib::ensure($require_backup),
       command => $script_path,
-      user    => $user,
+      user    => 'root',
       hour    => '*/6',
       minute  => 0,
       require => File[$script_path],

@@ -209,11 +209,11 @@ class opendnssec (
     ensure => stdlib::ensure($enabled, 'service'),
     enable => true,
   }
-service { $service_signer:
-  ensure  => stdlib::ensure($enabled, 'service'),
-  enable  => $enabled,
-  require => Service[$service_enforcer],
-}
+  service { $service_signer:
+    ensure  => stdlib::ensure($enabled, 'service'),
+    enable  => $enabled,
+    require => Service[$service_enforcer],
+  }
   opendnssec::addns { 'default':
     masters      => $default_masters,
     provide_xfrs => $default_provide_xfrs,
