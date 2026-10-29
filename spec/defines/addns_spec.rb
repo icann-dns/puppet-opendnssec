@@ -56,7 +56,7 @@ describe 'opendnssec::addns' do
 
         it do
           is_expected.to contain_file('/etc/opendnssec/addns-test_addns.xml.tmp').with(
-            owner: 'root'
+            owner: 'root',
           ).with_content(
             %r{
       <\?xml\sversion="1.0"\sencoding="UTF-8"\?>
@@ -69,7 +69,7 @@ describe 'opendnssec::addns' do
       \s+</Outbound>
       \s+</DNS>
       \s+</Adapter>
-            }x
+            }x,
           )
         end
       end
@@ -82,7 +82,7 @@ describe 'opendnssec::addns' do
 
           it do
             is_expected.to contain_file('/etc/opendnssec/addns-test_addns.xml.tmp').with(
-              owner: 'root'
+              owner: 'root',
             ).with_content(
               %r{
               <\?xml\sversion="1.0"\sencoding="UTF-8"\?>
@@ -103,7 +103,7 @@ describe 'opendnssec::addns' do
               \s+</Outbound>
               \s+</DNS>
               \s+</Adapter>
-              }x
+              }x,
             )
           end
         end
@@ -115,7 +115,7 @@ describe 'opendnssec::addns' do
 
           it do
             is_expected.to contain_file(
-              '/etc/opendnssec/addns-test_addns.xml.tmp'
+              '/etc/opendnssec/addns-test_addns.xml.tmp',
             ).with_content(
               %r{
               <\?xml\sversion="1.0"\sencoding="UTF-8"\?>
@@ -136,7 +136,7 @@ describe 'opendnssec::addns' do
               \s+</Outbound>
               \s+</DNS>
               \s+</Adapter>
-              }x
+              }x,
             )
           end
         end
@@ -148,7 +148,7 @@ describe 'opendnssec::addns' do
 
           it do
             is_expected.to contain_file(
-              '/etc/opendnssec/addns-test_addns.xml.tmp'
+              '/etc/opendnssec/addns-test_addns.xml.tmp',
             ).with_content(
               %r{
               <\?xml\sversion="1.0"\sencoding="UTF-8"\?>
@@ -177,7 +177,7 @@ describe 'opendnssec::addns' do
               \s+</Outbound>
               \s+</DNS>
               \s+</Adapter>
-              }x
+              }x,
             )
           end
         end
@@ -200,7 +200,7 @@ describe 'opendnssec::addns' do
 
           it do
             is_expected.to contain_file(
-              '/etc/opendnssec/addns-test_addns.xml.tmp'
+              '/etc/opendnssec/addns-test_addns.xml.tmp',
             ).with_owner('foobar')
           end
         end
@@ -223,31 +223,8 @@ describe 'opendnssec::addns' do
 
           it do
             is_expected.to contain_file(
-              '/etc/opendnssec/addns-test_addns.xml.tmp'
+              '/etc/opendnssec/addns-test_addns.xml.tmp',
             ).with_group('foobar')
-          end
-        end
-
-        context 'opendnssec::manage_ods_ksmutil' do
-          let(:pre_condition) do
-            <<-EOF
-            class { '::opendnssec':
-              manage_ods_ksmutil => false,
-              policies => {'test_policy' => {} },
-              remotes  => {
-                'master' => { 'address4' => '192.0.2.1' },
-                'provide_xfr' => { 'address4' => '192.0.2.2' },
-              },
-            }
-            EOF
-          end
-
-          it { is_expected.to compile }
-
-          it do
-            is_expected.not_to contain_exec(
-              'Forcing ods-ksmutil to update after modifying addns-test_addns.xml.tmp'
-            )
           end
         end
 
@@ -269,7 +246,7 @@ describe 'opendnssec::addns' do
 
           it do
             is_expected.not_to contain_exec(
-              'Forcing ods-ksmutil to update after modifying addns-test_addns.xml.tmp'
+              'Forcing ods-ksmutil to update after modifying addns-test_addns.xml.tmp',
             )
           end
         end
@@ -303,14 +280,14 @@ describe 'opendnssec::addns' do
 
           it do
             is_expected.to contain_file(
-              '/etc/opendnssec/addns-test_addns.xml.tmp'
+              '/etc/opendnssec/addns-test_addns.xml.tmp',
             ).with_content(
               %r{
                 \s+<Notify>
                 \s+<xi:include\shref="/etc/opendnssec/remotes/slave_notify_out.xml"
                 \s+xpointer="xpointer\(//Notify/Remote\)"\s/>
                 \s+</Notify>
-              }x
+              }x,
             )
           end
         end
@@ -344,7 +321,7 @@ describe 'opendnssec::addns' do
 
           it do
             is_expected.to contain_file(
-              '/etc/opendnssec/addns-test_addns.xml.tmp'
+              '/etc/opendnssec/addns-test_addns.xml.tmp',
             ).with_content(
               %r{
               <\?xml\sversion="1.0"\sencoding="UTF-8"\?>
@@ -377,7 +354,7 @@ describe 'opendnssec::addns' do
               \s+</Outbound>
               \s+</DNS>
               \s+</Adapter>
-              }x
+              }x,
             )
           end
         end
@@ -411,7 +388,7 @@ describe 'opendnssec::addns' do
 
           it do
             is_expected.to contain_file(
-              '/etc/opendnssec/addns-test_addns.xml.tmp'
+              '/etc/opendnssec/addns-test_addns.xml.tmp',
             ).with_content(
               %r{
               <\?xml\sversion="1.0"\sencoding="UTF-8"\?>
@@ -444,7 +421,7 @@ describe 'opendnssec::addns' do
               \s+</Outbound>
               \s+</DNS>
               \s+</Adapter>
-              }x
+              }x,
             )
           end
         end

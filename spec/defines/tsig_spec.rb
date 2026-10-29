@@ -45,7 +45,7 @@ describe 'opendnssec::tsig' do
         it do
           is_expected.to contain_file('/etc/opendnssec/tsigs/test_tsig.xml').with(
             ensure: 'file',
-            owner: 'root'
+            owner: 'root',
           ).with_content(
             %r{
             <\?xml\sversion="1.0"\?>
@@ -54,7 +54,7 @@ describe 'opendnssec::tsig' do
             \s+<Algorithm>hmac-sha256</Algorithm>
             \s+<Secret>AAAA</Secret>
             \s+</TSIG>
-            }x
+            }x,
           )
         end
       end
@@ -68,7 +68,7 @@ describe 'opendnssec::tsig' do
           it do
             is_expected.to contain_file('/etc/opendnssec/tsigs/foobar.xml').with(
               ensure: 'file',
-              owner: 'root'
+              owner: 'root',
             ).with_content(
               %r{
               <\?xml\sversion="1.0"\?>
@@ -77,7 +77,7 @@ describe 'opendnssec::tsig' do
               \s+<Algorithm>hmac-sha256</Algorithm>
               \s+<Secret>AAAA</Secret>
               \s+</TSIG>
-              }x
+              }x,
             )
           end
         end

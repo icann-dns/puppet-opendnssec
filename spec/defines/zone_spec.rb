@@ -67,14 +67,14 @@ describe 'opendnssec::zone' do
 
         it do
           is_expected.to contain_file(
-            '/etc/opendnssec/addns-default.xml.tmp'
+            '/etc/opendnssec/addns-default.xml.tmp',
           )
         end
 
         it do
           is_expected.to contain_concat__fragment('zone_test_zone').with(
             target: '/etc/opendnssec/zonelist.xml',
-            order: '10'
+            order: '10',
           ).with_content(
             %r{<Zone\sname="test_zone">
             \s+<Policy>default</Policy>
@@ -88,7 +88,7 @@ describe 'opendnssec::zone' do
             \s+</Output>
             \s+</Adapters>
             \s+</Zone>
-            }x
+            }x,
           )
         end
       end
@@ -114,7 +114,7 @@ describe 'opendnssec::zone' do
 
           it do
             is_expected.to contain_concat__fragment(
-              'zone_test_zone'
+              'zone_test_zone',
             ).with_content(
               %r{<Zone\sname="test_zone">
               \s+<Policy>foobar</Policy>
@@ -128,7 +128,7 @@ describe 'opendnssec::zone' do
               \s+</Output>
               \s+</Adapters>
               \s+</Zone>
-              }x
+              }x,
             )
           end
         end
@@ -141,13 +141,13 @@ describe 'opendnssec::zone' do
 
           it do
             is_expected.to contain_file(
-              '/etc/opendnssec/addns-test_zone-masters.xml.tmp'
+              '/etc/opendnssec/addns-test_zone-masters.xml.tmp',
             )
           end
 
           it do
             is_expected.to contain_concat__fragment(
-              'zone_test_zone'
+              'zone_test_zone',
             ).with_content(
               %r{<Zone\sname="test_zone">
               \s+<Policy>default</Policy>
@@ -161,7 +161,7 @@ describe 'opendnssec::zone' do
               \s+</Output>
               \s+</Adapters>
               \s+</Zone>
-              }x
+              }x,
             )
           end
         end
@@ -174,13 +174,13 @@ describe 'opendnssec::zone' do
 
           it do
             is_expected.to contain_file(
-              '/etc/opendnssec/addns-test_zone-provide_xfrs.xml.tmp'
+              '/etc/opendnssec/addns-test_zone-provide_xfrs.xml.tmp',
             )
           end
 
           it do
             is_expected.to contain_concat__fragment(
-              'zone_test_zone'
+              'zone_test_zone',
             ).with_content(
               %r{<Zone\sname="test_zone">
               \s+<Policy>default</Policy>
@@ -194,7 +194,7 @@ describe 'opendnssec::zone' do
               \s+</Output>
               \s+</Adapters>
               \s+</Zone>
-              }x
+              }x,
             )
           end
         end
@@ -206,7 +206,7 @@ describe 'opendnssec::zone' do
 
           it do
             is_expected.to contain_concat__fragment(
-              'zone_test_zone'
+              'zone_test_zone',
             ).with_content(
               %r{<Zone\sname="test_zone">
               \s+<Policy>default</Policy>
@@ -220,7 +220,7 @@ describe 'opendnssec::zone' do
               \s+</Output>
               \s+</Adapters>
               \s+</Zone>
-              }x
+              }x,
             )
           end
         end
@@ -232,7 +232,7 @@ describe 'opendnssec::zone' do
 
           it do
             is_expected.to contain_concat__fragment(
-              'zone_test_zone'
+              'zone_test_zone',
             ).with_order('20')
           end
         end
@@ -242,7 +242,7 @@ describe 'opendnssec::zone' do
             params.merge!(
               adapter_base_dir: '/foobar',
               adapter_input_type: 'File',
-              zone_content: 'bla'
+              zone_content: 'bla',
             )
           end
 
@@ -250,7 +250,7 @@ describe 'opendnssec::zone' do
 
           it do
             is_expected.to contain_concat__fragment(
-              'zone_test_zone'
+              'zone_test_zone',
             ).with_content(
               %r{<Zone\sname="test_zone">
               \s+<Policy>default</Policy>
@@ -264,7 +264,7 @@ describe 'opendnssec::zone' do
               \s+</Output>
               \s+</Adapters>
               \s+</Zone>
-              }x
+              }x,
             )
           end
         end
@@ -273,7 +273,7 @@ describe 'opendnssec::zone' do
           before do
             params.merge!(
               adapter_base_dir: '/foobar',
-              adapter_output_type: 'File'
+              adapter_output_type: 'File',
             )
           end
 
@@ -281,7 +281,7 @@ describe 'opendnssec::zone' do
 
           it do
             is_expected.to contain_concat__fragment(
-              'zone_test_zone'
+              'zone_test_zone',
             ).with_content(
               %r{<Zone\sname="test_zone">
               \s+<Policy>default</Policy>
@@ -295,7 +295,7 @@ describe 'opendnssec::zone' do
               \s+</Output>
               \s+</Adapters>
               \s+</Zone>
-              }x
+              }x,
             )
           end
         end
@@ -307,7 +307,7 @@ describe 'opendnssec::zone' do
 
           it do
             is_expected.to contain_concat__fragment(
-              'zone_test_zone'
+              'zone_test_zone',
             ).with_content(
               %r{<Zone\sname="test_zone">
               \s+<Policy>default</Policy>
@@ -321,7 +321,7 @@ describe 'opendnssec::zone' do
               \s+</Output>
               \s+</Adapters>
               \s+</Zone>
-              }x
+              }x,
             )
           end
         end
@@ -334,7 +334,7 @@ describe 'opendnssec::zone' do
           # Add Check to validate change was successful
           it do
             is_expected.to contain_concat__fragment(
-              'zone_test_zone'
+              'zone_test_zone',
             ).with_content(
               %r{<Zone\sname="test_zone">
               \s+<Policy>default</Policy>
@@ -348,7 +348,7 @@ describe 'opendnssec::zone' do
               \s+</Output>
               \s+</Adapters>
               \s+</Zone>
-              }x
+              }x,
             )
           end
         end
@@ -358,7 +358,7 @@ describe 'opendnssec::zone' do
             params.merge!(
               adapter_input_file: '/foobar',
               adapter_input_type: 'File',
-              zone_content: 'bla'
+              zone_content: 'bla',
             )
           end
 
@@ -367,7 +367,7 @@ describe 'opendnssec::zone' do
           # Add Check to validate change was successful
           it do
             is_expected.to contain_concat__fragment(
-              'zone_test_zone'
+              'zone_test_zone',
             ).with_content(
               %r{<Zone\sname="test_zone">
               \s+<Policy>default</Policy>
@@ -381,7 +381,7 @@ describe 'opendnssec::zone' do
               \s+</Output>
               \s+</Adapters>
               \s+</Zone>
-              }x
+              }x,
             )
           end
         end
@@ -390,7 +390,7 @@ describe 'opendnssec::zone' do
           before do
             params.merge!(
               adapter_output_file: '/foobar',
-              adapter_output_type: 'File'
+              adapter_output_type: 'File',
             )
           end
 
@@ -398,7 +398,7 @@ describe 'opendnssec::zone' do
 
           it do
             is_expected.to contain_concat__fragment(
-              'zone_test_zone'
+              'zone_test_zone',
             ).with_content(
               %r{<Zone\sname="test_zone">
               \s+<Policy>default</Policy>
@@ -412,7 +412,7 @@ describe 'opendnssec::zone' do
               \s+</Output>
               \s+</Adapters>
               \s+</Zone>
-              }x
+              }x,
             )
           end
         end
@@ -426,7 +426,7 @@ describe 'opendnssec::zone' do
 
           it do
             is_expected.to contain_concat__fragment(
-              'zone_test_zone'
+              'zone_test_zone',
             ).with_content(
               %r{<Zone\sname="test_zone">
               \s+<Policy>default</Policy>
@@ -440,7 +440,7 @@ describe 'opendnssec::zone' do
               \s+</Output>
               \s+</Adapters>
               \s+</Zone>
-              }x
+              }x,
             )
           end
         end
@@ -452,7 +452,7 @@ describe 'opendnssec::zone' do
 
           it do
             is_expected.to contain_concat__fragment(
-              'zone_test_zone'
+              'zone_test_zone',
             ).with_content(
               %r{<Zone\sname="test_zone">
               \s+<Policy>default</Policy>
@@ -466,7 +466,7 @@ describe 'opendnssec::zone' do
               \s+</Output>
               \s+</Adapters>
               \s+</Zone>
-              }x
+              }x,
             )
           end
         end

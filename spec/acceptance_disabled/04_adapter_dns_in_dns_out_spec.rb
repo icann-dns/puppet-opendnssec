@@ -4,7 +4,7 @@ require 'spec_helper_acceptance'
 
 # this test is flaxy due to a bug in opendnssec but
 # i have never seen centos-7 work in travis-ci
-describe 'opendnssec dns adapter -> dns adapter', tier_high: true do
+describe 'opendnssec dns adapter -> dns adapter', :tier_high do
   context 'defaults' do
     if fact('osfamily') == 'RedHat'
       enforcer = 'ods-enforcerd'
@@ -89,7 +89,7 @@ describe 'opendnssec dns adapter -> dns adapter', tier_high: true do
     describe command('/usr/bin/ods-ksmutil policy list') do
       its(:stdout) do
         is_expected.to match(
-          %r{default\s+default - Deny:NSEC3; KSK:RSASHA1-NSEC3-SHA1; ZSK:RSASHA1-NSEC3-SHA1}
+          %r{default\s+default - Deny:NSEC3; KSK:RSASHA1-NSEC3-SHA1; ZSK:RSASHA1-NSEC3-SHA1},
         )
       end
     end
@@ -114,13 +114,13 @@ describe 'opendnssec dns adapter -> dns adapter', tier_high: true do
     end
 
     describe command(
-      '/usr/bin/dig -p 5353 +dnssec soa root-servers.net @localhost'
+      '/usr/bin/dig -p 5353 +dnssec soa root-servers.net @localhost',
     ) do
       its(:stdout) { is_expected.to match(%r{\bRRSIG\b}) }
     end
 
     describe command(
-      '/usr/bin/dig -p 5353 +dnssec DNSKEY root-servers.net @localhost'
+      '/usr/bin/dig -p 5353 +dnssec DNSKEY root-servers.net @localhost',
     ) do
       its(:stdout) { is_expected.to match(%r{\bDNSKEY\s+257\b}) }
       its(:stdout) { is_expected.to match(%r{\bDNSKEY\s+256\b}) }

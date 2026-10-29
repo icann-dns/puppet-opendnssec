@@ -81,6 +81,7 @@ define opendnssec::policy (
 
   $policy_file     = $opendnssec::policy_file
   $repository_name = $opendnssec::repository_name
+
   $description_text = $description.lest || {
     "${name} - Deny:${denial_policy}; KSK:${ksk_algorithm}; ZSK:${zsk_algorithm}"
   }

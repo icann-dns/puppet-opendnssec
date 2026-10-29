@@ -85,7 +85,7 @@ else
       host,
       version: '5',
       puppet_agent_version: '5.5.8',
-      default_action: 'gem_install'
+      default_action: 'gem_install',
     )
     install_modules(host, modules, git_repos)
     apply_manifest_on(host, 'include epel', catch_failures: true) if host['platform'] =~ %r{^el-}

@@ -2,7 +2,7 @@
 
 require 'spec_helper_acceptance'
 
-describe 'opendnssec file adapter to file adapter', tier_low: true do
+describe 'opendnssec file adapter to file adapter', :tier_low do
   context 'defaults' do
     if fact('osfamily') == 'RedHat'
       enforcer = 'ods-enforcerd'
@@ -62,7 +62,7 @@ describe 'opendnssec file adapter to file adapter', tier_low: true do
     describe command('/usr/bin/ods-ksmutil policy list') do
       its(:stdout) do
         is_expected.to match(
-          %r{default\s+default - Deny:NSEC3; KSK:RSASHA1-NSEC3-SHA1; ZSK:RSASHA1-NSEC3-SHA1}
+          %r{default\s+default - Deny:NSEC3; KSK:RSASHA1-NSEC3-SHA1; ZSK:RSASHA1-NSEC3-SHA1},
         )
       end
     end
@@ -83,7 +83,7 @@ describe 'opendnssec file adapter to file adapter', tier_low: true do
     end
 
     describe command(
-      "/bin/grep RRSIG #{base_dir}/signed/example.com"
+      "/bin/grep RRSIG #{base_dir}/signed/example.com",
     ) do
       its(:exit_status) { is_expected.to eq 0 }
     end
