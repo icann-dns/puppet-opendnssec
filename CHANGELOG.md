@@ -1,3 +1,6 @@
+### 2025-10-29 3.0.0
+* Refactor and simplify
+
 ### 2025-06-18 2.1.0
 * Mysql::db pin collate and charset
 
